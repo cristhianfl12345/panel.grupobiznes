@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { useMemo } from 'react';
+import ProtectedFiles, { ROLES } from "../routes/ProtectedFiles"
 
 export default function ControlMarcadores() {
 
@@ -350,7 +351,7 @@ const reemplazarSpamBulk = async () => {
       </div>
 
 {/* KPI + RESUMEN MARCADORES */}
-
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
   {resumenMarcadores.map(m => (
@@ -416,6 +417,8 @@ const reemplazarSpamBulk = async () => {
   ))}
 
 </div>
+
+
 {/* GENERADOR */}
 
 <motion.div
@@ -614,8 +617,10 @@ ${isDark
   </AnimatePresence>
 
 </motion.div>
+</ProtectedFiles>
 
 {/* FILTROS */}
+<ProtectedFiles allow={[ROLES.USUARIO, ROLES.COORDINADOR, ROLES.SUPERVISOR]}>
 <motion.div
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
@@ -704,7 +709,7 @@ ${isDark
   </AnimatePresence>
 
 </motion.div>
-
+</ProtectedFiles>
 {/* ACTIVOS */}
 
 <div
@@ -777,7 +782,9 @@ ${isDark
                 />
               </th>
               <th className="p-2 text-left">Teléfono</th>
+              <ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
               <th className="p-2 text-left">Asignado por</th>
+              </ProtectedFiles>
               <th className="p-2 text-left">Marcador</th>
               <th className="p-2 text-left">Fecha</th>
               <th className="p-2 text-left">Acción</th>
@@ -805,7 +812,8 @@ ${isDark
                 </td>
 
                 <td className="p-2">{a.telefono}</td>
-                <td className="p-2">{a.usuario_nombre}</td>
+                <ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
+                <td className="p-2">{a.usuario_nombre}</td> </ProtectedFiles>
                 <td className="p-2">{a.marcador_nombre}</td>
 
                 <td className="p-2">
@@ -919,7 +927,9 @@ ${isDark
                 />
               </th>
               <th className="p-2 text-left">Teléfono</th>
-              <th className="p-2 text-left">Movido por</th>
+              <ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
+                <th className="p-2 text-left">Movido por</th>
+              </ProtectedFiles>
               <th className="p-2 text-left">Marcador</th>
               <th className="p-2 text-left">Fecha</th>
               <th className="p-2 text-left">Acción</th>
@@ -947,7 +957,8 @@ ${isDark
                 </td>
 
                 <td className="p-2">{s.telefono}</td>
-                <td className="p-2">{s.usuario_nombre}</td>
+                <ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
+                <td className="p-2">{s.usuario_nombre}</td> </ProtectedFiles>
                 <td className="p-2">{s.marcador_nombre}</td>
 
                 <td className="p-2">

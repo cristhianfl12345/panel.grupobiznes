@@ -162,13 +162,14 @@ const esAdmin = [1,2,6].includes(tipoUsuario);
 // cierre de sesion
 const handleLogout = () => {
   // Borrar todo (Recomendado para limpieza total)
- // localStorage.clear();
+ //localStorage.clear();
 
   // borrar solo lo relacionado al usuario pero mantener el tema (Dark/Light)
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   localStorage.removeItem("id_tipo_usuario");
-  localStorage.removeItem("notificaciones_cerradas_supervisor");
+  //localStorage.removeItem("notificaciones_cerradas_supervisor");
+ // localStorage.removeItem("notificaciones_cerradas_admin");
 
   // Redirigir al login y usar replace para que no puedan volver atrás
   navigate("/", { replace: true });
