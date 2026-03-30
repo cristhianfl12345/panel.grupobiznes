@@ -1,59 +1,102 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
 import HeaderLayout from "./components/Header"
 import Login from "./routes/Login"
 import Home from "./pages/Home"
+import PublicRoute from "./routes/PublicRoute"
+import ProtectedRoute from "./routes/ProtectedRoute"
 import ControlMarcadores from "./pages/ControlMarcadores"
 import VisoresKPI from "./pages/VisoresKPI"
 import CrearVista from "./pages/CrearVista"
 import CrearUser from "./pages/CrearUser"
+
 function App() {
+
+  const isAuth = localStorage.getItem("auth")
+
   return (
     <BrowserRouter>
 
       <Routes>
 
-        <Route path="/" element={<Login />} />
+        {/* LOGIN (PUBLIC) */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
 
+        {/* HOME */}
         <Route
           path="/home"
           element={
-            <HeaderLayout>
-              <Home />
-            </HeaderLayout>
+            <ProtectedRoute>
+              <HeaderLayout>
+                <Home />
+              </HeaderLayout>
+            </ProtectedRoute>
           }
         />
 
+        {/* CONTROL MARCADORES */}
         <Route
           path="/control-marcadores"
           element={
-            <HeaderLayout>
-              <ControlMarcadores />
-            </HeaderLayout>
+            <ProtectedRoute>
+              <HeaderLayout>
+                <ControlMarcadores />
+              </HeaderLayout>
+            </ProtectedRoute>
           }
         />
+
+        {/* VISOR KPI */}
         <Route
           path="/visor/:level/:idcamp/:vista"
           element={
-            <HeaderLayout>
-              <VisoresKPI />
-            </HeaderLayout>
+            <ProtectedRoute>
+              <HeaderLayout>
+                <VisoresKPI />
+              </HeaderLayout>
+            </ProtectedRoute>
           }
         />
-         <Route
+
+        {/* CREAR VISTA */}
+        <Route
           path="/createview"
           element={
-            <HeaderLayout>
-              <CrearVista />
-            </HeaderLayout>
+            <ProtectedRoute>
+              <HeaderLayout>
+                <CrearVista />
+              </HeaderLayout>
+            </ProtectedRoute>
           }
         />
-                 <Route
+
+        {/* CREAR USUARIO */}
+        <Route
           path="/createuser"
           element={
-            <HeaderLayout>
-              <CrearUser />
-            </HeaderLayout>
+            <ProtectedRoute>
+              <HeaderLayout>
+                <CrearUser />
+              </HeaderLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* REDIRECCIÓN GLOBAL */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to={isAuth ? "/home" : "/login"}
+              replace
+            />
           }
         />
 

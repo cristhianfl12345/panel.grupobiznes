@@ -158,6 +158,21 @@ const limpiarNombreVista = (nombre) => {
 
 const esSupervisor = [3,4,5].includes(tipoUsuario);
 const esAdmin = [1,2,6].includes(tipoUsuario);
+
+// cierre de sesion
+const handleLogout = () => {
+  // Borrar todo (Recomendado para limpieza total)
+ // localStorage.clear();
+
+  // borrar solo lo relacionado al usuario pero mantener el tema (Dark/Light)
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("id_tipo_usuario");
+  localStorage.removeItem("notificaciones_cerradas_supervisor");
+
+  // Redirigir al login y usar replace para que no puedan volver atrás
+  navigate("/", { replace: true });
+};
 return (
 
     <div
@@ -621,12 +636,12 @@ return (
             </p>
             
             <button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded hover:bg-red-500/70 transition mt-auto"
-            >
-              <LogOut size={18} />
-              <span>Salir</span>
-            </button>
+  onClick={handleLogout}
+  className="flex items-center gap-3 w-full px-3 py-2 rounded hover:bg-red-500/70 transition mt-auto text-white"
+>
+  <LogOut size={18} />
+  <span>Salir</span>
+</button>
 
           </nav>
 
@@ -829,7 +844,7 @@ return (
                     </button>
 
                     <button
-                      onClick={() => navigate("/")}
+                      onClick={handleLogout}
                       className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-gray-100 text-red-500 transition font-medium"
                     >
                       <LogOut size={18} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { useMemo } from 'react';
 
 export default function ControlMarcadores() {
 
@@ -30,9 +31,72 @@ const id_usuario = user.id
 const [activosAbierto, setActivosAbierto] = useState(null)
 const [spamAbierto, setSpamAbierto] = useState(null)
   const [previewMascaras, setPreviewMascaras] = useState([])
+const [selectedActivos, setSelectedActivos] = useState([]);
+const [selectedSpam, setSelectedSpam] = useState([]);
+// =============================
+// FILTROS DE MARCADORES
+// =============================
+const [filtroMarcador, setFiltroMarcador] = useState("");
+const [activosFiltrados, setActivosFiltrados] = useState([]);
+const [spamFiltrados, setSpamFiltrados] = useState([]);
+const [filtroAbierto, setFiltroAbierto] = useState(true);
 
-  useEffect(() => {
+//buscador
+const [searchMarcador, setSearchMarcador] = useState("");
+const activosFiltradosBusqueda = useMemo(() => {
 
+  if (!searchMarcador) return activosFiltrados;
+
+  return activosFiltrados.filter(a =>
+    a.marcador_nombre
+      ?.toLowerCase()
+      .includes(searchMarcador.toLowerCase())
+  );
+
+}, [searchMarcador, activosFiltrados]);
+
+// =============================
+// FUNCIÓN FILTRO
+// =============================
+const aplicarFiltro = () => {
+
+  if (!filtroMarcador) {
+    setActivosFiltrados(activos);
+    setSpamFiltrados(spam);
+    return;
+  }
+
+  const activosF = activos.filter(a =>
+    String(a.id_marcador) === String(filtroMarcador)
+  );
+
+  const spamF = spam.filter(s =>
+    String(s.id_marcador) === String(filtroMarcador)
+  );
+
+  setActivosFiltrados(activosF);
+  setSpamFiltrados(spamF);
+};
+
+// =============================
+// SINCRONIZACIÓN AUTOMÁTICA
+// =============================
+useEffect(() => {
+  setActivosFiltrados(activos);
+}, [activos]);
+
+useEffect(() => {
+  setSpamFiltrados(spam);
+}, [spam]);
+
+  // (opcional pero recomendado)
+// aplica filtro automáticamente cuando cambian datos o filtro
+{/*
+useEffect(() => {
+  aplicarFiltro();
+}, [filtroMarcador, activos, spam]);
+*/}
+useEffect(() => {
     const handleStorage = () => {
       const theme = localStorage.getItem("theme") === "dark"
       setIsDark(theme)
@@ -196,7 +260,77 @@ const [spamAbierto, setSpamAbierto] = useState(null)
     setSpam(spam.filter(s => s.id !== id))
 
   }
+// ============================
+// BULK ACTIVOS → SPAM
+// ============================
+const moverSpamBulk = async () => {
+  if (selectedActivos.length === 0) return;
 
+  if (!id_usuario) {
+    alert("Usuario no identificado");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:4000/api/mover-spam-bulk", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ids: selectedActivos,
+        id_usuario: id_usuario 
+      })
+    });
+
+    if (response.ok) {
+      alert("Números movidos exitosamente");
+      setSelectedActivos([]);
+      window.location.reload();
+    } else {
+      alert("Ocurrió un error, intente nuevamente");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Ocurrió un error, intente nuevamente");
+  }
+};
+
+// ============================
+// BULK REEMPLAZAR SPAM
+// ============================
+const reemplazarSpamBulk = async () => {
+  if (selectedSpam.length === 0) return;
+
+  if (!id_usuario) {
+    alert("Usuario no identificado");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:4000/api/reemplazar-spam-bulk", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ids: selectedSpam,
+        id_usuario: id_usuario
+      })
+    });
+
+    if (response.ok) {
+      alert("Números reemplazados exitosamente");
+      setSelectedSpam([]);
+      window.location.reload();
+    } else {
+      alert("Ocurrió un error, intente nuevamente");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Ocurrió un error, intente nuevamente");
+  }
+};
   const totalActivos = activos.length
   const totalSpam = spam.length
 
@@ -373,7 +507,7 @@ ${isDark
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={generarMascaras}
-      className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition-all"
+      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow-md transition-all"
     >
       Generar máscaras
     </motion.button>
@@ -481,6 +615,96 @@ ${isDark
 
 </motion.div>
 
+{/* FILTROS */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  className={`
+  rounded-2xl shadow-lg p-6 mb-8 border
+  ${isDark
+    ? "bg-[#272833] border-[#343545]"
+    : "bg-white border-gray-200"
+  }
+  `}
+>
+
+  {/* HEADER */}
+  <div
+    className="flex justify-between items-center cursor-pointer mb-4"
+    onClick={() => setFiltroAbierto(!filtroAbierto)}
+  >
+    <h2 className="font-semibold text-lg">
+      Filtro por Marcador
+    </h2>
+
+    {filtroAbierto ? <ChevronUp /> : <ChevronDown />}
+  </div>
+
+  <AnimatePresence>
+
+    {filtroAbierto && (
+
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto" }}
+        exit={{ opacity: 0, height: 0 }}
+      >
+
+        <div className="grid md:grid-cols-3 gap-6">
+
+          {/* CAMPAÑA (readonly) */}
+          <input
+            value={idCamp}
+            readOnly
+            className={`
+            p-2 rounded-lg border cursor-not-allowed bg-gray-200/50 p-2 rounded-lg border
+            ${isDark
+              ? "bg-[#1F2029] border-gray-700"
+              : "bg-white border-gray-300"
+            }
+            `}
+          />
+
+          {/* MARCADOR */}
+          <select
+            value={filtroMarcador}
+            onChange={(e) => setFiltroMarcador(e.target.value)}
+            className={`
+            p-2 rounded-lg border
+            ${isDark
+              ? "bg-[#1F2029] border-gray-700"
+              : "bg-white border-gray-300"
+            }
+            `}
+          >
+            <option value="">Todos</option>
+
+            {marcadores.map(m => (
+              <option key={m.id_marcador} value={m.id_marcador}>
+                {m.id_marcador} - {m.marcador}
+              </option>
+            ))}
+
+          </select>
+
+          {/* BOTÓN */}
+          <button
+            onClick={aplicarFiltro}
+            className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2"
+          >
+            Filtrar
+          </button>
+
+        </div>
+
+      </motion.div>
+
+    )}
+
+  </AnimatePresence>
+
+</motion.div>
+
 {/* ACTIVOS */}
 
 <div
@@ -491,12 +715,10 @@ ${isDark
 >
 
   {/* HEADER PLEGABLE */}
-
   <div
     className="flex items-center justify-between cursor-pointer"
     onClick={() => setActivosAbierto(!activosAbierto)}
   >
-
     <h2 className="font-semibold">
       Teléfonos Activos
     </h2>
@@ -507,10 +729,7 @@ ${isDark
         : <ChevronDown size={22}/>
       }
     </div>
-
   </div>
-
-  {/* CONTENIDO ANIMADO */}
 
   <AnimatePresence>
 
@@ -524,25 +743,66 @@ ${isDark
         className="overflow-hidden mt-4"
       >
 
+        {/* 🔎 BUSCADOR */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar por marcador..."
+            value={searchMarcador}
+            onChange={(e) => setSearchMarcador(e.target.value)}
+            className={`
+              w-full p-2 rounded-lg border text-sm
+              ${isDark
+                ? "bg-[#1F2029] border-gray-700 text-white"
+                : "bg-white border-gray-300"
+              }
+            `}
+          />
+        </div>
+
         <table className="w-full text-sm">
 
           <thead className={isDark ? "bg-[#1F2029]" : "bg-gray-100"}>
-
             <tr>
+              <th className="p-2">
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedActivos(activosFiltradosBusqueda.map(a => a.id));
+                    } else {
+                      setSelectedActivos([]);
+                    }
+                  }}
+                />
+              </th>
               <th className="p-2 text-left">Teléfono</th>
               <th className="p-2 text-left">Asignado por</th>
               <th className="p-2 text-left">Marcador</th>
               <th className="p-2 text-left">Fecha</th>
               <th className="p-2 text-left">Acción</th>
             </tr>
-
           </thead>
 
           <tbody>
 
-            {activos.map(a => (
+            {activosFiltradosBusqueda.map(a => (
 
               <tr key={a.id} className="border-t border-gray-700">
+
+                <td className="p-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedActivos.includes(a.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedActivos(prev => [...prev, a.id]);
+                      } else {
+                        setSelectedActivos(prev => prev.filter(id => id !== a.id));
+                      }
+                    }}
+                  />
+                </td>
 
                 <td className="p-2">{a.telefono}</td>
                 <td className="p-2">{a.usuario_nombre}</td>
@@ -560,7 +820,6 @@ ${isDark
                 </td>
 
                 <td className="p-2">
-
                   <button
                     onClick={async () => {
                       await moverSpam(a.id)
@@ -570,7 +829,6 @@ ${isDark
                   >
                     Mover a Spam
                   </button>
-
                 </td>
 
               </tr>
@@ -581,6 +839,21 @@ ${isDark
 
         </table>
 
+        {/* BOTÓN BULK */}
+        <div className="mt-4">
+          <button
+            onClick={moverSpamBulk}
+            disabled={selectedActivos.length === 0}
+            className={`px-4 py-2 rounded text-sm text-white transition ${
+              selectedActivos.length === 0
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            Mover seleccionados ({selectedActivos.length})
+          </button>
+        </div>
+
       </motion.div>
 
     )}
@@ -588,6 +861,8 @@ ${isDark
   </AnimatePresence>
 
 </div>
+
+
 {/* SPAM */}
 
 <div
@@ -596,8 +871,6 @@ ${isDark
   ${isDark ? "bg-[#272833]" : "bg-white"}
   `}
 >
-
-  {/* HEADER PLEGABLE */}
 
   <div
     className="flex items-center justify-between cursor-pointer"
@@ -617,8 +890,6 @@ ${isDark
 
   </div>
 
-  {/* CONTENIDO ANIMADO */}
-
   <AnimatePresence>
 
     {spamAbierto && (
@@ -634,22 +905,46 @@ ${isDark
         <table className="w-full text-sm">
 
           <thead className={isDark ? "bg-[#1F2029]" : "bg-gray-100"}>
-
             <tr>
+              <th className="p-2">
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedSpam(spamFiltrados.map(s => s.id));
+                    } else {
+                      setSelectedSpam([]);
+                    }
+                  }}
+                />
+              </th>
               <th className="p-2 text-left">Teléfono</th>
               <th className="p-2 text-left">Movido por</th>
               <th className="p-2 text-left">Marcador</th>
               <th className="p-2 text-left">Fecha</th>
               <th className="p-2 text-left">Acción</th>
             </tr>
-
           </thead>
 
           <tbody>
 
-            {spam.map(s => (
+            {spamFiltrados.map(s => (
 
               <tr key={s.id} className="border-t border-gray-700">
+
+                <td className="p-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedSpam.includes(s.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedSpam(prev => [...prev, s.id]);
+                      } else {
+                        setSelectedSpam(prev => prev.filter(id => id !== s.id));
+                      }
+                    }}
+                  />
+                </td>
 
                 <td className="p-2">{s.telefono}</td>
                 <td className="p-2">{s.usuario_nombre}</td>
@@ -673,7 +968,7 @@ ${isDark
                       await reemplazar(s.id)
                       window.location.reload()
                     }}
-                    className="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-xs transition"
+                    className="text-black bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-xs transition"
                   >
                     Reemplazar
                   </button>
@@ -688,6 +983,21 @@ ${isDark
 
         </table>
 
+        {/* BOTÓN BULK */}
+        <div className="mt-4">
+          <button
+            onClick={reemplazarSpamBulk}
+            disabled={selectedSpam.length === 0}
+            className={`text-black px-4 py-2 rounded text-sm transition ${
+              selectedSpam.length === 0
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-yellow-500 hover:bg-yellow-600"
+            }`}
+          >
+            Reemplazar seleccionados ({selectedSpam.length})
+          </button>
+        </div>
+
       </motion.div>
 
     )}
@@ -695,9 +1005,7 @@ ${isDark
   </AnimatePresence>
 
 </div>
-
 </div>
-
   )
 
 }

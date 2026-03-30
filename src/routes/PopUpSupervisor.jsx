@@ -10,18 +10,24 @@ export default function PopUpSupervisor({ open, setOpen }) {
   const [isDark, setIsDark] = useState(false);
 
   const intervalRef = useRef(null);
-// notificaciones del dia
-const hoy = new Date();
 
-const notificacionesHoy = notificaciones.filter((n) => {
-  const fecha = new Date(n.fecha);
+  // ==============================
+  // 🧠 UTILIDAD: VALIDAR SI ES HOY
+  // ==============================
+  const esHoy = (fechaStr) => {
+    const hoy = new Date();
+    const fecha = new Date(fechaStr);
 
-  return (
-    fecha.getFullYear() === hoy.getFullYear() &&
-    fecha.getMonth() === hoy.getMonth() &&
-    fecha.getDate() === hoy.getDate()
+    return fecha.toDateString() === hoy.toDateString();
+  };
+
+  // ==============================
+  // 📅 NOTIFICACIONES DEL DÍA
+  // ==============================
+  const notificacionesHoy = notificaciones.filter((n) =>
+    esHoy(n.fecha)
   );
-});
+
   // ==============================
   // TEMA
   // ==============================
@@ -74,9 +80,9 @@ const notificacionesHoy = notificaciones.filter((n) => {
       // 🔹 TODAS → CAMPANA
       setNotificaciones(data.data);
 
-      // 🔹 SOLO POPUPS
+      // 🔹 SOLO POPUPS (FILTRADAS POR HOY)
       const nuevasVisibles = data.data.filter((n) => {
-        return !cerradas[n.id];
+        return !cerradas[n.id] && esHoy(n.fecha);
       });
 
       setVisibles(nuevasVisibles);
