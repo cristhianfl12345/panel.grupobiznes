@@ -7,6 +7,7 @@ import {
   Trash2,
   X,
   Save,
+  Plus,
   Search,
   ChevronDown,
   ChevronUp,
@@ -52,8 +53,8 @@ export default function CrearUser() {
 
   const grupos = [
     { id: 1, descripcion: "Caja Arequipa" },
-    { id: 3, descripcion: "Empresa Biznes" },
-    { id: 4, descripcion: "Empresa Biznes - Caja Arequipa" }
+    { id: 2, descripcion: "Empresa Biznes" },
+    { id: 3, descripcion: "Empresa Biznes - Caja Arequipa" }
   ];
 
   // ==============================
@@ -100,8 +101,8 @@ export default function CrearUser() {
   const badgeGrupo = (grupoId) => {
     switch (grupoId) {
       case 1: return "bg-red-100 text-red-700 border border-red-200";
-      case 3: return "bg-green-100 text-green-700 border border-green-200";
-      case 4: return "bg-yellow-100 text-yellow-700 border border-yellow-200";
+      case 2: return "bg-green-100 text-green-700 border border-green-200";
+      case 3: return "bg-yellow-100 text-yellow-700 border border-yellow-200";
       default: return "bg-gray-100 text-gray-600 border border-gray-200";
     }
   };
@@ -115,7 +116,7 @@ export default function CrearUser() {
     ${isDark ? "bg-[#1F2029] text-white" : "bg-white text-gray-900"}
     ${changed(field, value) 
       ? "border-green-500 ring-2 ring-green-500/20" 
-      : isDark ? "border-gray-700 focus:border-blue-500" : "border-gray-300 focus:border-blue-500"}
+      : isDark ? "border-gray-700 focus:border-red-500" : "border-gray-300 focus:border-red-500"}
   `;
 
   // ==============================
@@ -157,6 +158,53 @@ export default function CrearUser() {
     setEditUser(null);
     obtenerUsuarios();
   };
+// crear usuario
+
+const [openModal, setOpenModal] = useState(false)
+
+const [form, setForm] = useState({
+  nombres: "",
+  apellidos: "",
+  usuario: "",
+  password: "",
+  estado: "1",
+  id_tipo_usuario: "",
+  id_grupo: ""
+})
+
+// 👉 handler inputs
+const handleChange = (e) => {
+  setForm({
+    ...form,
+    [e.target.name]: e.target.value
+  })
+}
+
+// 👉 submit
+const handleCreate = async () => {
+  try {
+    const res = await fetch("http://localhost:4000/api/usuarios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(form)
+    })
+
+    const data = await res.json()
+
+    if (data.ok) {
+      setOpenModal(false)
+      // 🔥 opcional: refrescar lista
+      window.location.reload()
+    } else {
+      alert(data.message)
+    }
+
+  } catch (err) {
+    console.error(err)
+  }
+}
 
   return (
     <div className={`min-h-screen transition-colors duration-500 p-4 md:p-8 ${isDark ? "bg-[#1F2029] text-white" : "bg-gray-50 text-gray-900"}`}>
@@ -166,25 +214,228 @@ export default function CrearUser() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-[1400px] mx-auto"
       >
-        {/* HEADER */}
-        <div className={`flex flex-col md:flex-row justify-between items-center mb-8 p-6 rounded-2xl shadow-sm border ${isDark ? "bg-[#272833] border-gray-800" : "bg-white border-gray-200"}`}>
-          <h1 className="flex items-center gap-3 text-2xl font-bold italic">
-            <Users size={32} className={isDark ? "text-red-500" : "text-red-600"} />
-            Gestión de Usuarios
-          </h1>
+        
+{/* HEADER */}
+<div className={`flex flex-col md:flex-row justify-between items-center mb-8 p-6 rounded-2xl shadow-sm border ${isDark ? "bg-[#272833] border-gray-800" : "bg-white border-gray-200"}`}>
 
-          <div className="relative mt-4 md:mt-0 w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              placeholder="Buscar por usuario o nombre..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className={`w-full pl-10 pr-4 py-2.5 rounded-xl border transition-all outline-none ${
-                isDark ? "bg-[#1F2029] border-gray-700 focus:border-blue-500" : "bg-gray-50 border-gray-300 focus:border-blue-600"
-              }`}
-            />
+  <h1 className="flex items-center gap-3 text-2xl font-bold italic">
+    <Users size={32} className={isDark ? "text-red-500" : "text-red-600"} />
+    Gestión de Usuarios
+  </h1>
+
+  <div className="flex items-center gap-4 mt-4 md:mt-0 w-full md:w-auto">
+
+    {/* 🔍 BUSCADOR */}
+    <div className="relative w-full md:w-80">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+      <input
+        placeholder="Buscar por usuario o nombre..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className={`w-full pl-10 pr-4 py-2.5 rounded-xl border transition-all outline-none ${
+          isDark
+            ? "bg-[#1F2029] border-gray-700 focus:border-red-500"
+            : "bg-gray-50 border-gray-300 focus:border-red-600"
+        }`}
+      />
+    </div>
+
+    {/* ➕ BOTÓN CREAR */}
+    <button
+      onClick={() => setOpenModal(true)}
+      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-800 hover:bg-red-900 text-white font-semibold transition-all"
+    >
+      <Plus size={18} />
+      Crear
+    </button>
+
+  </div>
+</div>
+
+{/* ============================== */}
+{/* 🧾 MODAL CREAR USUARIO (MEJORADO) */}
+{/* ============================== */}
+
+<AnimatePresence>
+  {openModal && (
+    <motion.div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border ${
+          isDark ? "bg-[#272833] border-gray-700" : "bg-white border-gray-100"
+        }`}
+      >
+        {/* HEADER */}
+        <div className={`p-6 flex justify-between items-center border-b ${
+          isDark ? "border-gray-700" : "border-gray-100"
+        }`}>
+          <div className="flex items-center gap-3">
+            <UserCircle size={28} className="text-green-500" />
+            <h2 className="text-xl font-bold italic">Crear Usuario</h2>
           </div>
+          <X
+            onClick={() => setOpenModal(false)}
+            className="cursor-pointer text-gray-500 hover:text-red-500"
+            size={24}
+          />
         </div>
+
+        {/* BODY */}
+        <div className="p-6 space-y-4 overflow-y-auto max-h-[70vh]">
+
+          {/* USUARIO + PASSWORD */}
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Usuario</label>
+              <input
+                name="usuario"
+                onChange={handleChange}
+                className={`w-full border p-2.5 rounded-lg ${
+                  isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+                }`}
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Contraseña</label>
+              <input
+                type="password"
+                name="password"
+                onChange={handleChange}
+                className={`w-full border p-2.5 rounded-lg ${
+                  isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+                }`}
+              />
+            </div>
+          </div>
+
+          {/* NOMBRES */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Nombres</label>
+              <input name="nombres" onChange={handleChange} className={`w-full border p-2.5 rounded-lg ${isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"}`} />
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Apellidos</label>
+              <input name="apellidos" onChange={handleChange} className={`w-full border p-2.5 rounded-lg ${isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"}`} />
+            </div>
+          </div>
+
+          {/* NIVEL + GRUPO */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Nivel</label>
+              <select
+                onChange={(e) => setForm({ ...form, id_tipo_usuario: Number(e.target.value) })}
+                className={`w-full border p-2.5 rounded-lg ${
+                  isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+                }`}
+              >
+                <option value="">Seleccionar</option>
+                {niveles.map(n => (
+                  <option key={n.id} value={n.id}>{n.descripcion}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Grupo</label>
+              <select
+                onChange={(e) => setForm({ ...form, id_grupo: Number(e.target.value) })}
+                className={`w-full border p-2.5 rounded-lg ${
+                  isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+                }`}
+              >
+                <option value="">Seleccionar</option>
+                {grupos.map(g => (
+                  <option key={g.id} value={g.id}>{g.descripcion}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* CAMPAÑAS */}
+          <div className={`border rounded-xl overflow-hidden ${
+            isDark ? "border-gray-700 bg-[#1c1d26]" : "border-gray-200 bg-gray-50"
+          }`}>
+            <button
+              onClick={() => setIsCampanasOpen(!isCampanasOpen)}
+              className="w-full flex justify-between items-center p-3"
+            >
+              <span className="text-sm font-bold">
+                Campañas ({selectedCampanas.length})
+              </span>
+              {isCampanasOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+
+            <motion.div animate={{ height: isCampanasOpen ? "auto" : 0 }} className="overflow-hidden">
+              <div className="p-3 grid gap-2 max-h-48 overflow-y-auto">
+                {allCampanas.map(c => (
+                  <label key={c.IdCamp} className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={selectedCampanas.includes(c.IdCamp)}
+                      onChange={() => {
+                        if (selectedCampanas.includes(c.IdCamp)) {
+                          setSelectedCampanas(selectedCampanas.filter(id => id !== c.IdCamp));
+                        } else {
+                          setSelectedCampanas([...selectedCampanas, c.IdCamp]);
+                        }
+                      }}
+                    />
+                    {c.Campana}
+                  </label>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ESTADO */}
+          <div>
+            <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Estado</label>
+            <select
+              onChange={(e) => setForm({ ...form, estado: Number(e.target.value) })}
+              className={`w-full border p-2.5 rounded-lg ${
+                isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+              }`}
+            >
+              <option value={1}>Activo</option>
+              <option value={0}>Inactivo</option>
+            </select>
+          </div>
+
+          {/* FOOTER */}
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              onClick={() => setOpenModal(false)}
+              className={`px-6 py-2.5 rounded-xl font-bold ${
+                isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              Cancelar
+            </button>
+
+            <button
+              onClick={handleCreate}
+              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold flex items-center gap-2"
+            >
+              <Save size={18} /> Crear
+            </button>
+          </div>
+
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
         {/* TABLA ANCHA */}
         <div className={`rounded-2xl shadow-xl overflow-hidden border ${isDark ? "bg-[#272833] border-gray-800" : "bg-white border-gray-200"}`}>
@@ -311,8 +562,8 @@ export default function CrearUser() {
                 
                 <div className="grid grid-cols-1 gap-4">
                   <div className="relative">
-                    <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Usuario ID</label>
-                    <input disabled value={editUser.usuario} className={`w-full border p-2.5 rounded-lg italic ${isDark ? "bg-[#1c1d26] border-gray-800 text-gray-500" : "bg-gray-100 border-gray-200"}`} />
+                    <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Usuario</label>
+                    <input disabled value={editUser.usuario} className={`w-full border p-2.5 rounded-lg italic ${isDark ? "bg-[#1c1d26] border-gray-800 text-gray-500" : "bg-gray-100 border-gray-200 cursor-not-allowed"}`} />
                   </div>
 
                   <div>

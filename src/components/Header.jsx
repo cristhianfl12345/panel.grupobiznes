@@ -618,7 +618,7 @@ return (
       className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
     >
       <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
-      Crear Usuario
+      Gestion de Usuarios
     </button>
 
     <button

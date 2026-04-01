@@ -34,8 +34,8 @@ const [selectedCampanas, setSelectedCampanas] = useState([]);
 
   const grupos = [
     { id: 1, descripcion: "Caja Arequipa" },
-    { id: 3, descripcion: "Empresa Biznes" },
-    { id: 4, descripcion: "Empresa Biznes - Caja Arequipa" }
+    { id: 2, descripcion: "Empresa Biznes" },
+    { id: 3, descripcion: "Empresa Biznes - Caja Arequipa" }
   ];
 
   // ==============================
