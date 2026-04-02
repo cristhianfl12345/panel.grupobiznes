@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import PopUpAdmin from "../routes/PopUpAdmin";
-import PopUpSupervisor from "../routes/PopUpSupervisor";  
+import PopUpSupervisor from "../routes/PopUpSupervisor";
+import ProtectedFiles, { ROLES } from "../routes/ProtectedFiles" 
 import Login from "../routes/Login";
 import {
   Menu,
@@ -207,7 +208,7 @@ return (
               <span>Inicio</span>
               
             </button>
-
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
             <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
               Reportes Clientes
             </p>
@@ -248,6 +249,7 @@ return (
             )}
 
 {/* Campañas Clientes  fin*/}
+</ProtectedFiles>
             <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
               Dashboard
             </p>
@@ -522,12 +524,12 @@ return (
             <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
               Configuración
             </p>
-
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
             <button className="flex items-center gap-3 w-full px-3 py-2 rounded hover:bg-red-500/70 transition">
               <Settings size={18} />
               <span>Control de Campaña</span>
             </button>
-
+</ProtectedFiles>
 <div className="relative">
 
   <button
@@ -589,6 +591,7 @@ return (
   )}
 
 </div>
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
                <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
               ADMIN
             </p>
@@ -630,7 +633,9 @@ return (
     </button>
 
   </div>
+  
 )}
+</ProtectedFiles>
 
             <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
               Usuario

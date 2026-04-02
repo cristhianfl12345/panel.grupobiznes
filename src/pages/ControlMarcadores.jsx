@@ -813,7 +813,8 @@ ${isDark
 
                 <td className="p-2">{a.telefono}</td>
                 <ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
-                <td className="p-2">{a.usuario_nombre}</td> </ProtectedFiles>
+                <td className="p-2">{a.usuario_nombre}</td>
+                </ProtectedFiles>
                 <td className="p-2">{a.marcador_nombre}</td>
 
                 <td className="p-2">
@@ -922,7 +923,7 @@ ${isDark
                       setSelectedSpam(spamFiltrados.map(s => s.id));
                     } else {
                       setSelectedSpam([]);
-                    }
+                    }ProtectedFiles
                   }}
                 />
               </th>
@@ -958,7 +959,8 @@ ${isDark
 
                 <td className="p-2">{s.telefono}</td>
                 <ProtectedFiles allow={[ROLES.ADMIN, ROLES.GERENCIA, ROLES.SISTEMAS]}>
-                <td className="p-2">{s.usuario_nombre}</td> </ProtectedFiles>
+                <td className="p-2">{s.usuario_nombre}</td>
+                </ProtectedFiles>
                 <td className="p-2">{s.marcador_nombre}</td>
 
                 <td className="p-2">

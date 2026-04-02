@@ -52,9 +52,9 @@ export default function CrearUser() {
   ];
 
   const grupos = [
-    { id: 1, descripcion: "Caja Arequipa" },
+    // { id: 1, descripcion: "Caja Arequipa" },
     { id: 2, descripcion: "Empresa Biznes" },
-    { id: 3, descripcion: "Empresa Biznes - Caja Arequipa" }
+    { id: 3, descripcion: "Empresa Biznes - Cliente" }
   ];
 
   // ==============================
@@ -205,7 +205,30 @@ const handleCreate = async () => {
     console.error(err)
   }
 }
-
+// reportes
+const reportesLabel = {
+  0: "Ninguno",
+  1: "Tipo 1 y 2",
+  2: "Tipo 2"
+};
+// DOMINIOS PERSONALIZADOS PARA USUARIOS
+const [usuarioBase, setUsuarioBase] = useState("");
+const [dominio, setDominio] = useState("biznes.pe");
+const dominios = [
+  "biznes.pe",
+  "grupobiznes.pe",
+  "grupobiznes.com.pe",
+  "hotmail.com",
+  "gmail.com"
+];
+useEffect(() => {
+  setForm((prev) => ({
+    ...prev,
+    usuario: usuarioBase
+      ? `${usuarioBase}@${dominio}`
+      : ""
+  }));
+}, [usuarioBase, dominio]);
   return (
     <div className={`min-h-screen transition-colors duration-500 p-4 md:p-8 ${isDark ? "bg-[#1F2029] text-white" : "bg-gray-50 text-gray-900"}`}>
       
@@ -290,18 +313,51 @@ const handleCreate = async () => {
         {/* BODY */}
         <div className="p-6 space-y-4 overflow-y-auto max-h-[70vh]">
 
-          {/* USUARIO + PASSWORD */}
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Usuario</label>
-              <input
-                name="usuario"
-                onChange={handleChange}
-                className={`w-full border p-2.5 rounded-lg ${
-                  isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
-                }`}
-              />
-            </div>
+          {/* CREAR USUARIO MODIFICAR + PASSWORD */}
+<div className="grid grid-cols-1 gap-4">
+  <div>
+    <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">
+      Usuario
+    </label>
+
+    <div className="flex">
+      {/* INPUT USUARIO */}
+      <input
+        name="usuario"
+        value={usuarioBase}
+        onChange={(e) => setUsuarioBase(e.target.value)}
+        placeholder="usuario"
+        className={`w-full border p-2.5 rounded-l-lg ${
+          isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+        }`}
+      />
+
+      {/* DOMINIO FIJO VISUAL */}
+      <div
+        className={`flex items-center px-3 border-t border-b ${
+          isDark ? "border-gray-700 bg-[#1c1d26]" : "border-gray-300 bg-gray-100"
+        } text-sm`}
+      >
+        @
+      </div>
+
+      {/* SELECT DOMINIO */}
+      <select
+        value={dominio}
+        onChange={(e) => setDominio(e.target.value)}
+        className={`border p-2.5 rounded-r-lg ${
+          isDark ? "bg-[#1c1d26] border-gray-700" : "bg-white border-gray-300"
+        }`}
+      >
+        {dominios.map((d) => (
+          <option key={d} value={d}>
+            {d}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
 
             <div>
               <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Contraseña</label>
@@ -488,8 +544,8 @@ const handleCreate = async () => {
                       </p>
                     </td>
                     <td className="p-4 border-r border-gray-700/10 text-center">
-                      {u.reportes ? "Tipo 1 y 2" : "Ninguno"}
-                    </td>
+  {reportesLabel[u.reportes] ?? "Ninguno"}
+</td>
                     <td className="p-4 border-r border-gray-700/10 text-center">
                       <span className={`px-2 py-1 rounded-md text-[10px] uppercase font-black ${Number(u.estado) === 1 ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}>
                         {Number(u.estado) === 1 ? "Activo" : "Inactivo"}
@@ -666,12 +722,18 @@ const handleCreate = async () => {
                   <div>
                     <label className="text-[10px] uppercase font-bold text-gray-500 ml-2 mb-1 block">Reportes</label>
                     <select
-                      value={editUser.reportes ? 1 : 0}
-                      onChange={(e) => setEditUser({ ...editUser, reportes: Number(e.target.value) })}
-                      className={inputClass("reportes", editUser.reportes)}
-                    >
+  value={editUser.reportes}
+  onChange={(e) =>
+    setEditUser({
+      ...editUser,
+      reportes: Number(e.target.value)
+    })
+  }
+  className={inputClass("reportes", editUser.reportes)}
+>
                       <option value={0}>Ninguno</option>
                       <option value={1}>Tipo 1 y 2</option>
+                      <option value={2}>Tipo 2</option>
                     </select>
                   </div>
                   <div>

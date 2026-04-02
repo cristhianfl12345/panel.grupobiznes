@@ -177,7 +177,8 @@ export default function PopUpAdmin({ open, setOpen }) {
             <div className="flex flex-col gap-2 max-h-[400px] overflow-auto pr-1">
               {notificaciones.map((n) => (
                 <motion.div
-                  key={n.id_usuario}
+                 // key={n.id_usuario}
+                  key={`${n.id_usuario}_${n.total}`}
                   layout
                   whileHover={{ scale: 1.02 }}
                   className={`p-3 rounded-xl border transition ${
@@ -218,7 +219,8 @@ export default function PopUpAdmin({ open, setOpen }) {
                       >
                         {detalleUsuario[n.id_usuario].map((d, i) => (
                           <div
-                            key={i}
+                           // key={i}
+                           key={`${d.telefono}_${d.fecha}`}
                             className="flex justify-between border-b py-1 text-[11px]"
                           >
                             <span className="truncate w-[45%]">
@@ -248,7 +250,8 @@ export default function PopUpAdmin({ open, setOpen }) {
         <AnimatePresence>
           {visibles.map((n) => (
             <motion.div
-              key={n.id_usuario}
+             // key={n.id_usuario}
+             key={`${n.id_usuario}_${n.total}`}
               variants={dropAnimation}
               initial="hidden"
               animate="visible"

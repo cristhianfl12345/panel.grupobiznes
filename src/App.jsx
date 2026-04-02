@@ -9,6 +9,7 @@ import ControlMarcadores from "./pages/ControlMarcadores"
 import VisoresKPI from "./pages/VisoresKPI"
 import CrearVista from "./pages/CrearVista"
 import CrearUser from "./pages/CrearUser"
+import ProtectedFiles, { ROLES } from "./routes/ProtectedFiles"
 
 function App() {
 
@@ -71,7 +72,9 @@ function App() {
           element={
             <ProtectedRoute>
               <HeaderLayout>
+                <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
                 <CrearVista />
+                </ProtectedFiles>
               </HeaderLayout>
             </ProtectedRoute>
           }
@@ -83,7 +86,9 @@ function App() {
           element={
             <ProtectedRoute>
               <HeaderLayout>
+                <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
                 <CrearUser />
+                </ProtectedFiles>
               </HeaderLayout>
             </ProtectedRoute>
           }
