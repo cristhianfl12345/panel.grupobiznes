@@ -750,7 +750,7 @@ return (
 
             </motion.button>
 
-{/* 🔔 NOTIFICACIONES */}
+{/* NOTIFICACIONES */}
 <div className="flex items-center ml-2">
 {esAdmin && (
   <>
@@ -779,7 +779,7 @@ return (
       </>
       
 )} 
-{/* 🔔 NOTIFICACIONES SUPERVISOR */}
+{/* NOTIFICACIONES SUPERVISOR */}
 
 {esSupervisor && (
   <>

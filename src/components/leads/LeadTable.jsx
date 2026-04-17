@@ -32,10 +32,10 @@ export default function LeadTable({
 const handleDrop = (targetKey) => {
   if (!draggedKey) return
 
-  // ❌ No permitir mover index
+  // no permitir mover index
   if (draggedKey === "index") return
 
-  // ❌ No permitir que nada se coloque antes de index
+  // no permitir que nada se coloque antes de index
   if (targetKey === "index") return
 
   const newColumns = [...columns]

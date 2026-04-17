@@ -167,7 +167,7 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
 case 'horai': {
   const h = lead.horai;
   
-  // Verificamos si es un objeto y tiene los datos
+  // ver si es un objeto y tiene los datos
   const tiempoFormateado = h && typeof h === 'object' 
     ? `${h.minutes}m ${h.seconds}s` 
     : (h || '-');
@@ -183,7 +183,7 @@ case 'discador':
   return (
     <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
       <div className="flex items-center justify-center gap-2">
-        {/* Mostramos el valor de la columna */}
+        {/* mosrar el valor de la columna */}
         <span>{lead.discador}</span>
         
         
@@ -207,14 +207,14 @@ case 'discador':
         )
 
 case 'ultimocodcontacto': {
-  // Mapeo de estilos según el código
+  // mapeo de estilos según el código
   const statusStyles = {
     "NC": "bg-red-100 text-red-700 border-red-200",
     "CD": "bg-green-100 text-green-700 border-green-200",
     "CND": "bg-yellow-100 text-yellow-700 border-yellow-200",
   };
 
-  // Seleccionamos el estilo o un gris por defecto
+  // sleccionamos el estilo o un gris por defecto
   const currentStyle = statusStyles[lead.ultimocodcontacto] || "bg-gray-100 text-gray-700 border-gray-500";
 
   return (
@@ -258,7 +258,7 @@ case 'ultimofecha':
     "CND": "bg-yellow-100 text-yellow-700 border-yellow-200",
   };
 
-  // Obtenemos la clase según el valor, o una por defecto si no coincide
+  // get clase según el valor, o una por defecto si no coincide
   const currentStyle = statusStyles[lead.mejorcodcontacto] || "bg-gray-100 text-gray-700 border-gray-500";
 
   return (
@@ -327,8 +327,8 @@ case 'ultimofecha':
 <motion.tr
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }} // <--- ESTO ES VITAL
-    transition={{ duration: 0.15 }} // Una transición rápida para que no se encime
+    exit={{ opacity: 0 }} // <--- sin esto algunas filas se sobreponen en una nueva paginacion
+    transition={{ duration: 0.15 }} // una transición rápida para que no se encime
     whileHover={{
       backgroundColor: isDark
         ? "rgba(40,44,59,0.9)"

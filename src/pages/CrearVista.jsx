@@ -27,7 +27,7 @@ export default function CrearVista() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  // 🔥 TAB CONTROL
+  // TAB CONTROL
   const [activeTab, setActiveTab] = useState("crear");
 
   const [form, setForm] = useState({
@@ -190,7 +190,7 @@ export default function CrearVista() {
     Editar Vista
   </button>
 </div>
-      {/* 🔥 CONTENIDO POR TAB */}
+      {/* CONTENIDO POR TAB */}
       <AnimatePresence mode="wait">
 
         {activeTab === "crear" && (

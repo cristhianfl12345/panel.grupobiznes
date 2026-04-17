@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Eye, EyeOff } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { useLocalTheme } from "../../context/useLocalTheme"
@@ -27,7 +27,7 @@ export default function ColumnCustomizer({
     )
   }
 
-  // 🔥 cerrar al hacer click fuera
+  // cerrar al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {

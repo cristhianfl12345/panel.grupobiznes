@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { FiSearch } from 'react-icons/fi'
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "framer-motion"
 import { LayoutGrid } from "lucide-react"
 import { useLocalTheme } from '../../context/useLocalTheme'
 import { getSubcampanias } from '../../services/leads.service'
