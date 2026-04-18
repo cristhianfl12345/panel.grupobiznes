@@ -11,6 +11,7 @@ import ControlMarcadores from "./pages/ControlMarcadores"
 import VisoresKPI from "./pages/VisoresKPI"
 import CrearVista from "./pages/CrearVista"
 import CrearUser from "./pages/CrearUser"
+import Control_Modulos from "./pages/Control_Modulos"
 import ProtectedFiles, { ROLES } from "./routes/ProtectedFiles"
 
 import Loader from './pages/Loader'
@@ -158,6 +159,19 @@ function AppRoutes() {
                   <HeaderLayout>
                     <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
                       <CrearUser />
+                    </ProtectedFiles>
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+            />
+            {/* CONTROL DE MODULOS */}
+            <Route
+              path="/control-modulos"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                    <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
+                      <Control_Modulos />
                     </ProtectedFiles>
                   </HeaderLayout>
                 </ProtectedRoute>

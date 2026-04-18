@@ -638,39 +638,36 @@ return (
     })}
   </div>
 )}
-          <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
+          
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
   
-  {/* TITULO - Solo visible si está abierto */}
-  {sidebarOpen && (
-    <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-      CONFIGURACION
-    </p>
-  )}
+  {/* TITULO */}
+  <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
+    CONFIGURACION
+  </p>
 
-  {/* MENU PRINCIPAL (Control de módulos) */}
+  {/* MENU PRINCIPAL */}
   <button
-    onClick={() => sidebarOpen && setOpenSistema(!openSistema)}
-    title={!sidebarOpen ? "Control de módulos" : ""}
-    className={`flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition ${
-      sidebarOpen ? "justify-between" : "justify-center"
-    }`}
+    onClick={() => setOpenSistema(!openSistema)}
+    className="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-red-500/70 transition"
   >
-    <div className="flex items-center gap-3">
-      <Settings size={18} />
-      {sidebarOpen && <span className="flex-1 text-left">Control de módulos</span>}
-    </div>
+    <Settings size={18} className="mr-2" />
 
-    {sidebarOpen && (
-      <ChevronRight
-        size={16}
-        className={`transition-transform ${openSistema ? 'rotate-90' : ''}`}
-      />
-    )}
+    <span className="flex-1 text-left">
+      Control de módulos
+    </span>
+
+    <ChevronRight
+      size={16}
+      className={`transition-transform ${openSistema ? 'rotate-90' : ''}`}
+    />
   </button>
 
-  {/* SUBMENÚ - Solo si está abierto y expandido */}
-  {sidebarOpen && openSistema && (
+  {/* SUBMENÚ */}
+  {openSistema && (
     <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
+
+      {/* CONTROL DE CAMPAÑA */}
       <button
         onClick={() => navigate("/home")}
         className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
@@ -679,6 +676,7 @@ return (
         Control de campaña
       </button>
 
+      {/* MONITOR DE LEADS */}
       <button
         onClick={() => navigate("/control-modulos")}
         className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
@@ -686,125 +684,128 @@ return (
         <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
         Monitor de Leads
       </button>
+
     </div>
   )}
 
 </ProtectedFiles>
-
 <div className="relative">
-  {/* CONTROL DE MARCADORES */}
-  <button
-    onClick={() => sidebarOpen && setOpenMarcadores(!openMarcadores)}
-    title={!sidebarOpen ? "Control de Marcadores" : ""}
-    className={`flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition ${
-      sidebarOpen ? "justify-between" : "justify-center"
-    }`}
-  >
-    <div className="flex items-center gap-3">
-      <Hash size={18} />
-      {sidebarOpen && <span className="flex-1 text-left">Control de Marcadores</span>}
-    </div>
 
-    {sidebarOpen && (
-      <ChevronRight
-        size={16}
-        className={`transition-transform ${openMarcadores ? 'rotate-90' : ''}`}
-      />
-    )}
+  <button
+    onClick={() => setOpenMarcadores(!openMarcadores)}
+    className="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-red-500/70 transition"
+  >
+    <Hash size={18} className="mr-2" />
+
+    <span className="flex-1 text-left">
+      Control de Marcadores
+    </span>
+
+    <ChevronRight
+      size={16}
+      className={`transition-transform ${openMarcadores ? 'rotate-90' : ''}`}
+    />
+
   </button>
 
-  {/* SUBMENÚ MARCADORES */}
-  {sidebarOpen && openMarcadores && (
+  {openMarcadores && (
+
     <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
+
       {campanas.length > 0 ? (
+
         campanas.map((c) => (
+
           <button
             key={c.IdCamp}
             onClick={() => {
-              navigate(`/control-marcadores?camp=${c.IdCamp}`);
-              window.location.reload();
-            }}
+    navigate(`/control-marcadores?camp=${c.IdCamp}`);
+    window.location.reload();
+  }}
+            
+              
+            
             className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
           >
+
             <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
+
             {c.Campana}
+            
+
           </button>
+
         ))
+
       ) : (
+
         <span className="text-sm text-gray-400 px-3 py-1 italic">
           Sin campañas
         </span>
+
       )}
-    </div>
-  )}
-</div><ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
-  {/* Título de sección condicional */}
-  {sidebarOpen && (
-    <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-      ADMIN
-    </p>
-  )}
 
-  <button
-    onClick={() => sidebarOpen && setOpenSistema(!openSistema)}
-    title={!sidebarOpen ? "Sistema" : ""}
-    className={`flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition ${
-      sidebarOpen ? "justify-between" : "justify-center"
-    }`}
-  >
-    <div className="flex items-center gap-3">
-      <Settings size={18} />
-      {sidebarOpen && <span className="flex-1 text-left">Sistema</span>}
     </div>
 
-    {sidebarOpen && (
-      <ChevronRight
-        size={16}
-        className={`transition-transform ${openSistema ? 'rotate-90' : ''}`}
-      />
-    )}
-  </button>
-
-  {/* Submenú de Gestión - Solo si el sidebar está abierto */}
-  {sidebarOpen && openSistema && (
-    <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
-      <button
-        onClick={() => navigate("/createuser")}
-        className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
-      >
-        <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
-        Gestion de Usuarios
-      </button>
-
-      <button
-        onClick={() => navigate("/createview")}
-        className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
-      >
-        <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
-        Crear Vista
-      </button>
-    </div>
   )}
+
+</div>
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
+               <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
+              ADMIN
+            </p>
+
+            <button
+  onClick={() => setOpenSistema(!openSistema)}
+  className="flex items-center justify-between w-full px-3 py-2 rounded hover:bg-red-500/70 transition"
+>
+  <Settings size={18} className="mr-2" />
+
+  <span className="flex-1 text-left">
+    Sistema
+  </span>
+
+  <ChevronRight
+    size={16}
+    className={`transition-transform ${openSistema ? 'rotate-90' : ''}`}
+  />
+</button>
+
+{openSistema && (
+
+  <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
+
+    <button
+      onClick={() => navigate("/createuser")}
+      className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
+    >
+      <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
+      Gestion de Usuarios
+    </button>
+
+    <button
+      onClick={() => navigate("/createview")}
+      className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
+    >
+      <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
+      Crear Vista
+    </button>
+
+  </div>
+  
+)}
 </ProtectedFiles>
 
-{/* Título de sección condicional */}
-{sidebarOpen && (
-  <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-    Usuario
-  </p>
-)}
-
-<button
+            <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
+              Usuario
+            </p>
+            
+            <button
   onClick={handleLogout}
-  title={!sidebarOpen ? "Salir" : ""}
-  className={`
-    flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition mt-auto text-white
-    ${sidebarOpen ? "justify-start gap-3" : "justify-center"}
-  `}
+  className="flex items-center gap-3 w-full px-3 py-2 rounded hover:bg-red-500/70 transition mt-auto text-white"
 >
   <LogOut size={18} />
-  {/* Ocultamos el texto "Salir" si el sidebar está colapsado */}
-  {sidebarOpen && <span>Salir</span>}
+  <span>Salir</span>
 </button>
 
           </nav>

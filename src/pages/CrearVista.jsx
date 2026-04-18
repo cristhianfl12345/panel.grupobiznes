@@ -32,8 +32,8 @@ export default function CrearVista() {
 
   const [form, setForm] = useState({
     level: "",
-    idcamp: "",
-    Name_vista: "",
+    id_camp: "",
+    name_vista: "",
     url_vista: "",
     contenedor: "",
     contenedor2: "",
@@ -116,11 +116,14 @@ export default function CrearVista() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          ...form,
-          level: Number(form.level),
-          idcamp: Number(form.idcamp),
-          activo: Number(form.activo)
-        })
+  level: Number(form.level),
+  idcamp: Number(form.id_camp),        
+  name_vista: form.name_vista,         
+  url_vista: form.url_vista,
+  contenedor: form.contenedor,
+  contenedor2: form.contenedor2,
+  activo: Number(form.activo)
+})
       });
 
       const data = await res.json();
@@ -130,8 +133,8 @@ export default function CrearVista() {
 
         setForm({
           level: "",
-          idcamp: "",
-          Name_vista: "",
+          id_camp: "",
+          name_vista: "",
           url_vista: "",
           contenedor: "",
           contenedor2: "",
@@ -228,19 +231,19 @@ export default function CrearVista() {
                   <option value="4">RRHH</option>
                 </select>
 
-                <select name="idcamp" value={form.idcamp} onChange={handleChange} className={`${inputBase} ${inputTheme}`} required>
+                <select name="id_camp" value={form.id_camp} onChange={handleChange} className={`${inputBase} ${inputTheme}`} required>
                   <option value="">Seleccionar Campaña</option>
                   {campanas.map(c => (
-                    <option key={c.IdCamp} value={c.IdCamp}>
-                      {c.IdCamp} - {c.Campana}
+                    <option key={c.id_camp} value={c.id_camp}>
+                      {c.id_camp} - {c.nombre}
                     </option>
                   ))}
                 </select>
 
                 <input
                   type="text"
-                  name="Name_vista"
-                  value={form.Name_vista}
+                  name="name_vista"
+                  value={form.name_vista}
                   onChange={handleChange}
                   placeholder="Nombre de la vista"
                   className={`${inputBase} ${inputTheme}`}

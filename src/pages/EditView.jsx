@@ -21,25 +21,18 @@ export default function EditView() {
   const [editing, setEditing] = useState(null);
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [urlConfirmada, setUrlConfirmada] = useState(false);
-
-  const [previewEditOpen, setPreviewEditOpen] = useState(false); // NUEVO
+  const [previewEditOpen, setPreviewEditOpen] = useState(false);
 
   const API = "http://localhost:4000/api";
 
-  const levelMap = {
-    1: "Operativos",
-    2: "Calidad",
-    3: "Rentabilidad",
-    4: "RRHH"
-  };
+  const input = `w-full px-3 py-2 rounded-xl border transition`;
+  const theme = isDark
+    ? "bg-[#272833] text-white border-white/10"
+    : "bg-white text-black border-gray-300";
 
-  const activoLabel = (val) => {
-    if (val === 1 || val === "1") return "Habilitado";
-    if (val === 0 || val === "0") return "Inhabilitado";
-    return "Seleccione";
-  };
-
+  // =========================
+  // LOAD CAMPANAS
+  // =========================
   useEffect(() => {
     fetch(`${API}/campanas-select`)
       .then(res => res.json())
@@ -48,6 +41,18 @@ export default function EditView() {
       });
   }, []);
 
+  // =========================
+  // NORMALIZADOR
+  // =========================
+  const normalizarVista = (v) => ({
+    ...v,
+    name_vista: v.name_vista || v.name_vista || "",
+    idcamp: v.idcamp || v.id_camp || "",
+  });
+
+  // =========================
+  // BUSCAR
+  // =========================
   const buscar = async () => {
     if (!level) return;
 
@@ -59,60 +64,85 @@ export default function EditView() {
     const res = await fetch(url);
     const json = await res.json();
 
-    if (json.ok) setData(json.data);
+    if (json.ok) {
+      const normalizados = json.data.map(normalizarVista);
+      setData(normalizados);
+    }
 
     setLoading(false);
   };
 
-  const abrirEditar = async (id) => {
-    const res = await fetch(`${API}/vistas-filtradas/${id}`);
+  // =========================
+  // ABRIR EDIT
+  // =========================
+  const abrirEditar = async (id_vista) => {
+    const res = await fetch(`${API}/vistas-filtradas/${id_vista}`);
     const json = await res.json();
 
     if (json.ok) {
+      const v = normalizarVista(json.data);
+
       setEditing({
-        ...json.data,
-        level: json.data.level ?? "",
-        activo: json.data.activo ?? ""
+        ...v,
+        level: v.level ?? "",
+        activo: v.activo ?? ""
       });
+
       setModalOpen(true);
-      setUrlConfirmada(false);
       setPreviewEditOpen(false);
     }
   };
 
+  // =========================
+  // GUARDAR (FIX REAL)
+  // =========================
   const guardar = async () => {
     try {
-      const response = await fetch(`${API}/vistas-filtradas/${editing.orden}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editing)
-      });
+      const payload = {
+        level: Number(editing.level),
+        idcamp: Number(editing.idcamp),
+        name_vista: editing.name_vista, // 🔥 CLAVE
+        url_vista: editing.url_vista,
+        contenedor: editing.contenedor || null,
+        contenedor2: editing.contenedor2 || null,
+        activo: Number(editing.activo)
+      };
 
-      if (response.ok) {
+      console.log("PAYLOAD:", payload);
+
+      const response = await fetch(
+        `${API}/vistas-filtradas/${editing.id_vista}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.ok) {
         alert("Vista actualizada correctamente");
       } else {
-        alert("Error al guardar: Intenta nuevamente");
+        alert(data.message || "Error al guardar");
       }
+
     } catch (error) {
-      console.error("Error en la petición:", error);
-      alert("Hubo un problema de conexión. Intenta nuevamente");
+      console.error("Error:", error);
+      alert("Error de conexión");
     }
 
     setModalOpen(false);
     buscar();
   };
 
-  const input = `w-full px-3 py-2 rounded-xl border transition`;
-  const theme = isDark
-    ? "bg-[#272833] text-white border-white/10"
-    : "bg-white text-black border-gray-300";
-
   return (
     <div className={`p-6 ${isDark ? "bg-[#1F2029] text-white" : "bg-gray-100"}`}>
 
       <motion.div layout className={`rounded-2xl p-6 shadow-xl ${theme}`}>
 
-        <div className="flex justify-between items-center cursor-pointer"
+        <div
+          className="flex justify-between items-center cursor-pointer"
           onClick={() => setOpen(!open)}
         >
           <h1 className="text-xl font-semibold">Editar Vistas</h1>
@@ -129,7 +159,11 @@ export default function EditView() {
               {/* FILTROS */}
               <div className="grid grid-cols-3 gap-4 my-6">
 
-                <select value={level} onChange={e => setLevel(e.target.value)} className={`${input} ${theme}`}>
+                <select
+                  value={level}
+                  onChange={e => setLevel(e.target.value)}
+                  className={`${input} ${theme}`}
+                >
                   <option value="">Nivel</option>
                   <option value="1">Operativos</option>
                   <option value="2">Calidad</option>
@@ -137,16 +171,23 @@ export default function EditView() {
                   <option value="4">RRHH</option>
                 </select>
 
-                <select value={idcamp} onChange={e => setIdcamp(e.target.value)} className={`${input} ${theme}`}>
+                <select
+                  value={idcamp}
+                  onChange={e => setIdcamp(e.target.value)}
+                  className={`${input} ${theme}`}
+                >
                   <option value="">Campaña</option>
                   {campanas.map(c => (
-                    <option key={c.IdCamp} value={c.IdCamp}>
-                      {c.Campana}
-                    </option>
+                    <option key={c.id_camp} value={c.id_camp}>
+  {c.nombre}
+</option>
                   ))}
                 </select>
 
-                <button onClick={buscar} className="bg-red-800 hover:bg-red-950 text-white rounded-xl">
+                <button
+                  onClick={buscar}
+                  className="bg-red-800 hover:bg-red-950 text-white rounded-xl"
+                >
                   Buscar
                 </button>
               </div>
@@ -156,36 +197,40 @@ export default function EditView() {
                 <table className="w-full text-base border-separate border-spacing-y-2">
                   <tbody>
                     {data.map(row => (
-                      <motion.tr key={row.orden} whileHover={{ scale: 1.01 }} className={`${theme} shadow-md`}>
-
-                        <td className="p-4">{row.Name_vista}</td>
+                      <motion.tr
+                        key={row.id_vista}
+                        whileHover={{ scale: 1.01 }}
+                        className={`${theme} shadow-md`}
+                      >
+                        <td className="p-4">{row.name_vista}</td>
 
                         <td className="p-4 truncate max-w-[250px]">
                           {row.url_vista}
                         </td>
 
-    <td className="p-4">
-  <div className="flex items-ce gap-2"> 
-    {/* Botón Editar */}
-    <button
-      onClick={() => abrirEditar(row.orden)}
-      className="flex items-center justify-center bg-red-800 hover:bg-red-950 text-white p-2 rounded-xl shadow"
-    >
-      <Pencil size={16}/>
-    </button>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
 
-    {/* Botón Ver */}
-    <button
-      onClick={() => {
-        setEditing(row);
-        setPreviewOpen(true);
-      }}
-      className="flex items-center justify-center bg-gray-200 hover:bg-gray-300 text-gray-800 p-2 rounded-xl shadow"
-    >
-      <Eye size={16}/>
-    </button>
-  </div>
-</td>
+                            <button
+                              onClick={() => abrirEditar(row.id_vista)}
+                              className="bg-red-800 hover:bg-red-950 text-white p-2 rounded-xl"
+                            >
+                              <Pencil size={16} />
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setEditing(row);
+                                setPreviewOpen(true);
+                              }}
+                              className="bg-gray-200 hover:bg-gray-300 text-gray-800 p-2 rounded-xl"
+                            >
+                              <Eye size={16} />
+                            </button>
+
+                          </div>
+                        </td>
+
                       </motion.tr>
                     ))}
                   </tbody>
@@ -197,12 +242,11 @@ export default function EditView() {
         </AnimatePresence>
       </motion.div>
 
-      {/* MODAL EDICIÓN */}
+      {/* MODAL */}
       <AnimatePresence>
         {modalOpen && editing && (
           <motion.div className="fixed inset-0 bg-black/60 flex items-center justify-center">
 
-            {/* 👇 ANCHO AUMENTADO */}
             <div className={`w-[1000px] max-w-[95%] p-6 rounded-2xl ${theme}`}>
 
               <h2 className="mb-4 text-lg font-semibold">Editar Vista</h2>
@@ -225,13 +269,13 @@ export default function EditView() {
                 className={`${input} ${theme} mb-3`}
               >
                 {campanas.map(c => (
-                  <option key={c.IdCamp} value={c.IdCamp}>
-                    {c.Campana}
+                  <option key={c.id_camp} value={c.id_camp}>
+                    {c.nombre}
                   </option>
                 ))}
               </select>
 
-              {["Name_vista", "url_vista", "contenedor", "contenedor2"].map(f => (
+              {["name_vista", "url_vista", "contenedor", "contenedor2"].map(f => (
                 <input
                   key={f}
                   value={editing[f] || ""}
@@ -251,7 +295,6 @@ export default function EditView() {
                 <option value="0">Inhabilitado</option>
               </select>
 
-              {/* 🔥 NUEVO PREVIEW DENTRO DEL EDIT */}
               <button
                 onClick={() => setPreviewEditOpen(!previewEditOpen)}
                 className="mt-3 bg-red-800 text-white px-4 py-2 rounded"
@@ -261,24 +304,18 @@ export default function EditView() {
 
               {previewEditOpen && (
                 <div className="mt-4 h-[400px] border rounded-xl overflow-hidden">
-                  <iframe
-                    src={editing.url_vista}
-                    className="w-full h-full"
-                  />
-                </div>
-              )}
-
-              {urlConfirmada && (
-                <div className="text-green-500 flex gap-1 mt-2">
-                  <Check size={14}/> URL Confirmada
+                  <iframe src={editing.url_vista} className="w-full h-full" />
                 </div>
               )}
 
               <div className="flex justify-end gap-3 mt-4">
                 <button onClick={() => setModalOpen(false)}>
-                  <X/>
+                  <X />
                 </button>
-                <button onClick={guardar} className="bg-green-900 px-4 py-2 rounded text-white">
+                <button
+                  onClick={guardar}
+                  className="bg-green-900 px-4 py-2 rounded text-white"
+                >
                   Guardar
                 </button>
               </div>
@@ -295,24 +332,13 @@ export default function EditView() {
           <motion.div className="fixed inset-0 bg-black/70 flex items-center justify-center">
 
             <div className={`w-[85%] h-[85%] rounded-xl overflow-hidden flex flex-col ${theme}`}>
+              <iframe src={editing.url_vista} className="flex-1" />
 
-              <iframe src={editing.url_vista} className="flex-1"/>
-
-              <div className="p-6 flex text-red-500 justify-end gap-3 text-xl">
+              <div className="p-6 flex justify-end">
                 <button onClick={() => setPreviewOpen(false)}>
                   CERRAR
                 </button>
-             {/*   <button
-                  onClick={() => {
-                    setUrlConfirmada(true);
-                    setPreviewOpen(false);
-                  }}
-                  className="bg-green-600 text-white px-4 py-2 rounded"
-                >
-                  Confirmar
-                </button> */}
               </div>
-
             </div>
 
           </motion.div>

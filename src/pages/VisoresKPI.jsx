@@ -47,7 +47,7 @@ export default function VisoresKPI() {
       const vistaBuscada = limpiar(decodeURIComponent(vista))
 
       const vistaEncontrada = data.find(
-        (v) => limpiar(v.Name_vista) === vistaBuscada
+        (v) => limpiar(v.name_vista) === vistaBuscada
       )
 
       if (vistaEncontrada) {
