@@ -68,11 +68,17 @@ export default function CrearUser() {
     setLoading(false);
   };
 
-  const obtenerCampanas = async () => {
-    const res = await fetch("http://localhost:4000/api/campanas-select");
-    const json = await res.json();
-    setAllCampanas(json.data);
-  };
+const obtenerCampanas = async () => {
+  const res = await fetch("http://localhost:4000/api/campanas-select");
+  const json = await res.json();
+
+  const normalizadas = json.data.map(c => ({
+    IdCamp: Number(c.id_camp),
+    Campana: c.nombre
+  }));
+
+  setAllCampanas(normalizadas);
+};
 
   useEffect(() => {
     obtenerUsuarios();
@@ -180,7 +186,7 @@ const handleChange = (e) => {
   })
 }
 
-// 👉 submit
+// submit
 const handleCreate = async () => {
   try {
     const res = await fetch("http://localhost:4000/api/usuarios", {
@@ -188,7 +194,7 @@ const handleCreate = async () => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify({ ...form, campanas: selectedCampanas })
     })
 
     const data = await res.json()

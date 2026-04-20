@@ -34,7 +34,7 @@ export default function HeaderLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userMenu, setUserMenu] = useState(false);
   const [openSistema, setOpenSistema] = useState(false)
-  
+  const [openModulos, setOpenModulos] = useState(false);
   
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -267,11 +267,13 @@ return (
               {sidebarOpen && <span>Inicio</span>} 
             </button><ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
   {/* Solo mostramos el título de sección si el sidebar está abierto */}
-  {sidebarOpen && (
-    <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-      Reportes Clientes
-    </p>
+<p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+  {sidebarOpen ? (
+    "Reportes Clientes"
+  ) : (
+    <span className="font-bold text-xs tracking-tighter">RC</span>
   )}
+</p>
 
   {/* Campañas Clientes inicio */}
   <button
@@ -328,11 +330,13 @@ return (
   {/* Campañas Clientes fin */}
 </ProtectedFiles>
                         {/* Solo mostramos el título "Dashboard" si el sidebar está abierto */}
-            {sidebarOpen && (
-              <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-                Dashboard
-              </p>
-            )}
+           <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+  {sidebarOpen ? (
+    "Dashboard"
+  ) : (
+    <span className="font-bold text-xs tracking-tight">DASH</span>
+  )}
+</p>
 
             <button 
               title={!sidebarOpen ? "Control Supervisor" : ""}
@@ -352,7 +356,7 @@ return (
             </button>
 
          {/* KPI */}
-<p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
+<p className="font-bold text-xs uppercase opacity-70 mt-4 mb-2 px-3">
   KPI
 </p>
 
@@ -638,18 +642,20 @@ return (
     })}
   </div>
 )}
-          <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
+       
   
   {/* TITULO - Solo visible si está abierto */}
-  {sidebarOpen && (
-    <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-      CONFIGURACION
-    </p>
+ <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+  {sidebarOpen ? (
+    "Configuración"
+  ) : (
+    <span className="font-bold text-xs tracking-tighter">CONFIG</span>
   )}
-
+</p>
+   <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
   {/* MENU PRINCIPAL (Control de módulos) */}
   <button
-    onClick={() => sidebarOpen && setOpenSistema(!openSistema)}
+    onClick={() => sidebarOpen && setOpenModulos(!openModulos)}
     title={!sidebarOpen ? "Control de módulos" : ""}
     className={`flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition ${
       sidebarOpen ? "justify-between" : "justify-center"
@@ -663,13 +669,13 @@ return (
     {sidebarOpen && (
       <ChevronRight
         size={16}
-        className={`transition-transform ${openSistema ? 'rotate-90' : ''}`}
+        className={`transition-transform ${openModulos ? 'rotate-90' : ''}`}
       />
     )}
   </button>
 
   {/* SUBMENÚ - Solo si está abierto y expandido */}
-  {sidebarOpen && openSistema && (
+  {sidebarOpen && openModulos && (
     <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
       <button
         onClick={() => navigate("/home")}
@@ -739,11 +745,13 @@ return (
   )}
 </div><ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
   {/* Título de sección condicional */}
-  {sidebarOpen && (
-    <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-      ADMIN
-    </p>
+ <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+  {sidebarOpen ? (
+    "ADMIN"
+  ) : (
+    <span className="font-bold text-xs tracking-tighter">ADMIN</span>
   )}
+</p>
 
   <button
     onClick={() => sidebarOpen && setOpenSistema(!openSistema)}
@@ -788,11 +796,13 @@ return (
 </ProtectedFiles>
 
 {/* Título de sección condicional */}
-{sidebarOpen && (
-  <p className="text-xs uppercase opacity-70 mt-4 mb-2 px-3">
-    Usuario
-  </p>
-)}
+<p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+  {sidebarOpen ? (
+    "Usuario"
+  ) : (
+    <span className="font-bold text-xs tracking-tighter">USER</span>
+  )}
+</p>
 
 <button
   onClick={handleLogout}
@@ -880,9 +890,9 @@ return (
                     className="flex items-center gap-2"
                   >
                     <LightbulbOff size={18} />
-                    <span className="text-sm font-medium">
+                  {/*  <span className="text-sm font-medium">
                       Dark
-                    </span>
+                    </span> */}
                   </motion.div>
 
                 ) : (
@@ -897,9 +907,9 @@ return (
                     className="flex items-center gap-2"
                   >
                     <Lightbulb size={18} />
-                    <span className="text-sm font-medium">
+                  {/*  <span className="text-sm font-medium">
                       Light
-                    </span>
+                    </span> */}
                   </motion.div>
 
                 )}
