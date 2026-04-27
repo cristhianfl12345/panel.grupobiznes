@@ -7,6 +7,7 @@ import { LayoutGrid } from "lucide-react"
 import { useLocalTheme } from '../../context/useLocalTheme'
 import { getSubcampanias } from '../../services/leads.service'
 import ColumnCustomizer from './ColumnCustomizer'
+import { INDICE_CAMPS } from '../../context/indiceCamps'
 
 function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange }) {
 
@@ -26,17 +27,19 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
   const [iniCampania, setIniCampania] = useState('')
   const [showColumnPanel, setShowColumnPanel] = useState(false)
 
-  // panel de filtros dinámicos
   const [showFilters, setShowFilters] = useState(false)
 
-  // estado de filtros
   const [columnFilters, setColumnFilters] = useState({
     pautanameanuncio: '',
     CampaOrigen: '',
     Alias: ''
   })
 
-  // extraer valores únicos desde leads
+  const campInfo = useMemo(() => {
+    if (!idCamp) return null
+    return INDICE_CAMPS.find(c => String(c.id_camp) === String(idCamp)) || null
+  }, [idCamp])
+
   const uniqueValues = useMemo(() => {
 
     const extract = (key) => {
@@ -60,14 +63,12 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
 
   }, [leads])
 
-  // emitir filtros al padre
   useEffect(() => {
     if (onFilterChange) {
       onFilterChange(columnFilters)
     }
   }, [columnFilters])
 
-  // cargar campaña
   useEffect(() => {
 
     const params = new URLSearchParams(window.location.search)
@@ -125,24 +126,32 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className={`w-full p-4 rounded-xl shadow-md mb-6 ${
-        isDark
-          ? 'bg-slate-800'
-          : 'bg-white'
+      className={`w-full p-4 rounded-xl shadow-md mb-6 relative ${
+        isDark ? 'bg-slate-800' : 'bg-white'
       }`}
     >
+
+
+{/* HEADER MINIMALISTA */}
+{campInfo && (
+  <div className="text-lg absolute left-1/2 -top-4 -translate-x-1/2 z-180 px-4 py-1  ${">
+    <span className={`text-xl font-semibold whitespace-nowrap ${
+      isDark ? 'text-cyan-300' : 'text-slate-700'
+    }`}>
+      {campInfo.id_camp} - {campInfo.nombre}
+    </span>
+  </div>
+)}
 
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-4"
       >
 
-        {/* FILTROS PRINCIPALES */}
         <div className="flex flex-col sm:flex-row gap-4 items-end justify-between flex-wrap">
 
           <div className="flex flex-col sm:flex-row gap-4 items-end flex-wrap">
 
-            {/* FECHA */}
             <div className="flex flex-col">
               <label className="text-sm mb-1 font-medium">Fecha</label>
               <input
@@ -155,7 +164,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
               />
             </div>
 
-            {/* SUBCAMPAÑA */}
             <div className="flex flex-col w-64">
               <label className="text-sm mb-1 font-medium">Inicampania</label>
               <select
@@ -176,7 +184,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
               </select>
             </div>
 
-            {/* BUSCAR */}
             <button
               type="submit"
               className={`flex items-center gap-2 px-5 py-2 rounded-lg ${
@@ -187,7 +194,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
               Buscar
             </button>
 
-            {/* BOTÓN FILTROS */}
             <button
               type="button"
               onClick={() => setShowFilters(!showFilters)}
@@ -199,7 +205,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
 
           </div>
 
-          {/* VISTA */}
           <div className="relative">
             <button
               type="button"
@@ -224,7 +229,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
 
         </div>
 
-        {/* NUEVA BARRA DE FILTROS */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
@@ -234,7 +238,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
               className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2"
             >
 
-              {/* pautanameanuncio */}
               <div className="flex flex-col">
                 <label className="text-xs mb-1">Pauta</label>
                 <select
@@ -249,7 +252,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
                 </select>
               </div>
 
-              {/* CampaOrigen */}
               <div className="flex flex-col">
                 <label className="text-xs mb-1">Campaña Origen</label>
                 <select
@@ -264,7 +266,6 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
                 </select>
               </div>
 
-              {/* Alias */}
               <div className="flex flex-col">
                 <label className="text-xs mb-1">Alias</label>
                 <select

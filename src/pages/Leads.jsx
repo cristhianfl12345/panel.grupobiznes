@@ -146,7 +146,7 @@ export default function Leads() {
     <div className={`min-h-screen ${
       isDark
         ? 'bg-[#1F2029] text-white'
-        : 'bg-slate-50 text-slate-800'
+        : 'bg-gray-100 text-slate-800'
     }`}>
 
       {/* LOADER GLOBAL */}

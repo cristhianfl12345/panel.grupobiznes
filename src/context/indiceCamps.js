@@ -1,3 +1,4 @@
+//front/src/context/indiceCamps.js
 export const INDICE_CAMPS = [
   { id_camp: "370", IdCamp: "370", nombre: "Leads Externo OncoSalud", Campana: "Leads Externo OncoSalud", campana: "Leads Externo OncoSalud" },
   { id_camp: "340", IdCamp: "340", nombre: "Ricardo Palma", Campana: "Ricardo Palma", campana: "Ricardo Palma" },
