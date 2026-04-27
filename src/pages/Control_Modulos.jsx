@@ -104,7 +104,7 @@ await axios.put(
     <div className={`min-h-screen p-6 transition-colors ${
       isDark
         ? "bg-[#1F2029] text-white"
-        : "bg-slate-50 text-slate-800"
+        : "bg-gray-100 text-slate-800"
     }`}>
 
       {/* TABS */}
@@ -152,7 +152,7 @@ await axios.put(
         <table className="w-full text-sm">
 
           <thead className={`
-            ${isDark ? "bg-slate-800" : "bg-gray-100"}
+            ${isDark ? "bg-slate-800" : "bg-gray-200"}
           `}>
             <tr>
               <th className="px-4 py-3 text-left">ID CAMP</th>
