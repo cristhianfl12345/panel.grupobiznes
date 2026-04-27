@@ -114,7 +114,7 @@ t.count += r.TotalMarcaciones;
 
   return (
     <div className={`min-h-screen p-6 transition-colors duration-300 ${
-      isDark ? "bg-[#13141b] text-slate-200" : "bg-gray-50 text-gray-800"
+      isDark ? "bg-[#1F2029] text-slate-200" : "bg-gray-100 text-gray-800"
     }`}>
 
       {/* HEADER */}

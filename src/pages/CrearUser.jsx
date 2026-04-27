@@ -178,7 +178,7 @@ const [form, setForm] = useState({
   id_grupo: ""
 })
 
-// 👉 handler inputs
+// handler inputs
 const handleChange = (e) => {
   setForm({
     ...form,
@@ -201,7 +201,7 @@ const handleCreate = async () => {
 
     if (data.ok) {
       setOpenModal(false)
-      // 🔥 opcional: refrescar lista
+      // opcional: refrescar lista
       window.location.reload()
     } else {
       alert(data.message)
@@ -236,7 +236,7 @@ useEffect(() => {
   }));
 }, [usuarioBase, dominio]);
   return (
-    <div className={`min-h-screen transition-colors duration-500 p-4 md:p-8 ${isDark ? "bg-[#1F2029] text-white" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`min-h-screen transition-colors duration-500 p-4 md:p-8 ${isDark ? "bg-[#1F2029] text-white" : "bg-gray-100 text-gray-900"}`}>
       
       <motion.div 
         initial={{ opacity: 0, y: -20 }} 
