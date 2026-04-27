@@ -138,7 +138,7 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
     <span className={`text-xll font-semibold whitespace-nowrap ${
       isDark ? 'text-slate-300' : 'text-slate-700'
     }`}>
-      KPI / Operativos / Monitor de Leads /  {campInfo.nombre}
+      KPI / Operativos / {campInfo.nombre} / Monitor de Leads 
     </span>
   </div>
 )}

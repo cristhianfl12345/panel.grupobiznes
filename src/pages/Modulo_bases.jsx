@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Database, Filter, Clock } from "lucide-react";
+import { Calendar, Database, Filter, Clock, RefreshCcw  } from "lucide-react";
 import {INDICE_CAMPS} from "../context/indiceCamps";
 
 const API_URL = "http://192.168.9.115:4000/api/modulo-bases";
@@ -129,44 +129,59 @@ t.count += r.TotalMarcaciones;
         <span className={`text-xl font-semibold whitespace-nowrap ${
           isDark ? 'text-slate-300' : 'text-slate-700'
         }`}>
-          KPI / Operativos / Monitor de Bases /  {campInfo.nombre}
+          KPI / Operativos / {campInfo.nombre} / Monitor de Bases 
         </span>
       </div>
     </div>
   );
 })()}
-      {/* FILTROS */}
-      <div className={`flex flex-wrap gap-4 p-4 rounded-xl mb-6 border transition-all ${
-        isDark ? "bg-slate-800/50 border-slate-700 shadow-2xl" : "bg-white border-gray-200 shadow-sm"
-      }`}>
-        <div className="flex items-center gap-2 text-sm font-semibold opacity-70 mr-2">
-          <Filter size={18} /> <span>FILTRAR POR:</span>
-        </div>
+     {/* FILTROS */}
+<div className={`flex flex-wrap items-center gap-4 p-4 rounded-xl mb-6 border transition-all ${
+  isDark ? "bg-slate-800/50 border-slate-700 shadow-2xl" : "bg-white border-gray-200 shadow-sm"
+}`}>
 
-        <select
-          onChange={e => setFechaFilter(e.target.value)}
-          value={fechaFilter}
-          className={`px-4 py-2 rounded-lg border focus:ring-2 outline-none transition-all ${
-            isDark ? "bg-slate-900 border-slate-600 text-white focus:ring-red-500" : "bg-gray-50 border-gray-300 focus:ring-red-400"
-          }`}
-        >
-          <option value="">Todas las fechas</option>
-          {fechasRaw.map(f => (
-            <option key={f} value={f}>{formatDate(f)}</option>
-          ))}
-        </select>
+  <div className="flex items-center gap-2 text-sm font-semibold opacity-70 mr-2">
+    <Filter size={18} /> <span>FILTRAR POR:</span>
+  </div>
 
-        <select
-          onChange={e => setBaseFilter(e.target.value)}
-          value={baseFilter}
-          className={`px-4 py-2 rounded-lg border focus:ring-2 outline-none transition-all ${
-            isDark ? "bg-slate-900 border-slate-600 text-white focus:ring-red-500" : "bg-gray-50 border-gray-300 focus:ring-red-400"
-          }`}
-        >
-          <option value="">Todas las bases</option>
-          {bases.map(b => <option key={b} value={b}>{b}</option>)}
-        </select>
-      </div>
+  <select
+    onChange={e => setFechaFilter(e.target.value)}
+    value={fechaFilter}
+    className={`px-4 py-2 rounded-lg border focus:ring-2 outline-none transition-all ${
+      isDark ? "bg-slate-900 border-slate-600 text-white focus:ring-red-500" : "bg-gray-50 border-gray-300 focus:ring-red-400"
+    }`}
+  >
+    <option value="">Todas las fechas</option>
+    {fechasRaw.map(f => (
+      <option key={f} value={f}>{formatDate(f)}</option>
+    ))}
+  </select>
+
+  <select
+    onChange={e => setBaseFilter(e.target.value)}
+    value={baseFilter}
+    className={`px-4 py-2 rounded-lg border focus:ring-2 outline-none transition-all ${
+      isDark ? "bg-slate-900 border-slate-600 text-white focus:ring-red-500" : "bg-gray-50 border-gray-300 focus:ring-red-400"
+    }`}
+  >
+    <option value="">Todas las bases</option>
+    {bases.map(b => <option key={b} value={b}>{b}</option>)}
+  </select>
+
+  {/* BOTÓN REFRESH */}
+  <button
+    onClick={() => window.location.reload()}
+    className={`ml-auto flex items-center justify-center p-2 rounded-lg transition-all ${
+      isDark
+        ? "bg-red-900 hover:bg-red-700 text-white shadow-lg"
+        : "bg-red-500 hover:bg-red-600 text-white shadow-md"
+    }`}
+    title="Recargar"
+  >
+    <RefreshCcw size={18} />
+  </button>
+
+</div>
 
       {/* TABLA CONTENEDOR */}
       <div className={`rounded-2xl overflow-hidden border transition-all ${
@@ -293,7 +308,7 @@ function formatDate(dateStr) {
     const dd = String(date.getDate()).padStart(2, "0");
     const aa = String(date.getFullYear()).slice(-2);
 
-    return `${mm}/${dd}/${aa}`;
+    return `${dd}/${mm}/${aa}`;
   } catch (e) {
     return dateStr;
   }
