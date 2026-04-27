@@ -74,7 +74,7 @@ useEffect(() => {
       const user = JSON.parse(storedUser);
 
       const res = await fetch(
-        `http://localhost:4000/api/auth/mis-campanas/${user.id}`
+        `http://192.168.9.115:4000/api/auth/mis-campanas/${user.id}`
       );
 
       const data = await res.json();
@@ -110,7 +110,7 @@ useEffect(() => {
       
 
 
-const res = await fetch("http://localhost:4000/api/kpis", {
+const res = await fetch("http://192.168.9.115:4000/api/kpis", {
   headers: {
     Authorization: `Bearer ${token}`
   }
@@ -142,7 +142,7 @@ const limpiarNombreVista = (nombre) => {
  useEffect(() => {
   const fetchModulos = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/control-modulos", {
+      const res = await fetch("http://192.168.9.115:4000/api/control-modulos", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
@@ -165,13 +165,18 @@ const limpiarNombreVista = (nombre) => {
                 ? "MONITOR DE LEADS"
                 : m.id_modulo === 2
                 ? "BUSQUEDA"
+                : m.id_modulo === 3
+                ? "MONITOR DE BASES"
                 : "MODULO",
             ruta:
               m.id_modulo === 1
-                ? "leads"
+                ? "monitor"
                 : m.id_modulo === 2
                 ? "busqueda"
-                : "#"
+                : m.id_modulo === 3
+                ? "monitor-bases"
+                : "modulo"
+
           });
         });
 
@@ -421,8 +426,8 @@ return (
                       key={`mod-${mod.idModulo}`}
                       whileHover={{ x: 5 }}
                       onClick={() => {
-                        navigate(`/monitor?camp=${campId}`);
-                      }}
+  navigate(`/${mod.ruta}?camp=${campId}`);
+}}
                       className="text-left px-2 py-1 rounded bg-red-600/40 hover:bg-red-600/70 transition text-xs font-semibold"
                     >
                       {mod.nombre}

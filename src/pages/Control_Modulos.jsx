@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Layers, Search } from "lucide-react"
 import { useLocalTheme } from "../context/useLocalTheme"
 
-const API = "http://localhost:4000/api/control-modulos"
+const API = "http://192.168.9.115:4000/api/control-modulos"
 
 // helper auth
 const getAuthConfig = () => {
@@ -123,6 +123,14 @@ await axios.put(
           onClick={() => setActiveTab(2)}
           icon={<Search size={16}/>}
           label="BUSQUEDA"
+          isDark={isDark}
+        />
+
+        <TabButton
+          active={activeTab === 3}
+          onClick={() => setActiveTab(3)}
+          icon={<Search size={16}/>}
+          label="MONITOR DE BASES"
           isDark={isDark}
         />
 

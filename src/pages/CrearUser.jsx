@@ -61,7 +61,7 @@ export default function CrearUser() {
   // FETCH (Sin cambios en lógica)
   // ==============================
   const obtenerUsuarios = async () => {
-    const res = await fetch("http://localhost:4000/api/usuarios-get");
+    const res = await fetch("http://192.168.9.115:4000/api/usuarios-get");
     const json = await res.json();
     setUsuarios(json.data);
     setFiltered(json.data);
@@ -69,7 +69,7 @@ export default function CrearUser() {
   };
 
 const obtenerCampanas = async () => {
-  const res = await fetch("http://localhost:4000/api/campanas-select");
+  const res = await fetch("http://192.168.9.115:4000/api/campanas-select");
   const json = await res.json();
 
   const normalizadas = json.data.map(c => ({
@@ -130,7 +130,7 @@ const obtenerCampanas = async () => {
   // ==============================
   const handleDelete = async (u) => {
     if (!confirm("¿Eliminar usuario?")) return;
-    await fetch(`http://localhost:4000/api/usuarios/${u.id}`, { method: "DELETE" });
+    await fetch(`http://192.168.9.115:4000/api/usuarios/${u.id}`, { method: "DELETE" });
     obtenerUsuarios();
   };
 
@@ -156,7 +156,7 @@ const obtenerCampanas = async () => {
   };
 
   const handleSave = async () => {
-    await fetch(`http://localhost:4000/api/usuarios/${editUser.id}`, {
+    await fetch(`http://192.168.9.115:4000/api/usuarios/${editUser.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...editUser, campanas: selectedCampanas })
@@ -189,7 +189,7 @@ const handleChange = (e) => {
 // submit
 const handleCreate = async () => {
   try {
-    const res = await fetch("http://localhost:4000/api/usuarios", {
+    const res = await fetch("http://192.168.9.115:4000/api/usuarios", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -53,7 +53,7 @@ export default function CrearVista() {
   useEffect(() => {
     const loadCampanas = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/campanas-select");
+        const res = await fetch("http://192.168.9.115:4000/api/campanas-select");
         const data = await res.json();
 
         if (Array.isArray(data)) {
@@ -110,7 +110,7 @@ export default function CrearVista() {
     setMsg(null);
 
     try {
-      const res = await fetch("http://localhost:4000/api/vistasss", {
+      const res = await fetch("http://192.168.9.115:4000/api/vistasss", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

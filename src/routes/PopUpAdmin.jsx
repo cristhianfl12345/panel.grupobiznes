@@ -41,7 +41,7 @@ export default function PopUpAdmin({ open, setOpen }) {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://localhost:4000/api/notificaciones-sistemas/obtener",
+        "http://192.168.9.115:4000/api/notificaciones-sistemas/obtener",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -95,7 +95,7 @@ export default function PopUpAdmin({ open, setOpen }) {
       setLoadingDetalle(idUsuario);
 
       const res = await fetch(
-        `http://localhost:4000/api/notificaciones-sistemas/detalle/${idUsuario}`,
+        `http://192.168.9.115:4000/api/notificaciones-sistemas/detalle/${idUsuario}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

@@ -1,0 +1,4 @@
+
+Landing interno = <Pen />
+NC con voz = <Megaphone />
+BD = <Database />

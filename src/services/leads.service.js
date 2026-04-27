@@ -1,8 +1,8 @@
 import axios from 'axios'
 
-const API = "http://localhost:4000/api"
+const API = "http://192.168.9.115:4000/api"
 
-// 🔒 helper para auth correcto
+// helper para auth correcto
 const getAuthConfig = () => {
   const token = localStorage.getItem("token")
 
@@ -17,7 +17,7 @@ const getAuthConfig = () => {
   }
 }
 
-// ✅ GET LEADS
+// GET LEADS
 export const getLeads = async (fecha, idCamp, iniCampania) => {
   try {
     const { headers } = getAuthConfig()
@@ -39,7 +39,7 @@ export const getLeads = async (fecha, idCamp, iniCampania) => {
   }
 }
 
-// ✅ GET SUBCAMPAÑAS
+// GET SUBCAMPAÑAS
 export const getSubcampanias = async (idCamp) => {
   try {
     const { headers } = getAuthConfig()
@@ -57,7 +57,7 @@ export const getSubcampanias = async (idCamp) => {
   }
 }
 
-// ✅ GET VISTAS POR CAMPAÑA
+// GET VISTAS POR CAMPAÑA
 export const getVistasCampana = async (idCamp) => {
   try {
     const { headers } = getAuthConfig()

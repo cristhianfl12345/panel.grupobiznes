@@ -11,7 +11,6 @@ import Loader from '../pages/Loader'
 export default function Leads() {
 
   const [searchParams] = useSearchParams()
-
   const campFromURL = searchParams.get("camp")
 
   const { theme } = useLocalTheme()
@@ -26,24 +25,23 @@ export default function Leads() {
   const [searchText, setSearchText] = useState('')
   const [toast, setToast] = useState(null)
 
-  const handleCopy = async (text) => {
+  // NUEVO: filtros por columnas
+  const [columnFilters, setColumnFilters] = useState({
+    pautanameanuncio: '',
+    CampaOrigen: '',
+    Alias: ''
+  })
 
+  const handleCopy = async (text) => {
     if (!text) return
 
     try {
-
       await navigator.clipboard.writeText(text.toString())
-
       setToast(`Copiado: ${text}`)
-
       setTimeout(() => setToast(null), 2000)
-
     } catch (err) {
-
       console.error('Error al copiar:', err)
-
     }
-
   }
 
   const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
@@ -86,7 +84,6 @@ export default function Leads() {
           { key: 'index', label: 'N', visible: true },
           ...matchedColumns
         ])
-
       }
 
     } catch (err) {
@@ -97,12 +94,10 @@ export default function Leads() {
       setColumns([])
 
     } finally {
-
       setLoading(false)
-
     }
-
   }
+
   useEffect(() => {
 
     if (!campFromURL) return
@@ -115,22 +110,36 @@ export default function Leads() {
 
   }, [campFromURL])
 
-  const filteredLeads = useMemo(() => {
+  // FILTRO GLOBAL (searchText)
+  const searchedLeads = useMemo(() => {
 
     if (!searchText) return leads
 
     const text = searchText.toLowerCase()
 
-    return leads.filter((lead) => (
-
+    return leads.filter((lead) =>
       Object.values(lead)
         .join(" ")
         .toLowerCase()
         .includes(text)
-
-    ))
+    )
 
   }, [leads, searchText])
+
+  // FILTROS POR COLUMNAS (tipo BI)
+  const filteredLeads = useMemo(() => {
+
+    return searchedLeads.filter(l => {
+
+      return (
+        (!columnFilters.pautanameanuncio || l.pautanameanuncio === columnFilters.pautanameanuncio) &&
+        (!columnFilters.CampaOrigen || l.CampaOrigen === columnFilters.CampaOrigen) &&
+        (!columnFilters.Alias || l.Alias === columnFilters.Alias)
+      )
+
+    })
+
+  }, [searchedLeads, columnFilters])
 
   return (
 
@@ -140,20 +149,16 @@ export default function Leads() {
         : 'bg-slate-50 text-slate-800'
     }`}>
 
-      {/* LOADER GLOBAL DE BUSQUEDA */}
+      {/* LOADER GLOBAL */}
       <Loader show={loading} />
 
       {toast && (
-
         <div className="fixed top-15 left-1/2 -translate-x-1/2 z-50 
                         bg-black text-white
                         dark:bg-yellow-100 dark:text-black
                         px-4 py-2 rounded-lg shadow-lg">
-
           {toast}
-
         </div>
-
       )}
 
       <div className="px-6 py-4 space-y-4 w-full">
@@ -162,10 +167,12 @@ export default function Leads() {
           onSearch={fetchLeads}
           columns={columns}
           setColumns={setColumns}
+          leads={leads} // necesario para generar valores únicos
+          onFilterChange={setColumnFilters} // conexión filtros
         />
 
         <LeadTable
-          leads={filteredLeads}
+          leads={filteredLeads} // DATA FINAL FILTRADA
           loading={loading}
           searched={searched}
           onCopy={handleCopy}
@@ -178,5 +185,4 @@ export default function Leads() {
     </div>
 
   )
-
 }

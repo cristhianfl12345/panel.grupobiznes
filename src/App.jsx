@@ -16,7 +16,7 @@ import ProtectedFiles, { ROLES } from "./routes/ProtectedFiles"
 
 import Loader from './pages/Loader'
 import Monitor from './routes/Monitor'
-
+import ModuloBases from "./pages/Modulo_bases"
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -108,6 +108,17 @@ function AppRoutes() {
                 <ProtectedRoute>
                   <HeaderLayout>
                     <Monitor />
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+            />
+              {/* MONITOR */}
+            <Route
+              path="/monitor-bases"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                    <ModuloBases />
                   </HeaderLayout>
                 </ProtectedRoute>
               }

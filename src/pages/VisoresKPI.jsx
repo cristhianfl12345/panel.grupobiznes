@@ -23,7 +23,7 @@ export default function VisoresKPI() {
 
   }, []);
 
-  const API = "http://localhost:4000/api"
+  const API = "http://192.168.9.115:4000/api"
 
   const { level, idcamp, vista } = useParams()
 

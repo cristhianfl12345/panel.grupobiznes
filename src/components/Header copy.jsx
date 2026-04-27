@@ -74,7 +74,7 @@ useEffect(() => {
       const user = JSON.parse(storedUser);
 
       const res = await fetch(
-        `http://localhost:4000/api/auth/mis-campanas/${user.id}`
+        `http://192.168.9.115:4000/api/auth/mis-campanas/${user.id}`
       );
 
       const data = await res.json();

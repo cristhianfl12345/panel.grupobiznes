@@ -1,10 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { io } from "socket.io-client";
-import { INDICE_CAMPS } from "../context/indiceCamps";
 
 const STORAGE_KEY = "notificaciones_cerradas_supervisor";
-const STORAGE_NOTI = "notificaciones_supervisor";
 
 export default function PopUpSupervisor({ open, setOpen }) {
   const [notificaciones, setNotificaciones] = useState([]);
@@ -12,21 +9,24 @@ export default function PopUpSupervisor({ open, setOpen }) {
   const [contador, setContador] = useState(0);
   const [isDark, setIsDark] = useState(false);
 
-  // ==============================
-  // MAPA ID -> NOMBRE (OPTIMIZADO)
-  // ==============================
-  const mapCampanas = useMemo(() => {
-    const map = {};
-    INDICE_CAMPS.forEach((c) => {
-      map[String(c.id_camp)] = c.nombre;
-      map[String(c.IdCamp)] = c.nombre;
-    });
-    return map;
-  }, []);
+  const intervalRef = useRef(null);
 
-  const obtenerNombreCamp = (id) => {
-    return mapCampanas[String(id)] || id;
+  // ==============================
+  // 🧠 UTILIDAD: VALIDAR SI ES HOY
+  // ==============================
+  const esHoy = (fechaStr) => {
+    const hoy = new Date();
+    const fecha = new Date(fechaStr);
+
+    return fecha.toDateString() === hoy.toDateString();
   };
+
+  // ==============================
+  // 📅 NOTIFICACIONES DEL DÍA
+  // ==============================
+  const notificacionesHoy = notificaciones.filter((n) =>
+    esHoy(n.fecha)
+  );
 
   // ==============================
   // TEMA
@@ -37,7 +37,7 @@ export default function PopUpSupervisor({ open, setOpen }) {
   }, []);
 
   // ==============================
-  // STORAGE HELPERS
+  // LOCAL STORAGE
   // ==============================
   const obtenerCerradas = () => {
     try {
@@ -47,114 +47,101 @@ export default function PopUpSupervisor({ open, setOpen }) {
     }
   };
 
-  const obtenerNotificacionesStorage = () => {
+  // ==============================
+  // FETCH
+  // ==============================
+  const fetchNotificaciones = async () => {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_NOTI)) || [];
-    } catch {
-      return [];
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://192.168.9.115:4000/api/notificaciones-supervisor/obtener",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const text = await res.text();
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("❌ RESPUESTA NO ES JSON:", text);
+        return;
+      }
+
+      if (!data.ok) return;
+
+      const cerradas = obtenerCerradas();
+
+      // 🔹 TODAS → CAMPANA
+      setNotificaciones(data.data);
+
+      // 🔹 SOLO POPUPS (FILTRADAS POR HOY)
+      const nuevasVisibles = data.data.filter((n) => {
+        return !cerradas[n.id] && esHoy(n.fecha);
+      });
+
+      setVisibles(nuevasVisibles);
+
+      // 🔹 CONTADOR
+      setContador(Object.keys(cerradas).length);
+
+    } catch (err) {
+      console.error("Error notificaciones supervisor:", err);
     }
   };
 
-  const guardarNotificacionesStorage = (data) => {
-    localStorage.setItem(STORAGE_NOTI, JSON.stringify(data));
-  };
-
   // ==============================
-  // REHIDRATAR AL INICIO
+  // POLLING
   // ==============================
   useEffect(() => {
-    const stored = obtenerNotificacionesStorage();
-    const cerradas = obtenerCerradas();
+    fetchNotificaciones();
+    intervalRef.current = setInterval(fetchNotificaciones, 20000);
 
-    setNotificaciones(stored);
-
-    const visiblesInicial = stored.filter((n) => !cerradas[n.id]);
-    setVisibles(visiblesInicial);
-
-    setContador(Object.keys(cerradas).length);
+    return () => clearInterval(intervalRef.current);
   }, []);
 
   // ==============================
-  // SOCKET.IO
+  // ❌ CERRAR
   // ==============================
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  const cerrar = async (n) => {
+    try {
+      const key = n.id;
 
-    const socket = io("http://192.168.9.115:4000", {
-      auth: { token },
-      transports: ["websocket"],
-    });
+      const actuales = obtenerCerradas();
+      actuales[key] = true;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(actuales));
 
-    socket.on("connect", () => {
-      // console.log("Conectado a socket");
-    });
+      const token = localStorage.getItem("token");
 
-    socket.on("nueva_notificacion", (data) => {
-      const cerradas = obtenerCerradas();
-
-      const id = `${data.camp}-${data.hora}`;
-
-      if (cerradas[id]) return;
-
-      // ==============================
-      // REEMPLAZO DE ID POR NOMBRE
-      // ==============================
-      const nombreCamp = obtenerNombreCamp(data.camp);
-
-      const mensajeTransformado = data.mensaje.replace(
-        new RegExp(data.camp, "g"),
-        nombreCamp
+      await fetch(
+        "http://192.168.9.115:4000/api/notificaciones-supervisor/marcar-leida",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            idNotificacion: n.id,
+          }),
+        }
       );
 
-      const nueva = {
-        id,
-        mensaje: mensajeTransformado,
-        fecha: new Date().toISOString(),
-      };
+      // quitar popup
+      setVisibles((prev) => prev.filter((x) => x.id !== n.id));
 
-      setNotificaciones((prev) => {
-        const existe = prev.find((n) => n.id === id);
-        if (existe) return prev;
+      // actualizar contador
+      setContador((prev) => prev + 1);
 
-        const updated = [nueva, ...prev];
-        guardarNotificacionesStorage(updated);
-        return updated;
-      });
-
-      setVisibles((prev) => [nueva, ...prev]);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Socket desconectado");
-    });
-
-    return () => socket.disconnect();
-  }, [mapCampanas]);
-
-  // ==============================
-  // CERRAR
-  // ==============================
-  const cerrar = (n) => {
-    const actuales = obtenerCerradas();
-    actuales[n.id] = true;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(actuales));
-
-    setVisibles((prev) => prev.filter((x) => x.id !== n.id));
-    setContador((prev) => prev + 1);
+    } catch (err) {
+      console.error("Error cerrar notificación:", err);
+    }
   };
-
-  // ==============================
-  // SOLO HOY
-  // ==============================
-  const esHoy = (fechaStr) => {
-    const hoy = new Date();
-    const fecha = new Date(fechaStr);
-    return fecha.toDateString() === hoy.toDateString();
-  };
-
-  const notificacionesHoy = notificaciones.filter((n) =>
-    esHoy(n.fecha)
-  );
 
   // ==============================
   // ANIMACIÓN
@@ -172,7 +159,7 @@ export default function PopUpSupervisor({ open, setOpen }) {
 
   return (
     <>
-      {/* DROPDOWN */}
+      {/* 📦 DROPDOWN */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -221,10 +208,10 @@ export default function PopUpSupervisor({ open, setOpen }) {
         )}
       </AnimatePresence>
 
-      {/* CONTADOR */}
+      {/* 🔴 CONTADOR */}
       <div id="notificaciones-contador-supervisor" data-count={contador} />
 
-      {/* POPUPS */}
+      {/* 🔔 POPUPS */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-3 items-center">
         <AnimatePresence>
           {visibles.map((n) => (

@@ -23,7 +23,7 @@ export default function EditView() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewEditOpen, setPreviewEditOpen] = useState(false);
 
-  const API = "http://localhost:4000/api";
+  const API = "http://192.168.9.115:4000/api";
 
   const input = `w-full px-3 py-2 rounded-xl border transition`;
   const theme = isDark
