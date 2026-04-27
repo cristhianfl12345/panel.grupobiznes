@@ -132,13 +132,13 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
     >
 
 
-{/* HEADER MINIMALISTA */}
+{/* HEADER ALINEADO A LA IZQUIERDA CON OFFSET */}
 {campInfo && (
-  <div className="text-lg absolute left-1/2 -top-4 -translate-x-1/2 z-180 px-4 py-1  ${">
-    <span className={`text-xl font-semibold whitespace-nowrap ${
-      isDark ? 'text-cyan-300' : 'text-slate-700'
+  <div className="text-lg absolute left-0 -top-9 translate-y-[1px] z-10 px-4 py-1">
+    <span className={`text-xll font-semibold whitespace-nowrap ${
+      isDark ? 'text-slate-300' : 'text-slate-700'
     }`}>
-      {campInfo.id_camp} - {campInfo.nombre}
+      KPI / Operativos / Monitor de Leads /  {campInfo.nombre}
     </span>
   </div>
 )}
@@ -187,7 +187,7 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
             <button
               type="submit"
               className={`flex items-center gap-2 px-5 py-2 rounded-lg ${
-                isDark ? 'bg-[#74F2F2]' : 'bg-[#354196] text-white'
+                isDark ? 'bg-[#6E0303]' : 'bg-[#CC0404] text-white'
               }`}
             >
               <FiSearch />
@@ -229,60 +229,86 @@ function LeadFilters({ onSearch, columns, setColumns, leads = [], onFilterChange
 
         </div>
 
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2"
-            >
+<AnimatePresence>
+  {showFilters && (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      className={`grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 ${
+        isDark ? 'bg-slate-800/50' : 'bg-slate-50'
+      } p-3 rounded-lg`}
+    >
 
-              <div className="flex flex-col">
-                <label className="text-xs mb-1">Pauta</label>
-                <select
-                  value={columnFilters.pautanameanuncio}
-                  onChange={(e) => handleFilterChange('pautanameanuncio', e.target.value)}
-                  className="px-3 py-2 rounded border"
-                >
-                  <option value="">Todas</option>
-                  {uniqueValues.pautanameanuncio.map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
-              </div>
+      <div className="flex flex-col">
+        <label className={`text-xs mb-1 ${
+          isDark ? 'text-slate-300' : 'text-slate-600'
+        }`}>
+          Pauta
+        </label>
+        <select
+          value={columnFilters.pautanameanuncio}
+          onChange={(e) => handleFilterChange('pautanameanuncio', e.target.value)}
+          className={`px-3 py-2 rounded border ${
+            isDark
+              ? 'bg-slate-700 text-white border-slate-600'
+              : 'bg-white text-slate-800 border-slate-300'
+          }`}
+        >
+          <option value="">Todas</option>
+          {uniqueValues.pautanameanuncio.map(v => (
+            <option key={v} value={v}>{v}</option>
+          ))}
+        </select>
+      </div>
 
-              <div className="flex flex-col">
-                <label className="text-xs mb-1">Campaña Origen</label>
-                <select
-                  value={columnFilters.CampaOrigen}
-                  onChange={(e) => handleFilterChange('CampaOrigen', e.target.value)}
-                  className="px-3 py-2 rounded border"
-                >
-                  <option value="">Todas</option>
-                  {uniqueValues.CampaOrigen.map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
-              </div>
+      <div className="flex flex-col">
+        <label className={`text-xs mb-1 ${
+          isDark ? 'text-slate-300' : 'text-slate-600'
+        }`}>
+          Campaña Origen
+        </label>
+        <select
+          value={columnFilters.CampaOrigen}
+          onChange={(e) => handleFilterChange('CampaOrigen', e.target.value)}
+          className={`px-3 py-2 rounded border ${
+            isDark
+              ? 'bg-slate-700 text-white border-slate-600'
+              : 'bg-white text-slate-800 border-slate-300'
+          }`}
+        >
+          <option value="">Todas</option>
+          {uniqueValues.CampaOrigen.map(v => (
+            <option key={v} value={v}>{v}</option>
+          ))}
+        </select>
+      </div>
 
-              <div className="flex flex-col">
-                <label className="text-xs mb-1">Alias</label>
-                <select
-                  value={columnFilters.Alias}
-                  onChange={(e) => handleFilterChange('Alias', e.target.value)}
-                  className="px-3 py-2 rounded border"
-                >
-                  <option value="">Todas</option>
-                  {uniqueValues.Alias.map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
-              </div>
+      <div className="flex flex-col">
+        <label className={`text-xs mb-1 ${
+          isDark ? 'text-slate-300' : 'text-slate-600'
+        }`}>
+          Alias
+        </label>
+        <select
+          value={columnFilters.Alias}
+          onChange={(e) => handleFilterChange('Alias', e.target.value)}
+          className={`px-3 py-2 rounded border ${
+            isDark
+              ? 'bg-slate-700 text-white border-slate-600'
+              : 'bg-white text-slate-800 border-slate-300'
+          }`}
+        >
+          <option value="">Todas</option>
+          {uniqueValues.Alias.map(v => (
+            <option key={v} value={v}>{v}</option>
+          ))}
+        </select>
+      </div>
 
-            </motion.div>
-          )}
-        </AnimatePresence>
+    </motion.div>
+  )}
+</AnimatePresence>
 
       </form>
 

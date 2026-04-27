@@ -1,13 +1,13 @@
 //front/src/context/indiceCamps.js
 export const INDICE_CAMPS = [
-  { id_camp: "370", IdCamp: "370", nombre: "Leads Externo OncoSalud", Campana: "Leads Externo OncoSalud", campana: "Leads Externo OncoSalud" },
-  { id_camp: "340", IdCamp: "340", nombre: "Ricardo Palma", Campana: "Ricardo Palma", campana: "Ricardo Palma" },
+  { id_camp: "370", IdCamp: "370", nombre: "370_Leads Externo OncoSalud", Campana: "370_Leads Externo OncoSalud", campana: "370_Leads Externo OncoSalud" },
+  { id_camp: "340", IdCamp: "340", nombre: "340_Ricardo Palma", Campana: "340_Ricardo Palma", campana: "340_Ricardo Palma" },
   { id_camp: "760", IdCamp: "760", nombre: "Zaaz", Campana: "Zaaz", campana: "Zaaz" },
-  { id_camp: "90", IdCamp: "90", nombre: "Vida", Campana: "Vida", campana: "Vida" },
+  { id_camp: "90", IdCamp: "90", nombre: "90_Interseguro Vida", Campana: "90_Interseguro Vida", campana: "90_Interseguro Vida" },
   { id_camp: "10", IdCamp: "10", nombre: "Interseguro Soat", Campana: "Interseguro Soat", campana: "Interseguro Soat" },
   { id_camp: "20", IdCamp: "20", nombre: "Caja Arequipa", Campana: "Caja Arequipa", campana: "Caja Arequipa" },
   { id_camp: "21", IdCamp: "21", nombre: "CAJA AREQUIPA BACK", Campana: "CAJA AREQUIPA BACK", campana: "CAJA AREQUIPA BACK" },
-  { id_camp: "30", IdCamp: "30", nombre: "OncoSalud", Campana: "OncoSalud", campana: "OncoSalud" },
+  { id_camp: "30", IdCamp: "30", nombre: "30_OncoSalud", Campana: "30_OncoSalud", campana: "30_OncoSalud" },
   { id_camp: "70", IdCamp: "70", nombre: "AunaSalud", Campana: "AunaSalud", campana: "AunaSalud" },
   { id_camp: "75", IdCamp: "75", nombre: "AUNA VIDA", Campana: "AUNA VIDA", campana: "AUNA VIDA" },
   { id_camp: "80", IdCamp: "80", nombre: "Interseguro Vehicular", Campana: "Interseguro Vehicular", campana: "Interseguro Vehicular" },
@@ -30,12 +30,12 @@ export const INDICE_CAMPS = [
   { id_camp: "330", IdCamp: "330", nombre: "Verisure", Campana: "Verisure", campana: "Verisure" },
   { id_camp: "360", IdCamp: "360", nombre: "Bz Digital Verisure", Campana: "Bz Digital Verisure", campana: "Bz Digital Verisure" },
   { id_camp: "380", IdCamp: "380", nombre: "Movistar", Campana: "Movistar", campana: "Movistar" },
-  { id_camp: "60", IdCamp: "60", nombre: "60 Interseguro Rumbo", Campana: "60 Interseguro Rumbo", campana: "60 Interseguro Rumbo" },
-  { id_camp: "310", IdCamp: "310", nombre: "310 Bz Digital PeruFibra", Campana: "310 Bz Digital PeruFibra", campana: "310 Bz Digital PeruFibra" },
+  { id_camp: "60", IdCamp: "60", nombre: "60_Interseguro Rumbo", Campana: "60_Interseguro Rumbo", campana: "60_Interseguro Rumbo" },
+  { id_camp: "310", IdCamp: "310", nombre: "310_Bz Digital PeruFibra", Campana: "310_Bz Digital PeruFibra", campana: "310_Bz Digital PeruFibra" },
   { id_camp: "50", IdCamp: "50", nombre: "Ojt Nexum", Campana: "Ojt Nexum", campana: "Ojt Nexum" },
   { id_camp: "702", IdCamp: "702", nombre: "TLKM_ADMIN", Campana: "TLKM_ADMIN", campana: "TLKM_ADMIN" },
   { id_camp: "460", IdCamp: "460", nombre: "460 Leads Sorteo OncoSalud", Campana: "460 Leads Sorteo OncoSalud", campana: "460 Leads Sorteo OncoSalud" },
   { id_camp: "40", IdCamp: "40", nombre: "40 CROSS AUNA", Campana: "40 CROSS AUNA", campana: "40 CROSS AUNA" },
   { id_camp: "730", IdCamp: "730", nombre: "730 Distribuidor Promotor", Campana: "730 Distribuidor Promotor", campana: "730 Distribuidor Promotor" },
-  { id_camp: "200", IdCamp: "200", nombre: "200 - Bz Digital OncoSalud", Campana: "200 - Bz Digital OncoSalud", campana: "200 - Bz Digital OncoSalud" }
+  { id_camp: "200", IdCamp: "200", nombre: "200_Bz Digital OncoSalud", Campana: "200_Bz Digital OncoSalud", campana: "200_Bz Digital OncoSalud" }
 ];

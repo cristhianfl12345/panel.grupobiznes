@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Database, Filter, Clock } from "lucide-react";
+import {INDICE_CAMPS} from "../context/indiceCamps";
 
 const API_URL = "http://192.168.9.115:4000/api/modulo-bases";
 
@@ -117,23 +118,23 @@ t.count += r.TotalMarcaciones;
       isDark ? "bg-[#1F2029] text-slate-200" : "bg-gray-100 text-gray-800"
     }`}>
 
-      {/* HEADER */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-4 mb-8"
-      >
-        <div className={`p-3 rounded-xl ${isDark ? "bg-red-500/20 text-red-400" : "bg-red-600 text-white shadow-lg"}`}>
-          <Database size={28} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Monitor de Bases</h1>
-          <p className={`text-sm ${isDark ? "text-slate-400" : "text-gray-500"}`}>
-            Campaña activa: <span className="font-bold text-red-500">{camp || "No seleccionada"}</span>
-          </p>
-        </div>
-      </motion.div>
+     {/* HEADER */}
+{(() => {
+  const campInfo = INDICE_CAMPS.find(c => String(c.id_camp) === String(camp));
+  if (!campInfo) return null;
 
+  return (
+    <div className="relative mb-10">
+      <div className="absolute left-0 -top-6 translate-y-[6px] z-10">
+        <span className={`text-xl font-semibold whitespace-nowrap ${
+          isDark ? 'text-slate-300' : 'text-slate-700'
+        }`}>
+          KPI / Operativos / Monitor de Bases /  {campInfo.nombre}
+        </span>
+      </div>
+    </div>
+  );
+})()}
       {/* FILTROS */}
       <div className={`flex flex-wrap gap-4 p-4 rounded-xl mb-6 border transition-all ${
         isDark ? "bg-slate-800/50 border-slate-700 shadow-2xl" : "bg-white border-gray-200 shadow-sm"
