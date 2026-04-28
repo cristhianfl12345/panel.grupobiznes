@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import PopUpAdmin from "../routes/PopUpAdmin";
@@ -91,6 +91,44 @@ useEffect(() => {
   };
 
   loadCampanas();
+}, []);
+// cerrar menu con clic fuera: 
+
+  const notifRef = useRef(null);
+const userMenuRef = useRef(null);
+const supervisorRef = useRef(null);
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    // NOTIFICACIONES ADMIN
+    if (
+      notifRef.current &&
+      !notifRef.current.contains(event.target)
+    ) {
+      setOpenNotif(false);
+    }
+
+    // NOTIFICACIONES SUPERVISOR
+    if (
+      supervisorRef.current &&
+      !supervisorRef.current.contains(event.target)
+    ) {
+      setOpenSupervisor(false);
+    }
+
+    // USER MENU
+    if (
+      userMenuRef.current &&
+      !userMenuRef.current.contains(event.target)
+    ) {
+      setUserMenu(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
 }, []);
 //kpis seguin seccion
 const [kpis, setKpis] = useState(null)
@@ -333,6 +371,7 @@ return (
     </div>
   )}
   {/* Campañas Clientes fin */}
+  
 </ProtectedFiles>
                         {/* Solo mostramos el título "Dashboard" si el sidebar está abierto */}
            <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
@@ -924,7 +963,7 @@ return (
             </motion.button>
 
 {/* NOTIFICACIONES */}
-<div className="flex items-center ml-2">
+<div ref={notifRef} className="flex items-center ml-2">
 {esAdmin && (
   <>
 <div
@@ -956,7 +995,7 @@ return (
 
 {esSupervisor && (
   <>
-<div
+<div ref={supervisorRef}
   className="relative cursor-pointer -ml-5"
   onClick={() => setOpenSupervisor((prev) => !prev)}
 >
@@ -999,6 +1038,7 @@ return (
               </button>
 
               <AnimatePresence>
+                <div ref={userMenuRef}>
 
                 {userMenu && (
 
@@ -1033,7 +1073,7 @@ return (
                   </motion.div>
 
                 )}
-
+</div>
               </AnimatePresence>
 
             </div>

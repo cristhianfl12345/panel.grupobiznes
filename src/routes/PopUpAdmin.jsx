@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const STORAGE_KEY = "notificaciones_cerradas_admin";
 
@@ -13,6 +14,7 @@ export default function PopUpAdmin({ open, setOpen }) {
   const [loadingDetalle, setLoadingDetalle] = useState(null);
  
   const [isDark, setIsDark] = useState(false);
+  const navigate = useNavigate();
 
   const intervalRef = useRef(null);
 
@@ -73,6 +75,44 @@ export default function PopUpAdmin({ open, setOpen }) {
   }, []);
 
   // ==============================
+  // 🔥 AUTO-CARGAR DETALLES
+  // ==============================
+  useEffect(() => {
+    const cargarDetalles = async () => {
+      const token = localStorage.getItem("token");
+
+      for (const n of notificaciones) {
+        if (detalleUsuario[n.id_usuario]) continue;
+
+        try {
+          const res = await fetch(
+            `http://192.168.9.115:4000/api/notificaciones-sistemas/detalle/${n.id_usuario}`,
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          );
+
+          const data = await res.json();
+
+          if (data.ok) {
+            setDetalleUsuario(prev => ({
+              ...prev,
+              [n.id_usuario]: data.data
+            }));
+          }
+
+        } catch (err) {
+          console.error("Error detalle auto:", err);
+        }
+      }
+    };
+
+    if (notificaciones.length) {
+      cargarDetalles();
+    }
+  }, [notificaciones]);
+
+  // ==============================
   // ❌ CERRAR POPUP
   // ==============================
   const cerrar = (n) => {
@@ -84,36 +124,6 @@ export default function PopUpAdmin({ open, setOpen }) {
     setVisibles((prev) =>
       prev.filter((item) => item.id_usuario !== n.id_usuario)
     );
-  };
-
-  // ==============================
-  // DETALLE
-  // ==============================
-  const fetchDetalle = async (idUsuario) => {
-    try {
-      const token = localStorage.getItem("token");
-      setLoadingDetalle(idUsuario);
-
-      const res = await fetch(
-        `http://192.168.9.115:4000/api/notificaciones-sistemas/detalle/${idUsuario}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      const data = await res.json();
-      if (!data.ok) return;
-
-      setDetalleUsuario((prev) => ({
-        ...prev,
-        [idUsuario]: data.data
-      }));
-
-    } catch (err) {
-      console.error("Error detalle:", err);
-    } finally {
-      setLoadingDetalle(null);
-    }
   };
 
   // ==============================
@@ -177,7 +187,6 @@ export default function PopUpAdmin({ open, setOpen }) {
             <div className="flex flex-col gap-2 max-h-[400px] overflow-auto pr-1">
               {notificaciones.map((n) => (
                 <motion.div
-                 // key={n.id_usuario}
                   key={`${n.id_usuario}_${n.total}`}
                   layout
                   whileHover={{ scale: 1.02 }}
@@ -193,48 +202,40 @@ export default function PopUpAdmin({ open, setOpen }) {
                     </span>
 
                     <button
-                      onClick={() => fetchDetalle(n.id_usuario)}
+                      onClick={() => {
+                        cerrar(n);
+                        setOpen(false);
+                        navigate(`/control-marcadores?camp=${n.id_camp}`);
+                      }}
                       className="text-blue-500 text-xs hover:underline"
                     >
                       Ver
                     </button>
                   </div>
 
-                  <AnimatePresence>
-                    {loadingDetalle === n.id_usuario && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-xs mt-2"
-                      >
-                        Cargando...
-                      </motion.div>
-                    )}
-
-                    {detalleUsuario[n.id_usuario] && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="mt-2 text-xs overflow-hidden"
-                      >
-                        {detalleUsuario[n.id_usuario].map((d, i) => (
-                          <div
-                           // key={i}
-                           key={`${d.telefono}_${d.fecha}`}
-                            className="flex justify-between border-b py-1 text-[11px]"
-                          >
-                            <span className="truncate w-[45%]">
-                              {d.campana}
-                            </span>
-                            <span>{d.telefono}</span>
-                            <span className="text-gray-400">
-                              {d.fecha}
-                            </span>
-                          </div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {/* 🔥 DETALLE SIEMPRE VISIBLE */}
+                  {detalleUsuario[n.id_usuario] && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="mt-2 text-xs"
+                    >
+                      {detalleUsuario[n.id_usuario].map((d) => (
+                        <div
+                          key={`${d.telefono}_${d.fecha}`}
+                          className="flex justify-between border-b py-1 text-[11px]"
+                        >
+                          <span className="truncate w-[45%]">
+                            {d.campana}
+                          </span>
+                          <span>{d.telefono}</span>
+                          <span className="text-gray-400">
+                            {d.fecha}
+                          </span>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
             </div>
@@ -250,8 +251,7 @@ export default function PopUpAdmin({ open, setOpen }) {
         <AnimatePresence>
           {visibles.map((n) => (
             <motion.div
-             // key={n.id_usuario}
-             key={`${n.id_usuario}_${n.total}`}
+              key={`${n.id_usuario}_${n.total}`}
               variants={dropAnimation}
               initial="hidden"
               animate="visible"
