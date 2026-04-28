@@ -419,7 +419,7 @@ return (
                 className="ml-4 mt-1 flex flex-col gap-1 border-l border-red-200/20 pl-3 overflow-hidden"
               >
 
-                {/* 🔥 MODULOS (NUEVO) */}
+                {/* MODULOS (NUEVO) */}
                 {modulosMap[Number(campId)] &&
                   modulosMap[Number(campId)].map(mod => (
                     <motion.button
