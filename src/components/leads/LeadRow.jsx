@@ -163,14 +163,28 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
             {lead.hora_creacion || lead.horac || '-'}
           </motion.td>
         )
-
 case 'horai': {
   const h = lead.horai;
-  
-  // ver si es un objeto y tiene los datos
-  const tiempoFormateado = h && typeof h === 'object' 
-    ? `${h.minutes}m ${h.seconds}s` 
-    : (h || '-');
+
+  let tiempoFormateado = '-';
+
+  if (typeof h === 'string') {
+    const parts = h.split(':'); // ["05","00","50.975683"]
+
+    if (parts.length === 3) {
+      const hours = parseInt(parts[0], 10) || 0;
+      const minutes = parseInt(parts[1], 10) || 0;
+      const seconds = Math.floor(parseFloat(parts[2])) || 0;
+
+      tiempoFormateado = `${hours}h ${minutes}m ${seconds}s`;
+    }
+  } else if (h && typeof h === 'object') {
+    const hours = h.hours ?? 0;
+    const minutes = h.minutes ?? 0;
+    const seconds = h.seconds ?? 0;
+
+    tiempoFormateado = `${hours}h ${minutes}m ${seconds}s`;
+  }
 
   return (
     <motion.td {...cellAnimation} className={`${baseClass} text-center font-mono text-xs`}>
