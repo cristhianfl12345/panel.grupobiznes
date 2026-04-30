@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Search,
   Phone,
@@ -11,18 +11,40 @@ import {
   Loader2
 } from "lucide-react";
 import { INDICE_CAMPS } from "../context/indiceCamps";
+import { RxCrossCircled } from "react-icons/rx";
+import { MdOutlineCheckCircle, MdPending } from "react-icons/md";
 
 const SEARCH_OPTIONS = [
   { value: "telefono", label: "Teléfono", icon: Phone },
   { value: "dni", label: "DNI", icon: CreditCard },
-  { value: "idkey", label: "IdKey", icon: KeyRound },
+  { value: "idKey", label: "IdKey", icon: KeyRound },
 ];
+
+/* ================= DESCRIPCIONES ================= */
+const FIELD_DESCRIPTIONS = {
+  "Segmento": "Segmento dentro de la plataforma Digital es:",
+  "Medio": "medio por el cual se lanza la publicidad es:",
+  "Página": "la pagina donde se muestra la publicidad es:",
+  "Formato": "El formato en el cual se recibe la informacion del cliente es:"
+};
+
+/* ================= ICON MAPPER ================= */
+function StatusIcon({ value }) {
+  if (value === "ACEPTA") {
+    return <MdOutlineCheckCircle className="text-green-500" size={18} />;
+  }
+
+  if (value === "NO ACEPTA") {
+    return <RxCrossCircled className="text-red-500" size={18} />;
+  }
+
+  return <MdPending className="text-yellow-500" size={18} />;
+}
 
 export default function BusquedaTelefonos() {
   const [searchParams] = useSearchParams();
   const camp = searchParams.get("camp");
 
-  // IS DARK REAL (igual que tu sistema)
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -35,35 +57,58 @@ export default function BusquedaTelefonos() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  // ================= STATE =================
   const [tipo, setTipo] = useState("telefono");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultados, setResultados] = useState([]);
 
-  const IconoActual = SEARCH_OPTIONS.find(o => o.value === tipo)?.icon;
-
   const bgMain = isDark ? "bg-[#1F2029] text-slate-200" : "bg-gray-100 text-gray-800";
   const cardBg = isDark ? "bg-[#262730]" : "bg-white";
   const border = isDark ? "border-zinc-700" : "border-zinc-200";
+
+  const handleBuscar = async () => {
+    if (!query.trim() || !camp) return;
+
+    setLoading(true);
+    setResultados([]);
+
+    try {
+      const params = new URLSearchParams();
+      params.append("camp", camp);
+
+      if (tipo === "telefono") params.append("telefono", query);
+      if (tipo === "dni") params.append("dni", query);
+      if (tipo === "idKey") params.append("idKey", query);
+
+      const res = await fetch(`http://192.168.9.115:4000/api/busqueda?${params.toString()}`);
+      const data = await res.json();
+
+      setResultados(data.ok ? data.data : []);
+    } catch (error) {
+      console.error("Error en búsqueda:", error);
+      setResultados([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleBuscar();
+  };
 
   return (
     <div className={`min-h-screen p-6 transition-colors duration-300 ${bgMain}`}>
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* ================= HEADER ================= */}
+        {/* HEADER */}
         {(() => {
           const campInfo = INDICE_CAMPS.find(c => String(c.id_camp) === String(camp));
           if (!campInfo) return null;
 
           return (
-            <motion.div
-              initial={{ opacity: 0, y: -15 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="relative mb-10"
-            >
+            <motion.div initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} className="relative mb-10">
               <div className="absolute left-0 -top-12 translate-y-[6px] z-10">
-                <span className={`text-xl font-semibold whitespace-nowrap ${
+                <span className={`text-xl font-semibold ${
                   isDark ? "text-slate-300" : "text-slate-700"
                 }`}>
                   KPI / Operativos / {campInfo.nombre} / Buscador
@@ -73,40 +118,18 @@ export default function BusquedaTelefonos() {
           );
         })()}
 
-        {/* ================= BUSCADOR ================= */}
-        <motion.div
-          layout
-          className={`${cardBg} ${border} border rounded-2xl shadow-xl p-5 space-y-5`}
-        >
-
-          {/* SELECTOR */}
-          <div className="relative flex bg-black/5 dark:bg-white/5 p-1 rounded-xl w-fit overflow-hidden">
-
-            <motion.div
-              layout
-              className="absolute top-1 bottom-1 w-[120px] bg-red-800 rounded-lg shadow-lg"
-              animate={{
-                x:
-                  tipo === "telefono"
-                    ? 0
-                    : tipo === "dni"
-                    ? 120
-                    : 240
-              }}
-              transition={{ type: "spring", stiffness: 260, damping: 25 }}
-            />
-
+        {/* BUSCADOR */}
+        <motion.div className={`${cardBg} ${border} border rounded-2xl shadow-xl p-5 space-y-5`}>
+          <div className="flex gap-2">
             {SEARCH_OPTIONS.map((opt) => {
               const Icon = opt.icon;
-              const active = tipo === opt.value;
-
               return (
                 <button
                   key={opt.value}
                   onClick={() => setTipo(opt.value)}
-                  className={`relative z-10 flex items-center gap-2 px-4 py-2 w-[120px] justify-center text-sm font-medium transition
-                    ${active ? "text-white" : "text-zinc-400"}
-                  `}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm ${
+                    tipo === opt.value ? "bg-red-800 text-white" : "text-zinc-400"
+                  }`}
                 >
                   <Icon size={16} />
                   {opt.label}
@@ -115,116 +138,70 @@ export default function BusquedaTelefonos() {
             })}
           </div>
 
-          {/* INPUT */}
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="flex gap-3">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 px-4 py-3 rounded-xl border outline-none bg-transparent"
+            />
 
-            <motion.div
-              whileFocus={{ scale: 1.01 }}
-              className={`flex-1 flex items-center gap-3 px-4 py-3 rounded-xl border ${border}
-                ${isDark ? "bg-[#1F2029]" : "bg-white"}
-                focus-within:ring-2 focus-within:ring-red-800 transition`}
-            >
-              {IconoActual && (
-                <IconoActual size={18} className="text-red-400" />
-              )}
-
-              <input
-                type="text"
-                placeholder={
-                  tipo === "telefono"
-                    ? "Ej: 987654321"
-                    : tipo === "dni"
-                    ? "Ej: 12345678"
-                    : "Ej: A1B2C3..."
-                }
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full outline-none bg-transparent text-sm"
-              />
-            </motion.div>
-
-            <motion.button
-              whileHover={{ scale: 1.07 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center gap-2 bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-xl font-semibold shadow-md"
+            <button
+              onClick={handleBuscar}
+              className="bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-xl flex items-center gap-2"
             >
               <Search size={16} />
               Buscar
-            </motion.button>
-
+            </button>
           </div>
-
         </motion.div>
 
-        {/* ================= ESTADOS ================= */}
-        <AnimatePresence>
+        {/* LOADING */}
+        {loading && (
+          <div className="flex justify-center py-12">
+            <Loader2 className="animate-spin text-red-500" />
+          </div>
+        )}
 
-          {loading && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex justify-center py-12"
-            >
-              <Loader2 className="animate-spin text-red-500" />
-            </motion.div>
-          )}
-
-          {!loading && resultados.length === 0 && query && (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12 text-zinc-400"
-            >
-              Sin resultados encontrados
-            </motion.div>
-          )}
-
-        </AnimatePresence>
-
-        {/* ================= RESULTADOS ================= */}
+        {/* RESULTADOS */}
         {!loading && resultados.length > 0 && (
-          <motion.div layout className="grid gap-5">
+          <div className="grid gap-5">
+            {resultados.map((item, i) => {
+              const idkey = item.idkey || item.IdKey;
 
-            {resultados.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 25 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.015 }}
-                className={`${cardBg} ${border} border rounded-2xl p-5 shadow-lg`}
-              >
+              return (
+                <div key={i} className={`${cardBg} ${border} border rounded-2xl p-5`}>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xs text-zinc-400">
-                    Resultado #{index + 1}
-                  </span>
+                    <Field label="Segmento" value={item.segmento} />
+                    <Field label="Medio" value={item.medio} />
+                    <Field label="Página" value={item.pag} />
+                    <Field label="Formato" value={item.formato} />
 
-                  <span className="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-md">
-                    {item.campania || "Sin campaña"}
-                  </span>
+                    <Field label="IdKey" value={idkey} />
+                    <Field label="Anuncio ID" value={item.id_anuncio} />
+                    <Field label="Teléfono" value={item.numero_telefono} />
+                    <Field label="Usuario" value={item.idusuario} />
+
+                    <Field label="Fecha Creación" value={item.fecha_creacion} />
+                    <Field label="Fecha Plataforma" value={item.fcreacion_plataforma} />
+                    <Field label="Form ID" value={item.formid} />
+                    <Field label="Anuncio" value={item.pautanameanuncio} />
+
+                    <Field label="Campaña" value={item.campania} />
+                    <Field label="IP" value={item.remote_ip} />
+                   { /*  <Field label="dni" value={item.dni} /> */}
+
+                    <IconField label="Políticas" value={item.politica} />
+                    <IconField label="Fines Adicionales" value={item.finesadicionales} />
+
+                  </div>
+
                 </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-
-                  <Field label="Teléfono" value={item.telefono} />
-                  <Field label="DNI" value={item.dni} />
-                  <Field label="IdKey" value={item.idkey} />
-                  <Field label="IP" value={item.ip} />
-
-                  <Field label="Medio" value={item.medio} />
-                  <Field label="Plataforma" value={item.plataforma} />
-                  <Field label="Formato" value={item.formato} />
-                  <Field label="Fecha" value={item.fecha_creacion} />
-
-                </div>
-
-              </motion.div>
-            ))}
-
-          </motion.div>
+              );
+            })}
+          </div>
         )}
 
       </div>
@@ -232,17 +209,33 @@ export default function BusquedaTelefonos() {
   );
 }
 
-/* FIELD */
+/* FIELD NORMAL */
 function Field({ label, value }) {
-  return (
-    <div className="flex flex-col group">
-      <span className="text-[10px] text-zinc-500 uppercase tracking-wider">
-        {label}
-      </span>
+  const descripcion = FIELD_DESCRIPTIONS[label];
 
-      <span className="font-medium truncate group-hover:text-red-400 transition">
+  return (
+    <div className="flex flex-col">
+      <span className="text-[10px] text-zinc-500 uppercase">{label}</span>
+
+      {descripcion && (
+        <span className="text-[11px] text-zinc-400 leading-tight">
+          {descripcion}
+        </span>
+      )}
+
+      <span className="font-medium truncate">
         {value || "-"}
       </span>
+    </div>
+  );
+}
+
+/* FIELD ICONO */
+function IconField({ label, value }) {
+  return (
+    <div className="flex flex-col items-start justify-center">
+      <span className="text-[10px] text-zinc-500 uppercase mb-1">{label}</span>
+      <StatusIcon value={value} />
     </div>
   );
 }

@@ -169,7 +169,7 @@ case 'horai': {
   let tiempoFormateado = '-';
 
   if (typeof h === 'string') {
-    const parts = h.split(':'); // ["05","00","50.975683"]
+    const parts = h.split(':'); // ["hh","mm","ss.ffffff"]
 
     if (parts.length === 3) {
       const hours = parseInt(parts[0], 10) || 0;
