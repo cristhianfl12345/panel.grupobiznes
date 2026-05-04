@@ -33,17 +33,17 @@ function StatusIcon({ value }) {
   if (value === "ACEPTA") {
     return <MdOutlineCheckCircle className="text-green-500" size={18} />;
   }
-
   if (value === "NO ACEPTA") {
     return <RxCrossCircled className="text-red-500" size={18} />;
   }
-
   return <MdPending className="text-yellow-500" size={18} />;
 }
 
 export default function BusquedaTelefonos() {
   const [searchParams] = useSearchParams();
   const camp = searchParams.get("camp");
+
+  const campInfo = INDICE_CAMPS.find(c => String(c.id_camp) === String(camp));
 
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
@@ -61,6 +61,7 @@ export default function BusquedaTelefonos() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultados, setResultados] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false); // ✅ clave
 
   const bgMain = isDark ? "bg-[#1F2029] text-slate-200" : "bg-gray-100 text-gray-800";
   const cardBg = isDark ? "bg-[#262730]" : "bg-white";
@@ -71,6 +72,7 @@ export default function BusquedaTelefonos() {
 
     setLoading(true);
     setResultados([]);
+    setHasSearched(true); // ✅ marca que ya se buscó
 
     try {
       const params = new URLSearchParams();
@@ -96,27 +98,28 @@ export default function BusquedaTelefonos() {
     if (e.key === "Enter") handleBuscar();
   };
 
+  const getTipoTexto = () => {
+    if (tipo === "telefono") return "teléfono";
+    if (tipo === "dni") return "DNI";
+    return "IdKey";
+  };
+
   return (
     <div className={`min-h-screen p-6 transition-colors duration-300 ${bgMain}`}>
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* HEADER */}
-        {(() => {
-          const campInfo = INDICE_CAMPS.find(c => String(c.id_camp) === String(camp));
-          if (!campInfo) return null;
-
-          return (
-            <motion.div initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} className="relative mb-10">
-              <div className="absolute left-0 -top-12 translate-y-[6px] z-10">
-                <span className={`text-xl font-semibold ${
-                  isDark ? "text-slate-300" : "text-slate-700"
-                }`}>
-                  KPI / Operativos / {campInfo.nombre} / Buscador
-                </span>
-              </div>
-            </motion.div>
-          );
-        })()}
+        {campInfo && (
+          <motion.div initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} className="relative mb-10">
+            <div className="absolute left-0 -top-12 translate-y-[6px] z-10">
+              <span className={`text-xl font-semibold ${
+                isDark ? "text-slate-300" : "text-slate-700"
+              }`}>
+                KPI / Operativos / {campInfo.nombre} / Buscador
+              </span>
+            </div>
+          </motion.div>
+        )}
 
         {/* BUSCADOR */}
         <motion.div className={`${cardBg} ${border} border rounded-2xl shadow-xl p-5 space-y-5`}>
@@ -143,6 +146,7 @@ export default function BusquedaTelefonos() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
+              placeholder={`Buscar por ${getTipoTexto()}`}
               className="flex-1 px-4 py-3 rounded-xl border outline-none bg-transparent"
             />
 
@@ -163,6 +167,29 @@ export default function BusquedaTelefonos() {
           </div>
         )}
 
+        {/* SIN RESULTADOS */}
+        {!loading && hasSearched && resultados.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`${cardBg} ${border} border rounded-2xl p-6 text-center`}
+          >
+            <p className="text-sm text-zinc-400">
+              No se ha obtenido resultado para el{" "}
+              <span className="font-semibold text-red-500">
+                {getTipoTexto()}
+              </span>{" "}
+              <span className="font-semibold">
+                "{query}"
+              </span>{" "}
+              en la campaña{" "}
+              <span className="font-semibold text-red-500">
+                {campInfo?.nombre || camp}
+              </span>.
+            </p>
+          </motion.div>
+        )}
+
         {/* RESULTADOS */}
         {!loading && resultados.length > 0 && (
           <div className="grid gap-5">
@@ -171,7 +198,6 @@ export default function BusquedaTelefonos() {
 
               return (
                 <div key={i} className={`${cardBg} ${border} border rounded-2xl p-5`}>
-                  
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 
                     <Field label="Segmento" value={item.segmento} />
@@ -191,13 +217,11 @@ export default function BusquedaTelefonos() {
 
                     <Field label="Campaña" value={item.campania} />
                     <Field label="IP" value={item.remote_ip} />
-                   { /*  <Field label="dni" value={item.dni} /> */}
 
                     <IconField label="Políticas" value={item.politica} />
                     <IconField label="Fines Adicionales" value={item.finesadicionales} />
 
                   </div>
-
                 </div>
               );
             })}

@@ -266,6 +266,7 @@ useEffect(() => {
 // ============================
 const moverSpamBulk = async () => {
   if (selectedActivos.length === 0) return;
+   if (!confirm(`¿Mover ${selectedActivos.length} números a spam?`)) return;
 
   if (!id_usuario) {
     alert("Usuario no identificado");
@@ -302,6 +303,7 @@ const moverSpamBulk = async () => {
 // ============================
 const reemplazarSpamBulk = async () => {
   if (selectedSpam.length === 0) return;
+   if (!confirm(`¿Reemplazar ${selectedSpam.length} números spam?`)) return;
 
   if (!id_usuario) {
     alert("Usuario no identificado");

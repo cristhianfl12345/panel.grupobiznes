@@ -131,7 +131,7 @@ export default function VisoresKPI() {
           <motion.iframe
             key={urlVista}
             src={urlVista}
-            className="w-full h-full rounded-xl border shadow"
+            className="w-full h-full rounded-xl border-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           />
