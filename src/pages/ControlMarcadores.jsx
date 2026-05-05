@@ -189,7 +189,7 @@ useEffect(() => {
   const confirmarMascaras = async () => {
 
     const ids = previewMascaras.map(m => m.id_gen_mask)
-
+if (!confirm("Deseas insertar este(os) número(s)?")) return
     const res = await fetch(`${API}/confirmar-mascaras`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

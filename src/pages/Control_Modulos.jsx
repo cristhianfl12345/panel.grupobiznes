@@ -1,10 +1,9 @@
-//front/src/pages/Control_Modulos.jsx
 "use client"
 
 import { useEffect, useState, useMemo } from "react"
 import axios from "axios"
-import { motion, AnimatePresence } from "framer-motion"
-import { Layers, Search } from "lucide-react"
+import { motion } from "framer-motion"
+import { Layers } from "lucide-react"
 import { useLocalTheme } from "../context/useLocalTheme"
 
 const API = "http://192.168.9.115:4000/api/control-modulos"
@@ -31,7 +30,6 @@ export default function Control_Modulos() {
 
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState(1) // 1 = Monitor, 2 = Busqueda
 
   // =========================
   // FETCH DATA
@@ -40,11 +38,8 @@ export default function Control_Modulos() {
     setLoading(true)
     try {
       const { headers } = getAuthConfig()
-
       const res = await axios.get(API, { headers })
-
       setData(res.data?.data || [])
-
     } catch (err) {
       console.error("Error cargando módulos:", err)
     } finally {
@@ -57,29 +52,62 @@ export default function Control_Modulos() {
   }, [])
 
   // =========================
+  // TRANSFORMAR DATA (PIVOT)
+  // =========================
+  const groupedData = useMemo(() => {
+
+    const map = {}
+
+    data.forEach(item => {
+      if (!map[item.id_camp]) {
+        map[item.id_camp] = {
+          id_camp: item.id_camp,
+          nombre: item.nombre,
+          monitor: false,
+          busqueda: false,
+          bases: false
+        }
+      }
+
+      if (item.id_modulo === 1) map[item.id_camp].monitor = item.modulo_activo
+      if (item.id_modulo === 2) map[item.id_camp].busqueda = item.modulo_activo
+      if (item.id_modulo === 3) map[item.id_camp].bases = item.modulo_activo
+    })
+
+    return Object.values(map)
+
+  }, [data])
+
+  // =========================
   // TOGGLE
   // =========================
-  const handleToggle = async (item) => {
+  const handleToggle = async (item, moduloKey) => {
     try {
       const { headers } = getAuthConfig()
 
-      const newState = !item.modulo_activo
+      const moduloMap = {
+        monitor: 1,
+        busqueda: 2,
+        bases: 3
+      }
 
-await axios.put(
-  `${API}`,
-  {
-    idCamp: item.id_camp,
-    idModulo: item.id_modulo,
-    modulo_activo: newState
-  },
-  { headers }
-)
+      const idModulo = moduloMap[moduloKey]
+      const newState = !item[moduloKey]
 
-      // update local state optimista
+      await axios.put(
+        `${API}`,
+        {
+          idCamp: item.id_camp,
+          idModulo,
+          modulo_activo: newState
+        },
+        { headers }
+      )
+
+      // update optimista
       setData(prev =>
         prev.map(d =>
-          d.id_camp === item.id_camp &&
-          d.id_modulo === item.id_modulo
+          d.id_camp === item.id_camp && d.id_modulo === idModulo
             ? { ...d, modulo_activo: newState }
             : d
         )
@@ -91,13 +119,6 @@ await axios.put(
   }
 
   // =========================
-  // FILTRO POR TAB
-  // =========================
-  const filteredData = useMemo(() => {
-    return data.filter(d => d.id_modulo === activeTab)
-  }, [data, activeTab])
-
-  // =========================
   // UI
   // =========================
   return (
@@ -107,106 +128,83 @@ await axios.put(
         : "bg-gray-100 text-slate-800"
     }`}>
 
-      {/* TABS */}
-      <div className="flex gap-3 mb-6">
-
-        <TabButton
-          active={activeTab === 1}
-          onClick={() => setActiveTab(1)}
-          icon={<Layers size={16}/>}
-          label="MONITOR DE LEADS"
-          isDark={isDark}
-        />
-
-        <TabButton
-          active={activeTab === 2}
-          onClick={() => setActiveTab(2)}
-          icon={<Search size={16}/>}
-          label="BUSQUEDA"
-          isDark={isDark}
-        />
-
-        <TabButton
-          active={activeTab === 3}
-          onClick={() => setActiveTab(3)}
-          icon={<Search size={16}/>}
-          label="MONITOR DE BASES"
-          isDark={isDark}
-        />
-
+      {/* BREADCRUMB */}
+      <div className="mb-6">
+        <span className={`text-xl ${
+          isDark ? "text-slate-400 font-semibold" : "text-slate-500 font-semibold"
+        }`}>
+          Módulos / <span className="font-semibold text-black-500">Control de Módulos</span>
+        </span>
       </div>
 
-      {/* TAB CONTENT */}
+      {/* TABLE */}
       <motion.div
-        key={activeTab}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className={`
-          rounded-xl
-          shadow-md
-          overflow-hidden
+          rounded-xl shadow-md overflow-hidden
           ${isDark ? "bg-slate-900" : "bg-white"}
         `}
       >
 
         <table className="w-full text-sm">
 
-          <thead className={`
-            ${isDark ? "bg-slate-800" : "bg-gray-200"}
-          `}>
+          <thead className={isDark ? "bg-slate-800" : "bg-gray-200"}>
             <tr>
               <th className="px-4 py-3 text-left">ID CAMP</th>
               <th className="px-4 py-3 text-left">CAMPAÑA</th>
-             {/* <th className="px-4 py-3 text-left">MÓDULO</th> */}
-              <th className="px-4 py-3 text-center">ACTIVO</th>
+              <th className="px-4 py-3 text-center">MONITOR</th>
+              <th className="px-4 py-3 text-center">BUSQUEDA</th>
+              <th className="px-4 py-3 text-center">BASES</th>
             </tr>
           </thead>
 
           <tbody>
 
-            <AnimatePresence>
+            {!loading && groupedData.map((item) => (
 
-              {!loading && filteredData.map((item) => (
+              <tr
+                key={item.id_camp}
+                className={`border-t ${
+                  isDark ? "border-slate-700" : "border-slate-200"
+                }`}
+              >
+                <td className="px-4 py-3">{item.id_camp}</td>
+                <td className="px-4 py-3">{item.nombre}</td>
 
-                <motion.tr
-                  key={`${item.id_camp}-${item.id_modulo}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={`
-                    border-t
-                    ${isDark ? "border-slate-700" : "border-slate-200"}
-                  `}
-                >
+                <td className="px-4 py-3 text-center">
+                  <ToggleSwitch
+                    checked={item.monitor}
+                    onChange={() => handleToggle(item, "monitor")}
+                    isDark={isDark}
+                  />
+                </td>
 
-                  <td className="px-4 py-3">{item.id_camp}</td>
-                  <td className="px-4 py-3">{item.nombre}</td>
-                 {/* <td className="px-4 py-3">
-                    {item.id_modulo === 1 ? "MONITOR" : "BUSQUEDA"}
-                  </td> */}
+                <td className="px-4 py-3 text-center">
+                  <ToggleSwitch
+                    checked={item.busqueda}
+                    onChange={() => handleToggle(item, "busqueda")}
+                    isDark={isDark}
+                  />
+                </td>
 
-                  <td className="px-4 py-3 text-center">
+                <td className="px-4 py-3 text-center">
+                  <ToggleSwitch
+                    checked={item.bases}
+                    onChange={() => handleToggle(item, "bases")}
+                    isDark={isDark}
+                  />
+                </td>
 
-                    {/* TOGGLE */}
-                    <ToggleSwitch
-                      checked={item.modulo_activo}
-                      onChange={() => handleToggle(item)}
-                      isDark={isDark}
-                    />
+              </tr>
 
-                  </td>
-
-                </motion.tr>
-
-              ))}
-
-            </AnimatePresence>
+            ))}
 
           </tbody>
 
         </table>
 
-        {!loading && filteredData.length === 0 && (
+        {!loading && groupedData.length === 0 && (
           <div className="p-6 text-center opacity-60">
             Sin datos
           </div>
@@ -215,33 +213,6 @@ await axios.put(
       </motion.div>
 
     </div>
-  )
-}
-
-
-// =========================
-// TAB BUTTON
-// =========================
-function TabButton({ active, onClick, icon, label, isDark }) {
-  return (
-    <motion.button
-      onClick={onClick}
-      whileTap={{ scale: 0.95 }}
-      whileHover={{ scale: 1.05 }}
-      className={`
-        flex items-center gap-2 px-4 py-2 rounded-xl border transition
-        ${
-          active
-            ? "bg-red-800 text-white border-red-600"
-            : isDark
-              ? "border-slate-700 hover:bg-slate-800"
-              : "border-slate-300 hover:bg-slate-200"
-        }
-      `}
-    >
-      {icon}
-      {label}
-    </motion.button>
   )
 }
 

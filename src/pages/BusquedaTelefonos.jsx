@@ -13,6 +13,8 @@ import {
 import { INDICE_CAMPS } from "../context/indiceCamps";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdOutlineCheckCircle, MdPending } from "react-icons/md";
+import * as htmlToImage from "html-to-image";
+import { useRef } from "react";
 
 const SEARCH_OPTIONS = [
   { value: "telefono", label: "Teléfono", icon: Phone },
@@ -39,6 +41,7 @@ function StatusIcon({ value }) {
   return <MdPending className="text-yellow-500" size={18} />;
 }
 
+
 export default function BusquedaTelefonos() {
   const [searchParams] = useSearchParams();
   const camp = searchParams.get("camp");
@@ -62,7 +65,7 @@ export default function BusquedaTelefonos() {
   const [loading, setLoading] = useState(false);
   const [resultados, setResultados] = useState([]);
   const [hasSearched, setHasSearched] = useState(false); // ✅ clave
-
+const exportRef = useRef(null);
   const bgMain = isDark ? "bg-[#1F2029] text-slate-200" : "bg-gray-100 text-gray-800";
   const cardBg = isDark ? "bg-[#262730]" : "bg-white";
   const border = isDark ? "border-zinc-700" : "border-zinc-200";
@@ -103,6 +106,36 @@ export default function BusquedaTelefonos() {
     if (tipo === "dni") return "DNI";
     return "IdKey";
   };
+const handleExportImage = async () => {
+  if (!exportRef.current) return;
+
+  try {
+    const dataUrl = await htmlToImage.toPng(exportRef.current, {
+      cacheBust: true,
+      backgroundColor: isDark ? "#1F2029" : "#ffffff"
+    });
+
+    /* ================= DESCARGAR ================= */
+    const link = document.createElement("a");
+    link.download = `busqueda_${tipo}_${query}.png`;
+    link.href = dataUrl;
+    link.click();
+
+    /* ================= COPIAR AL PORTAPAPELES ================= */
+    const blob = await (await fetch(dataUrl)).blob();
+
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        [blob.type]: blob
+      })
+    ]);
+alert("Imagen descargada y copiada al portapapeles");
+    console.log("Imagen copiada al portapapeles");
+
+  } catch (err) {
+    console.error("Error exportando/copiendo:", err);
+  }
+};
 
   return (
     <div className={`min-h-screen p-6 transition-colors duration-300 ${bgMain}`}>
@@ -191,42 +224,69 @@ export default function BusquedaTelefonos() {
         )}
 
         {/* RESULTADOS */}
-        {!loading && resultados.length > 0 && (
-          <div className="grid gap-5">
-            {resultados.map((item, i) => {
-              const idkey = item.idkey || item.IdKey;
+       {!loading && resultados.length > 0 && (
+  <div className="space-y-4">
 
-              return (
-                <div key={i} className={`${cardBg} ${border} border rounded-2xl p-5`}>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+    {/* BOTÓN */}
+    <button
+      onClick={handleExportImage}
+      className="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+    >
+      COPIAR Y GUARDAR
+    </button>
 
-                    <Field label="Segmento" value={item.segmento} />
-                    <Field label="Medio" value={item.medio} />
-                    <Field label="Página" value={item.pag} />
-                    <Field label="Formato" value={item.formato} />
+    {/* CONTENIDO EXPORTABLE */}
+    <div
+      ref={exportRef}
+      className={`p-6 rounded-2xl ${cardBg} ${border} border space-y-4`}
+    >
+      {/* CABECERA */}
+      <div className="text-sm space-y-1">
+        <p className="font-semibold text-red-500">
+          Resultado de la busqueda:
+        </p>
+        <p>
+          {tipo.toUpperCase()} :{" "}
+          <span className="font-bold">{query}</span>
+        </p>
+      </div>
 
-                    <Field label="IdKey" value={idkey} />
-                    <Field label="Anuncio ID" value={item.id_anuncio} />
-                    <Field label="Teléfono" value={item.numero_telefono} />
-                    <Field label="Usuario" value={item.idusuario} />
+      {/* RESULTADOS */}
+      {resultados.map((item, i) => {
+        const idkey = item.idkey || item.IdKey;
 
-                    <Field label="Fecha Creación" value={item.fecha_creacion} />
-                    <Field label="Fecha Plataforma" value={item.fcreacion_plataforma} />
-                    <Field label="Form ID" value={item.formid} />
-                    <Field label="Anuncio" value={item.pautanameanuncio} />
+        return (
+          <div key={i} className={`${cardBg} rounded-xl p-4`}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 
-                    <Field label="Campaña" value={item.campania} />
-                    <Field label="IP" value={item.remote_ip} />
+              <Field label="Segmento" value={item.segmento} />
+              <Field label="Medio" value={item.medio} />
+              <Field label="Página" value={item.pag} />
+              <Field label="Formato" value={item.formato} />
 
-                    <IconField label="Políticas" value={item.politica} />
-                    <IconField label="Fines Adicionales" value={item.finesadicionales} />
+              <Field label="IdKey" value={idkey} />
+              <Field label="Anuncio ID" value={item.id_anuncio} />
+              <Field label="Teléfono" value={item.numero_telefono} />
+              <Field label="Usuario" value={item.idusuario} />
 
-                  </div>
-                </div>
-              );
-            })}
+              <Field label="Fecha Creación" value={item.fecha_creacion} />
+              <Field label="Fecha Plataforma" value={item.fcreacion_plataforma} />
+              <Field label="Form ID" value={item.formid} />
+              <Field label="Anuncio" value={item.pautanameanuncio} />
+
+              <Field label="Campaña" value={item.campania} />
+              <Field label="IP" value={item.remote_ip} />
+
+              <IconField label="Políticas" value={item.politica} />
+              <IconField label="Fines Adicionales" value={item.finesadicionales} />
+
+            </div>
           </div>
-        )}
+        );
+      })}
+    </div>
+  </div>
+)}
 
       </div>
     </div>

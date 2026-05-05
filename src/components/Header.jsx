@@ -308,8 +308,12 @@ return (
             >
               <Home size={18} />
               {sidebarOpen && <span>Inicio</span>} 
-            </button><ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
-  {/* Solo mostramos el título de sección si el sidebar está abierto */}
+
+          
+             </button>
+             
+   {/*
+ <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
 <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
   {sidebarOpen ? (
     "Reportes Clientes"
@@ -318,7 +322,7 @@ return (
   )}
 </p>
 
-  {/* Campañas Clientes inicio */}
+  
   <button
     onClick={() => {
       // Si el sidebar está cerrado, quizás quieras abrirlo al hacer clic o 
@@ -333,11 +337,11 @@ return (
   >
     <div className="flex items-center gap-3">
       <Grid size={18} />
-      {/* Ocultamos el texto si sidebarOpen es false */}
+   
       {sidebarOpen && <span>Campañas</span>}
     </div>
 
-    {/* Ocultamos la flecha si sidebarOpen es false */}
+  
     {sidebarOpen && (
       <ChevronRight
         size={16}
@@ -345,8 +349,6 @@ return (
       />
     )}
   </button>
-
-  {/* El submenú solo debería ser visible si el sidebar está abierto */}
   {sidebarOpen && openCampanasClientes && (
     <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
       {campanas.length > 0 ? (
@@ -370,9 +372,10 @@ return (
       )}
     </div>
   )}
-  {/* Campañas Clientes fin */}
   
 </ProtectedFiles>
+*/}
+
                         {/* Solo mostramos el título "Dashboard" si el sidebar está abierto */}
            <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
   {sidebarOpen ? (
@@ -707,7 +710,7 @@ return (
   >
     <div className="flex items-center gap-3">
       <Settings size={18} />
-      {sidebarOpen && <span className="flex-1 text-left">Control de módulos</span>}
+      {sidebarOpen && <span className="flex-1 text-left">Módulos</span>}
     </div>
 
     {sidebarOpen && (
@@ -734,7 +737,7 @@ return (
         className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
       >
         <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
-        Monitor de Leads
+        Control de Modulos
       </button>
     </div>
   )}
@@ -833,7 +836,7 @@ return (
         className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
       >
         <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
-        Crear Vista
+        Control de Vistas
       </button>
     </div>
   )}

@@ -103,7 +103,7 @@ export default function Login() {
               className="flex items-center gap-2"
             >
               <LightbulbOff size={18}/>
-              Dark
+              
             </motion.div>
 
           ) : (
@@ -117,7 +117,7 @@ export default function Login() {
               className="flex items-center gap-2"
             >
               <Lightbulb size={18}/>
-              Light
+             
             </motion.div>
 
           )}
