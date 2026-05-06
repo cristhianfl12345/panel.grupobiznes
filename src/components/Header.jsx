@@ -228,6 +228,9 @@ const limpiarNombreVista = (nombre) => {
 
   fetchModulos();
 }, []);
+//CONTROL SUPERVISOR
+const [openControlSupervisor, setOpenControlSupervisor] = useState(false);
+
 //CONTADOR DE LAS NOTIFICACIONES ADMIN
  const [count, setCount] = useState(0);
 
@@ -376,8 +379,8 @@ return (
 </ProtectedFiles>
 */}
 
-                        {/* Solo mostramos el título "Dashboard" si el sidebar está abierto */}
-           <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+      {/* Título */}
+<p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
   {sidebarOpen ? (
     "Dashboard"
   ) : (
@@ -385,22 +388,54 @@ return (
   )}
 </p>
 
-            <button 
-              title={!sidebarOpen ? "Control Supervisor" : ""}
-              className={`
-                flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition
-                ${sidebarOpen ? "justify-between" : "justify-center"}
-              `}
-            >
-              <div className="flex items-center gap-3">
-                <BarChart3 size={18} />
-                {/* El texto desaparece cuando sidebarOpen es false */}
-                {sidebarOpen && <span>Control Supervisor</span>}
-              </div>
+{/* Botón principal */}
+<button
+  onClick={() => {
+    if (sidebarOpen) setOpenControlSupervisor(!openControlSupervisor);
+  }}
+  title={!sidebarOpen ? "Control Supervisor" : ""}
+  className={`
+    flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition
+    ${sidebarOpen ? "justify-between" : "justify-center"}
+  `}
+>
+  <div className="flex items-center gap-3">
+    <BarChart3 size={18} />
+    {sidebarOpen && <span>Control Supervisor</span>}
+  </div>
 
-              {/* La flecha desaparece cuando sidebarOpen es false */}
-              {sidebarOpen && <ChevronRight size={16} />}
-            </button>
+  {sidebarOpen && (
+    <ChevronRight
+      size={16}
+      className={`transition-transform ${openControlSupervisor ? "rotate-90" : ""}`}
+    />
+  )}
+</button>
+
+{/* Submenú campañas */}
+{sidebarOpen && openControlSupervisor && (
+  <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
+    {campanas.length > 0 ? (
+      campanas.map((c) => (
+        <button
+          key={c.IdCamp}
+          onClick={() => {
+            navigate(`/control-supervisor?camp=${c.IdCamp}`);
+            window.location.reload();
+          }}
+          className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
+        >
+          <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
+          {c.Campana}
+        </button>
+      ))
+    ) : (
+      <p className="text-sm text-muted-foreground">
+        No hay campañas disponibles
+      </p>
+    )}
+  </div>
+)}
 
          {/* KPI */}
 <p className="font-bold text-xs uppercase opacity-70 mt-4 mb-2 px-3">

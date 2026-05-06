@@ -8,7 +8,8 @@ import {
   Phone,
   CreditCard,
   KeyRound,
-  Loader2
+  Loader2,
+  ClipboardCopy
 } from "lucide-react";
 import { INDICE_CAMPS } from "../context/indiceCamps";
 import { RxCrossCircled } from "react-icons/rx";
@@ -154,44 +155,58 @@ alert("Imagen descargada y copiada al portapapeles");
           </motion.div>
         )}
 
-        {/* BUSCADOR */}
-        <motion.div className={`${cardBg} ${border} border rounded-2xl shadow-xl p-5 space-y-5`}>
-          <div className="flex gap-2">
-            {SEARCH_OPTIONS.map((opt) => {
-              const Icon = opt.icon;
-              return (
-                <button
-                  key={opt.value}
-                  onClick={() => setTipo(opt.value)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm ${
-                    tipo === opt.value ? "bg-red-800 text-white" : "text-zinc-400"
-                  }`}
-                >
-                  <Icon size={16} />
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
+{/* BUSCADOR */}
+<motion.div className={`${cardBg} ${border} border rounded-2xl shadow-xl p-5 space-y-5`}>
+  
+  {/* Contenedor superior: Pestañas a la izquierda, Botón a la derecha */}
+  <div className="flex justify-between items-start">
+    <div className="flex gap-2">
+      {SEARCH_OPTIONS.map((opt) => {
+        const Icon = opt.icon;
+        return (
+          <button
+            key={opt.value}
+            onClick={() => setTipo(opt.value)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
+              tipo === opt.value ? "bg-red-800 text-white" : "text-zinc-400 hover:bg-zinc-100/10"
+            }`}
+          >
+            <Icon size={16} />
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
 
-          <div className="flex gap-3">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`Buscar por ${getTipoTexto()}`}
-              className="flex-1 px-4 py-3 rounded-xl border outline-none bg-transparent"
-            />
+    {/* BOTÓN MOVIDO A LA DERECHA */}
+    <button
+  onClick={handleExportImage}
+  className="bg-red-800 hover:bg-red-700 text-white p-1.5 rounded-md transition-colors shadow-sm active:scale-95"
+  title="Copiar y Guardar"
+> 
+  <ClipboardCopy size={20} />
+</button>
+  </div>
 
-            <button
-              onClick={handleBuscar}
-              className="bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-xl flex items-center gap-2"
-            >
-              <Search size={16} />
-              Buscar
-            </button>
-          </div>
-        </motion.div>
+  {/* Barra de Input y Botón Buscar */}
+  <div className="flex gap-3">
+    <input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      onKeyDown={handleKeyDown}
+      placeholder={`Buscar por ${getTipoTexto()}`}
+      className="flex-1 px-4 py-3 rounded-xl border outline-none bg-transparent focus:ring-2 focus:ring-red-800/50 transition-all"
+    />
+
+    <button
+      onClick={handleBuscar}
+      className="bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-transform active:scale-95"
+    >
+      <Search size={16} />
+      Buscar
+    </button>
+  </div>
+</motion.div>
 
         {/* LOADING */}
         {loading && (
@@ -228,12 +243,12 @@ alert("Imagen descargada y copiada al portapapeles");
   <div className="space-y-4">
 
     {/* BOTÓN */}
-    <button
+  {/*  <button
       onClick={handleExportImage}
       className="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
     >
       COPIAR Y GUARDAR
-    </button>
+    </button> */}
 
     {/* CONTENIDO EXPORTABLE */}
     <div

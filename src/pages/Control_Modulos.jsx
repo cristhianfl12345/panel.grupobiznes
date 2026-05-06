@@ -153,9 +153,9 @@ export default function Control_Modulos() {
             <tr>
               <th className="px-4 py-3 text-left">ID CAMP</th>
               <th className="px-4 py-3 text-left">CAMPAÑA</th>
-              <th className="px-4 py-3 text-center">MONITOR</th>
-              <th className="px-4 py-3 text-center">BUSQUEDA</th>
-              <th className="px-4 py-3 text-center">BASES</th>
+              <th className="px-1 py-3 text-center">MONITOR</th>
+              <th className="px-1 py-3 text-center">BUSQUEDA</th>
+              <th className="px-1 py-3 text-center">BASES</th>
             </tr>
           </thead>
 
