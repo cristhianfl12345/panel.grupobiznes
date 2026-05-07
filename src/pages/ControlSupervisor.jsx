@@ -1126,8 +1126,29 @@ function AsesorRow({
         </TD>
 
         <TD isDark={isDark}>
-          {productividad.toFixed(2)}%
-        </TD>
+
+  <div className="
+    flex items-center justify-center
+    gap-2 whitespace-nowrap
+  ">
+
+    <span
+      className="w-2.5 h-2.5 rounded-full shrink-0"
+      style={{
+        backgroundColor:
+          getSemaforoColor(
+            a.SemaforoProductividad
+          )
+      }}
+    />
+
+    <span className="font-semibold">
+      {productividad.toFixed(2)}%
+    </span>
+
+  </div>
+
+</TD>
 
         <TD isDark={isDark}>
           {a.SPH || "0.00"}
