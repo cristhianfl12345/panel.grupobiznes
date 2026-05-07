@@ -18,6 +18,7 @@ import Loader from './pages/Loader'
 import Monitor from './routes/Monitor'
 import ModuloBases from "./pages/Modulo_bases"
 import BusquedaTelefonos from "./pages/BusquedaTelefonos";
+import ControlSupervisor from "./pages/ControlSupervisor"
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -196,6 +197,17 @@ function AppRoutes() {
                     <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
                       <Control_Modulos />
                     </ProtectedFiles>
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+            />
+            {/* CONTROL SUPERVISOR */}
+            <Route
+              path="/control-supervisor"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                      <ControlSupervisor />
                   </HeaderLayout>
                 </ProtectedRoute>
               }
