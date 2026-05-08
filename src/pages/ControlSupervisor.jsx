@@ -548,8 +548,16 @@ function CardSupervisor({
 
               {
                 isFemale
-                  ? <SlUserFemale />
-                  : <CiUser />
+                  ? <img
+            src="/female-icon2.png"
+            alt="dashboard"
+            className="w-[420px]"
+          />
+                  : <img
+            src="/male-icon.svg"
+            alt="dashboard"
+            className="w-[420px]"
+          />
               }
 
             </div>
@@ -1249,11 +1257,34 @@ function AsesorRow({
                     isDark={isDark}
                   />
 
-                  <Detalle
-                    label="Productividad"
-                    value={`${productividad.toFixed(2)} %`}
-                    isDark={isDark}
-                  />
+                 <Detalle
+  label="Productividad"
+  isDark={isDark}
+  value={
+
+    <div className="
+      flex items-center justify-center
+      gap-2 whitespace-nowrap
+    ">
+
+      <span
+        className="w-2.5 h-2.5 rounded-full shrink-0"
+        style={{
+          backgroundColor:
+            getSemaforoColor(
+              a.SemaforoProductividad
+            )
+        }}
+      />
+
+      <span>
+        {productividad.toFixed(2)} %
+      </span>
+
+    </div>
+
+  }
+/>
 
                 </div>
 
