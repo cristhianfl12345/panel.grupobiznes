@@ -205,6 +205,8 @@ const limpiarNombreVista = (nombre) => {
                 ? "BUSQUEDA"
                 : m.id_modulo === 3
                 ? "MONITOR DE BASES"
+                : m.id_modulo === 4
+                ?"LANDING"
                 : "MODULO",
             ruta:
               m.id_modulo === 1
@@ -213,6 +215,8 @@ const limpiarNombreVista = (nombre) => {
                 ? "busqueda"
                 : m.id_modulo === 3
                 ? "monitor-bases"
+                : m.id_modulo === 4
+                ? "landing-interno"
                 : "modulo"
 
           });

@@ -17,8 +17,10 @@ import ProtectedFiles, { ROLES } from "./routes/ProtectedFiles"
 import Loader from './pages/Loader'
 import Monitor from './routes/Monitor'
 import ModuloBases from "./pages/Modulo_bases"
-import BusquedaTelefonos from "./pages/BusquedaTelefonos";
+import BusquedaTelefonos from "./pages/BusquedaTelefonos"
 import ControlSupervisor from "./pages/ControlSupervisor"
+import LandingInterno from "./pages/LandingInterno"
+
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -211,6 +213,20 @@ function AppRoutes() {
                   </HeaderLayout>
                 </ProtectedRoute>
               }
+              
+            />
+             
+            {/* LANDING INTERNO */}
+            <Route
+              path="/landing-interno"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                      <LandingInterno />
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+              
             />
 
             {/* REDIRECCIÓN GLOBAL */}
