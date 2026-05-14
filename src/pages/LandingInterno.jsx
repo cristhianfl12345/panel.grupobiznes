@@ -534,292 +534,324 @@ const handleSubmit = async (e) => {
     </AnimatePresence>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-{/* USER CARD */}
+{/* USER */}
 
-<motion.div
-  whileHover={{ y: -3 }}
-  className={`
-    rounded-2xl p-5 border
-    flex items-center gap-4
-    shadow-sm
-    ${isDark
-      ? "bg-[#1F2029] border-[#3A3B47]"
-      : "bg-white border-gray-200"}
-  `}
+<InputField
+  icon={User2}
+  label="Usuario"
 >
 
-  <div
-    className="
-      w-14 h-14 rounded-2xl
-      bg-gradient-to-br from-red-500 to-red-700
-      flex items-center justify-center
-      shadow-md shrink-0
-    "
-  >
-    <User2 className="w-6 h-6 text-white" />
-  </div>
-
-  <div className="flex flex-col justify-center min-w-0 w-full">
-
-    <div
-      className={`
-        text-sm font-semibold mb-1
-        ${isDark
-          ? "text-gray-400"
-          : "text-gray-500"}
-      `}
-    >
-      Usuario
-    </div>
-
-    <div
-      className={`
-        font-bold text-lg truncate
-        ${isDark
-          ? "text-white"
-          : "text-gray-900"}
-      `}
-    >
-      {fullname || "-"} - {nroDoc || "-"}
-    </div>
-
-  </div>
-
-</motion.div>
-
-  {/* FECHA */}
-
-  <div
+  <input
+    type="text"
+    value={`${fullname || "-"} - ${nroDoc || "-"}`}
+    disabled
     className={`
-      rounded-2xl p-5 border
-      flex items-center gap-4
-      shadow-sm
+      ${inputClass(isDark)}
+      opacity-70 cursor-not-allowed
+      font-bold
       ${isDark
-        ? "bg-[#1F2029] border-[#3A3B47]"
-        : "bg-white border-gray-200"}
+        ? "bg-[#252632]"
+        : "bg-gray-300"}
     `}
-  >
+  />
 
-    <div
-      className="
-        w-14 h-14 rounded-2xl
-        bg-gradient-to-br from-red-600 to-red-900
-        flex items-center justify-center
-        shadow-md
-      "
-    >
-      <CalendarDays className="w-6 h-6 text-white" />
-    </div>
+</InputField>
 
-    <div className="w-full">
+{/* FECHA */}
 
-      <div className="text-sm opacity-70 mb-1">
-        Fecha ingreso
+<InputField
+  icon={CalendarDays}
+  label="Fecha ingreso"
+>
+
+  <input
+    type="date"
+    name="fecha_ingreso"
+    value={form.fecha_ingreso}
+    onChange={handleChange}
+    className={inputClass(isDark)}
+  />
+
+</InputField>
+
+         {/* FORM */}
+
+
+
+  <InputField
+    icon={Layers3}
+    label={
+      <div className="flex items-center gap-2">
+        <span>Origen</span>
+
+        <span
+          className={`
+            text-[11px] font-medium
+            ${isDark
+              ? "text-red-400"
+              : "text-red-500"}
+          `}
+        >
+          (obligatorio)
+        </span>
       </div>
+    }
+  >
+    <select
+      name="id_tipobase"
+      value={form.id_tipobase}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    >
 
-      <input
-        type="date"
-        name="fecha_ingreso"
-        value={form.fecha_ingreso}
-        onChange={handleChange}
-        className={inputClass(isDark)}
-      />
+      <option value="">
+        Seleccione origen
+      </option>
 
-    </div>
+      {tiposBase.map((item) => (
 
-  </div>
+        <option
+          key={item.id_tipobase}
+          value={item.id_tipobase}
+        >
+          {item.id_tipobase} - {item.medio} - {item.segmento}
+        </option>
+
+      ))}
+
+    </select>
+  </InputField>
+
+  <InputField
+    icon={Briefcase}
+    label={
+      <div className="flex items-center gap-2">
+        <span>IniCampania</span>
+
+        <span
+          className={`
+            text-[11px] font-medium
+            ${isDark
+              ? "text-red-400"
+              : "text-red-500"}
+          `}
+        >
+          (obligatorio)
+        </span>
+      </div>
+    }
+  >
+    <select
+      name="campania"
+      value={form.campania}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    >
+
+      <option value="">
+        Seleccione campaña
+      </option>
+
+      {campanias.map((item, index) => (
+
+        <option
+          key={index}
+          value={item}
+        >
+          {item}
+        </option>
+
+      ))}
+
+    </select>
+  </InputField>
+
+  <InputField
+    icon={Boxes}
+    label={
+      <div className="flex items-center gap-2">
+        <span>Producto</span>
+
+        <span
+          className={`
+            text-[11px] font-medium
+            ${isDark
+              ? "text-red-400"
+              : "text-red-500"}
+          `}
+        >
+          (obligatorio)
+        </span>
+      </div>
+    }
+  >
+    <select
+      name="producto"
+      value={form.producto}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    >
+
+      <option value="">
+        Seleccione producto
+      </option>
+
+      {productos.map((item, index) => (
+
+        <option
+          key={index}
+          value={item}
+        >
+          {item}
+        </option>
+
+      ))}
+
+    </select>
+  </InputField>
+
+  <InputField
+    icon={User2}
+    label={
+      <div className="flex items-center gap-2">
+        <span>Nombres</span>
+
+        <span
+          className={`
+            text-[11px] font-medium
+            ${isDark
+              ? "text-red-400"
+              : "text-red-500"}
+          `}
+        >
+          (obligatorio)
+        </span>
+      </div>
+    }
+  >
+    <input
+      type="text"
+      name="nombres"
+      value={form.nombres}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
+
+  <InputField
+    icon={User2}
+    label="Apellidos"
+  >
+    <input
+      type="text"
+      name="apellidos"
+      value={form.apellidos}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
+
+  <InputField
+    icon={BadgeCheck}
+    label={
+      <div className="flex items-center gap-2">
+        <span>DNI</span>
+
+        <span
+          className={`
+            text-[11px] font-medium
+            ${isDark
+              ? "text-red-400"
+              : "text-red-500"}
+          `}
+        >
+          (obligatorio)
+        </span>
+      </div>
+    }
+  >
+    <input
+      type="text"
+      name="dni"
+      value={form.dni}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
+
+  <InputField
+    icon={Phone}
+    label={
+      <div className="flex items-center gap-2">
+        <span>Teléfono</span>
+
+        <span
+          className={`
+            text-[11px] font-medium
+            ${isDark
+              ? "text-red-400"
+              : "text-red-500"}
+          `}
+        >
+          (obligatorio)
+        </span>
+      </div>
+    }
+  >
+    <input
+      type="text"
+      name="telefono"
+      value={form.telefono}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
+
+  <InputField
+    icon={Mail}
+    label="Email"
+  >
+    <input
+      type="email"
+      name="email"
+      value={form.email}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
+
+  <InputField
+    icon={MapPin}
+    label="Provincia"
+  >
+    <input
+      type="text"
+      name="provincia"
+      value={form.provincia}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
+{/* OBSERVACIONES */}
+
+
+  <InputField
+    icon={FileText}
+    label="Observaciones"
+  >
+    <input
+      type="text"
+      name="comentario"
+      value={form.comentario}
+      onChange={handleChange}
+      className={inputClass(isDark)}
+    />
+  </InputField>
 
 </div>
 
-            {/* FORM */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-              <InputField
-                icon={Layers3}
-                label="Origen"
-              >
-                <select
-                  name="id_tipobase"
-                  value={form.id_tipobase}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                >
-
-                  <option value="">
-                    Seleccione origen
-                  </option>
-
-                  {tiposBase.map((item) => (
-
-                    <option
-                      key={item.id_tipobase}
-                      value={item.id_tipobase}
-                    >
-                      {item.id_tipobase} - {item.medio} - {item.segmento}
-                    </option>
-
-                  ))}
-
-                </select>
-              </InputField>
-
-              <InputField
-                icon={Briefcase}
-                label="IniCampania"
-              >
-                <select
-                  name="campania"
-                  value={form.campania}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                >
-
-                  <option value="">
-                    Seleccione campaña
-                  </option>
-
-                  {campanias.map((item, index) => (
-
-                    <option
-                      key={index}
-                      value={item}
-                    >
-                      {item}
-                    </option>
-
-                  ))}
-
-                </select>
-              </InputField>
-
-              <InputField
-                icon={Boxes}
-                label="Producto"
-              >
-                <select
-                  name="producto"
-                  value={form.producto}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                >
-
-                  <option value="">
-                    Seleccione producto
-                  </option>
-
-                  {productos.map((item, index) => (
-
-                    <option
-                      key={index}
-                      value={item}
-                    >
-                      {item}
-                    </option>
-
-                  ))}
-
-                </select>
-              </InputField>
-
-              <InputField
-                icon={User2}
-                label="Nombres"
-              >
-                <input
-                  type="text"
-                  name="nombres"
-                  value={form.nombres}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                />
-              </InputField>
-
-              <InputField
-                icon={User2}
-                label="Apellidos"
-              >
-                <input
-                  type="text"
-                  name="apellidos"
-                  value={form.apellidos}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                />
-              </InputField>
-
-              <InputField
-                icon={BadgeCheck}
-                label="DNI"
-              >
-                <input
-                  type="text"
-                  name="dni"
-                  value={form.dni}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                />
-              </InputField>
-
-              <InputField
-                icon={Phone}
-                label="Teléfono"
-              >
-                <input
-                  type="text"
-                  name="telefono"
-                  value={form.telefono}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                />
-              </InputField>
-
-              <InputField
-                icon={Mail}
-                label="Email"
-              >
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                />
-              </InputField>
-
-              <InputField
-                icon={MapPin}
-                label="Provincia"
-              >
-                <input
-                  type="text"
-                  name="provincia"
-                  value={form.provincia}
-                  onChange={handleChange}
-                  className={inputClass(isDark)}
-                />
-              </InputField>
-
-            </div>
-
-            {/* OBSERVACIONES */}
-
-            <div className="mt-5">
-
-              <InputField
-                icon={FileText}
-                label="Observaciones"
-              >
-                <textarea
-                  rows={1}
-                  name="comentario"
-                  value={form.comentario}
-                  onChange={handleChange}
-                  className={`${inputClass(isDark)} resize-none`}
-                />
-              </InputField>
-
-            </div>
 {/* ID ORIGEN */}
 
 {Number(form.id_tipobase) === 37 && (
@@ -832,7 +864,7 @@ const handleSubmit = async (e) => {
 
     <InputField
       icon={Search}
-      label="Id origen"
+      label="ID ORIGEN"
     >
 
       <div className="flex gap-3">
@@ -913,7 +945,96 @@ const handleSubmit = async (e) => {
 
 )}
         
+{/* ID ORIGEN */}
 
+{Number(form.id_tipobase) === 34 && (
+
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="mt-6"
+  >
+
+    <InputField
+      icon={Search}
+      label="ID_ANUNCIO"
+    >
+
+      <div className="flex gap-3">
+
+        <input
+          type="text"
+          value={idOrigen}
+          onChange={(e) =>
+            setIdOrigen(e.target.value)
+          }
+          placeholder="Ingrese idkey"
+          className={inputClass(isDark)}
+        />
+
+        <button
+          type="button"
+          onClick={buscarTelefono}
+          disabled={loadingTelefono}
+          className="
+            px-5 rounded-2xl
+            bg-red-600 hover:bg-red-700
+            text-white font-semibold
+            flex items-center gap-2
+          "
+        >
+
+          {loadingTelefono ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Search className="w-4 h-4" />
+          )}
+
+          Buscar
+
+        </button>
+
+      </div>
+
+    </InputField>
+
+    {/* RESULTADO */}
+
+    {busquedaRealizada && !loadingTelefono && (
+
+  telefonoOrigen ? (
+
+        <div
+          className={`
+            mt-3 rounded-2xl border px-4 py-3
+            text-sm font-semibold
+            ${isDark
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+              : "bg-emerald-50 border-emerald-200 text-emerald-700"}
+          `}
+        >
+          Número encontrado: {telefonoOrigen}
+        </div>
+
+      ) : (
+
+        <div
+          className={`
+            mt-3 rounded-2xl border px-4 py-3
+            text-sm font-semibold
+            ${isDark
+              ? "bg-red-500/10 border-red-500/30 text-red-400"
+              : "bg-red-50 border-red-200 text-red-700"}
+          `}
+        >
+          No se encontraron resultados
+        </div>
+
+      )
+
+    )}
+
+  </motion.div> )}
             
 
             {/* CHECKBOX */}
