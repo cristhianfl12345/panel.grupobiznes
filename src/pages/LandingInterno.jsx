@@ -389,7 +389,7 @@ const handleSubmit = async (e) => {
 
     <div
       className={`
-        min-h-screen p-6 transition-colors duration-500
+        min-h-screen p-1 transition-colors duration-500
         ${isDark ? "bg-[#1F2029] text-white" : "bg-gray-100 text-black"}
       `}
     >
@@ -403,7 +403,7 @@ const handleSubmit = async (e) => {
 
         {/* BREADCRUMB */}
 
-        <div className="mb-6">
+        <div className="mb-2">
 
           <span
             className={`
@@ -453,7 +453,7 @@ const handleSubmit = async (e) => {
 
   <div
     className={`
-      px-8 py-5 border-b
+      px-8 py-2 border-b
       flex items-center justify-between
       ${isDark
         ? "border-[#3A3B47] bg-[#1F2029]"
@@ -468,7 +468,7 @@ const handleSubmit = async (e) => {
       <CgInsertAfterO className="w-7 h-7 text-red-500" />
 
       <h2 className="text-2xl font-bold">
-        Insertar Lead
+        Insertar Leads
       </h2>
 
     </div>
@@ -486,7 +486,7 @@ const handleSubmit = async (e) => {
       onClick={() => setOpenInfo(true)}
       className="
         w-11 h-11 rounded-2xl
-        bg-gradient-to-br from-red-600 to-red-900
+        bg-gradient-to-br from-yellow-500 to-yellow-600
         text-white shadow-lg
         flex items-center justify-center
       "
@@ -533,7 +533,7 @@ const handleSubmit = async (e) => {
 
     </AnimatePresence>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
 {/* USER */}
 
 <InputField
@@ -581,7 +581,7 @@ const handleSubmit = async (e) => {
   <InputField
     icon={Layers3}
     label={
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span>Origen</span>
 
         <span
@@ -625,7 +625,7 @@ const handleSubmit = async (e) => {
   <InputField
     icon={Briefcase}
     label={
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span>IniCampania</span>
 
         <span
@@ -669,7 +669,7 @@ const handleSubmit = async (e) => {
   <InputField
     icon={Boxes}
     label={
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span>Producto</span>
 
         <span
@@ -713,7 +713,7 @@ const handleSubmit = async (e) => {
   <InputField
     icon={User2}
     label={
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span>Nombres</span>
 
         <span
@@ -754,7 +754,7 @@ const handleSubmit = async (e) => {
   <InputField
     icon={BadgeCheck}
     label={
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span>DNI</span>
 
         <span
@@ -782,7 +782,7 @@ const handleSubmit = async (e) => {
   <InputField
     icon={Phone}
     label={
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <span>Teléfono</span>
 
         <span
