@@ -273,18 +273,11 @@ setTelefonoOrigen(telefono)
 
 setForm(prev => ({
   ...prev,
-  telefono,
+  
   id_anuncio: idkey
 }))
       setBusquedaRealizada(true)
 
-      if (telefono) {
-
-        setForm(prev => ({
-          ...prev,
-          telefono
-        }))
-      }
 
     } catch (error) {
 
