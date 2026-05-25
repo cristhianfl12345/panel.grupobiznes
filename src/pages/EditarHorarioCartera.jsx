@@ -586,70 +586,104 @@ export default function EditarHorarioCartera({
 
               {/* FOOTER */}
 
-              <div className="mt-7 flex justify-end gap-3">
+<div
+  className={`
+    sticky bottom-0 z-30
+    mt-7
+    flex justify-end gap-3
+    border-t
+    px-6 py-5
+    backdrop-blur-xl
+    ${
+      isDark
+        ? `
+          border-[#343746]
+          bg-[#1B1C24]/95
+        `
+        : `
+          border-slate-200
+          bg-white/95
+        `
+    }
+  `}
+>
 
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={onClose}
-                  className={`
-                    rounded-2xl border px-6 py-3
-                    text-sm font-bold transition-all
-                    shadow-lg
-                    ${isDark
-                      ? `
-                        border-[#343746]
-                        bg-[#232530]
-                        text-slate-300
-                        hover:bg-[#2A2C38]
-                      `
-                      : `
-                        border-slate-200
-                        bg-white
-                        text-slate-700
-                        hover:bg-slate-50
-                      `
-                    }
-                  `}
-                >
-                  Cancelar
-                </motion.button>
+  {/* EFECTO GRADIENT SUPERIOR */}
 
-                <motion.button
-                  whileHover={{
-                    scale: 1.03,
-                    y: -1,
-                  }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={guardar}
-                  disabled={loading}
-                  className="
-                    flex items-center gap-2
-                    rounded-2xl
-                    bg-gradient-to-r
-                    from-blue-600
-                    via-indigo-500
-                    to-cyan-500
-                    px-6 py-3
-                    text-sm font-bold text-white
-                    shadow-2xl shadow-blue-500/30
-                    transition-all
-                    hover:shadow-blue-500/50
-                    disabled:opacity-60
-                  "
-                >
+  <div
+    className="
+      pointer-events-none
+      absolute inset-x-0 top-0 h-px
+      bg-gradient-to-r
+      from-transparent
+      via-blue-500/40
+      to-transparent
+    "
+  />
 
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="h-4 w-4" />
-                  )}
+  <motion.button
+    whileHover={{ scale: 1.03 }}
+    whileTap={{ scale: 0.96 }}
+    onClick={onClose}
+    className={`
+      rounded-2xl border px-6 py-3
+      text-sm font-bold transition-all
+      shadow-lg
+      ${
+        isDark
+          ? `
+            border-[#343746]
+            bg-[#232530]
+            text-slate-300
+            hover:bg-[#2A2C38]
+          `
+          : `
+            border-slate-200
+            bg-white
+            text-slate-700
+            hover:bg-slate-50
+          `
+      }
+    `}
+  >
+    Cancelar
+  </motion.button>
 
-                  Guardar cambios
+  <motion.button
+    whileHover={{
+      scale: 1.03,
+      y: -1,
+    }}
+    whileTap={{ scale: 0.96 }}
+    onClick={guardar}
+    disabled={loading}
+    className="
+      flex items-center gap-2
+      rounded-2xl
+      bg-gradient-to-r
+      from-blue-600
+      via-indigo-500
+      to-cyan-500
+      px-6 py-3
+      text-sm font-bold text-white
+      shadow-2xl shadow-blue-500/30
+      transition-all
+      hover:shadow-blue-500/50
+      disabled:opacity-60
+    "
+  >
 
-                </motion.button>
+    {loading ? (
+      <Loader2 className="h-4 w-4 animate-spin" />
+    ) : (
+      <Save className="h-4 w-4" />
+    )}
 
-              </div>
+    Guardar cambios
+
+  </motion.button>
+
+</div>
 
             </div>
 
