@@ -14,6 +14,7 @@ import {
 import {
   MdPhoneAndroid,
   MdClose,
+  MdAccessTime,
 } from "react-icons/md";
 
 import {
@@ -451,7 +452,7 @@ export default function EditarHorarioCartera({
 
                       {/* TOP */}
 
-                      <div className="relative mb-6 flex items-center gap-4">
+                      <div className="relative mb-5 flex items-center gap-4">
 
                         <div
                           className={`
@@ -495,245 +496,85 @@ export default function EditarHorarioCartera({
 
                       </div>
 
-                      {/* HORARIOS */}
+                      {/* INPUTS */}
 
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
 
-                        {/* LUNES A VIERNES */}
+                        <HourInput
+                          isDark={isDark}
+                          label="Lunes a Viernes"
+                          value={
+                            form[fuente.id]
+                              ?.hora_ini
+                          }
+                          onChange={(value) =>
+                            handleChange(
+                              fuente.id,
+                              "hora_ini",
+                              value
+                            )
+                          }
+                          color={fuente.color}
+                          glow={fuente.glow}
+                          iconText={fuente.iconText}
+                        />
 
-                        <div
-                          className={`
-                            flex flex-wrap items-center gap-2
-                            text-sm font-bold
-                            ${
-                              isDark
-                                ? "text-slate-200"
-                                : "text-slate-700"
-                            }
-                          `}
-                        >
+                        <HourInput
+                          isDark={isDark}
+                          label="Hasta"
+                          value={
+                            form[fuente.id]
+                              ?.hora_fin
+                          }
+                          onChange={(value) =>
+                            handleChange(
+                              fuente.id,
+                              "hora_fin",
+                              value
+                            )
+                          }
+                          color={fuente.color}
+                          glow={fuente.glow}
+                          iconText={fuente.iconText}
+                        />
 
-                          <span>
-                            Lun - Vie desde
-                          </span>
+                        <HourInput
+                          isDark={isDark}
+                          label="Sábados"
+                          value={
+                            form[fuente.id]
+                              ?.hora_ini_s
+                          }
+                          onChange={(value) =>
+                            handleChange(
+                              fuente.id,
+                              "hora_ini_s",
+                              value
+                            )
+                          }
+                          color={fuente.color}
+                          glow={fuente.glow}
+                          iconText={fuente.iconText}
+                        />
 
-                          <input
-                            type="time"
-                            value={
-                              form[fuente.id]
-                                ?.hora_ini || ""
-                            }
-                            onChange={(e) =>
-                              handleChange(
-                                fuente.id,
-                                "hora_ini",
-                                e.target.value
-                              )
-                            }
-                            className={`
-                              h-11 w-[120px]
-                              rounded-2xl border
-                              px-3
-                              text-sm font-bold
-                              outline-none
-                              transition-all
-                              shadow-lg
-                              ${
-                                isDark
-                                  ? `
-                                    border-[#3B3E4E]
-                                    bg-[#2A2C38]
-                                    text-white
-                                    hover:border-blue-500/50
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-500/20
-                                  `
-                                  : `
-                                    border-slate-200
-                                    bg-white
-                                    text-slate-700
-                                    hover:border-slate-300
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-100
-                                  `
-                              }
-                            `}
-                          />
-
-                          <span>
-                            hasta
-                          </span>
-
-                          <input
-                            type="time"
-                            value={
-                              form[fuente.id]
-                                ?.hora_fin || ""
-                            }
-                            onChange={(e) =>
-                              handleChange(
-                                fuente.id,
-                                "hora_fin",
-                                e.target.value
-                              )
-                            }
-                            className={`
-                              h-11 w-[120px]
-                              rounded-2xl border
-                              px-3
-                              text-sm font-bold
-                              outline-none
-                              transition-all
-                              shadow-lg
-                              ${
-                                isDark
-                                  ? `
-                                    border-[#3B3E4E]
-                                    bg-[#2A2C38]
-                                    text-white
-                                    hover:border-blue-500/50
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-500/20
-                                  `
-                                  : `
-                                    border-slate-200
-                                    bg-white
-                                    text-slate-700
-                                    hover:border-slate-300
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-100
-                                  `
-                              }
-                            `}
-                          />
-
-                          <span>
-                            horas
-                          </span>
-
-                        </div>
-
-                        {/* SABADOS */}
-
-                        <div
-                          className={`
-                            flex flex-wrap items-center gap-2
-                            text-sm font-bold
-                            ${
-                              isDark
-                                ? "text-slate-200"
-                                : "text-slate-700"
-                            }
-                          `}
-                        >
-
-                          <span>
-                            Sábados desde
-                          </span>
-
-                          <input
-                            type="time"
-                            value={
-                              form[fuente.id]
-                                ?.hora_ini_s || ""
-                            }
-                            onChange={(e) =>
-                              handleChange(
-                                fuente.id,
-                                "hora_ini_s",
-                                e.target.value
-                              )
-                            }
-                            className={`
-                              h-11 w-[120px]
-                              rounded-2xl border
-                              px-3
-                              text-sm font-bold
-                              outline-none
-                              transition-all
-                              shadow-lg
-                              ${
-                                isDark
-                                  ? `
-                                    border-[#3B3E4E]
-                                    bg-[#2A2C38]
-                                    text-white
-                                    hover:border-blue-500/50
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-500/20
-                                  `
-                                  : `
-                                    border-slate-200
-                                    bg-white
-                                    text-slate-700
-                                    hover:border-slate-300
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-100
-                                  `
-                              }
-                            `}
-                          />
-
-                          <span>
-                            hasta
-                          </span>
-
-                          <input
-                            type="time"
-                            value={
-                              form[fuente.id]
-                                ?.hora_fin_s || ""
-                            }
-                            onChange={(e) =>
-                              handleChange(
-                                fuente.id,
-                                "hora_fin_s",
-                                e.target.value
-                              )
-                            }
-                            className={`
-                              h-11 w-[120px]
-                              rounded-2xl border
-                              px-3
-                              text-sm font-bold
-                              outline-none
-                              transition-all
-                              shadow-lg
-                              ${
-                                isDark
-                                  ? `
-                                    border-[#3B3E4E]
-                                    bg-[#2A2C38]
-                                    text-white
-                                    hover:border-blue-500/50
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-500/20
-                                  `
-                                  : `
-                                    border-slate-200
-                                    bg-white
-                                    text-slate-700
-                                    hover:border-slate-300
-                                    focus:border-blue-500
-                                    focus:ring-4
-                                    focus:ring-blue-100
-                                  `
-                              }
-                            `}
-                          />
-
-                          <span>
-                            horas
-                          </span>
-
-                        </div>
+                        <HourInput
+                          isDark={isDark}
+                          label="Hasta"
+                          value={
+                            form[fuente.id]
+                              ?.hora_fin_s
+                          }
+                          onChange={(value) =>
+                            handleChange(
+                              fuente.id,
+                              "hora_fin_s",
+                              value
+                            )
+                          }
+                          color={fuente.color}
+                          glow={fuente.glow}
+                          iconText={fuente.iconText}
+                        />
 
                       </div>
 
@@ -852,6 +693,93 @@ export default function EditarHorarioCartera({
       )}
 
     </AnimatePresence>
+
+  );
+}
+
+function HourInput({
+  label,
+  value,
+  onChange,
+  isDark,
+  color,
+  glow,
+  iconText,
+}) {
+
+  return (
+
+    <div>
+
+      <label
+        className={`
+          mb-2 block text-xs font-black uppercase tracking-wide
+          ${isDark
+            ? "text-slate-300"
+            : "text-slate-700"
+          }
+        `}
+      >
+        {label}
+      </label>
+
+      <div className="relative">
+
+        <div
+          className={`
+            absolute left-3 top-1/2
+            flex h-7 w-7
+            -translate-y-1/2
+            items-center justify-center
+            rounded-lg
+            bg-gradient-to-br ${color}
+            text-white shadow-lg ${glow}
+          `}
+        >
+
+          <MdAccessTime className="text-sm" />
+
+        </div>
+
+        <input
+          type="time"
+          value={value || ""}
+          onChange={(e) =>
+            onChange(e.target.value)
+          }
+          className={`
+            h-12 w-full rounded-2xl
+            border pl-12 pr-4
+            text-sm font-semibold
+            outline-none
+            transition-all
+            shadow-lg
+            ${isDark
+              ? `
+                border-[#3B3E4E]
+                bg-[#2A2C38]
+                text-white
+                hover:border-blue-500/50
+                focus:border-blue-500
+                focus:ring-4
+                focus:ring-blue-500/20
+              `
+              : `
+                border-slate-200
+                bg-white
+                text-slate-700
+                hover:border-slate-300
+                focus:border-blue-500
+                focus:ring-4
+                focus:ring-blue-100
+              `
+            }
+          `}
+        />
+
+      </div>
+
+    </div>
 
   );
 }
