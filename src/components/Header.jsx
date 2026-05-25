@@ -207,6 +207,8 @@ const limpiarNombreVista = (nombre) => {
                 ? "MONITOR DE BASES"
                 : m.id_modulo === 4
                 ?"LANDING"
+                : m.id_modulo === 5
+                ?"GESTION DE AGENTE"
                 : "MODULO",
             ruta:
               m.id_modulo === 1
@@ -217,6 +219,8 @@ const limpiarNombreVista = (nombre) => {
                 ? "monitor-bases"
                 : m.id_modulo === 4
                 ? "landing-interno"
+                : m.id_modulo === 5
+                ? "gestion-agente"
                 : "modulo"
 
           });
@@ -234,7 +238,8 @@ const limpiarNombreVista = (nombre) => {
 }, []);
 //CONTROL SUPERVISOR
 const [openControlSupervisor, setOpenControlSupervisor] = useState(false);
-
+// EMPRESA PERSONAL
+const [openPersonal, setOpenPersonal] = useState(false);
 //CONTADOR DE LAS NOTIFICACIONES ADMIN
  const [count, setCount] = useState(0);
 
@@ -666,7 +671,6 @@ return (
     })}
   </div>
 )}
-
 {/* ========= RRHH ========= */}
 <button
   onClick={() => sidebarOpen && setOpenKpi({ ...openKpi, rrhh: !openKpi.rrhh })}
@@ -689,8 +693,12 @@ return (
 
 {sidebarOpen && openKpi.rrhh && (
   <div className="ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
+
+
+    {/* ========= KPIS RRHH ========= */}
     {Object.entries(kpis?.rrhh || {}).map(([campId, camp]) => {
       const isOpen = openKpiCampaña.rrhh === campId;
+
       return (
         <div key={campId}>
           <button
@@ -703,10 +711,12 @@ return (
             className="flex items-center text-left justify-between w-full px-3 py-2 rounded hover:bg-red-500/40 transition text-sm"
           >
             <span>{camp.nombreCampana}</span>
+
             <motion.div animate={{ rotate: isOpen ? 90 : 0 }}>
               <ChevronRight size={14} />
             </motion.div>
           </button>
+
           <AnimatePresence>
             {isOpen && (
               <motion.div className="ml-4 mt-1 flex flex-col gap-1 border-l border-red-200/20 pl-3">
@@ -714,10 +724,20 @@ return (
                   <motion.button
                     key={vista.id}
                     whileHover={{ x: 5 }}
-                    onClick={() => abrirVista(4, campId, limpiarNombreVista(vista.nombre))}
+                    onClick={() =>
+                      abrirVista(
+                        4,
+                        campId,
+                        limpiarNombreVista(vista.nombre)
+                      )
+                    }
                     className="text-left px-2 py-1 rounded hover:bg-red-500/30 text-xs"
                   >
-                    <span dangerouslySetInnerHTML={{ __html: vista.nombre }} />
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: vista.nombre
+                      }}
+                    />
                   </motion.button>
                 ))}
               </motion.div>
@@ -728,8 +748,56 @@ return (
     })}
   </div>
 )}
-       
-  
+       {/*   EMPRESA    */}
+  <ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
+  {/* Título de sección condicional */}
+ <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
+  {sidebarOpen ? (
+    "EMPRESA"
+  ) : (
+    <span className="font-bold text-xs tracking-tighter">EMPRESA</span>
+  )}
+</p>
+
+  {/* ========= PERSONAL ========= */}
+<button
+  onClick={() => sidebarOpen && setOpenPersonal(!openPersonal)}
+  title={!sidebarOpen ? "Personal" : ""}
+  className={`flex items-center w-full px-3 py-2 rounded hover:bg-red-500/70 transition ${
+    sidebarOpen ? "justify-between" : "justify-center"
+  }`}
+>
+  <div className="flex items-center gap-3">
+    <UsersRound size={18} />
+    {sidebarOpen && <span className="flex-1 text-left">Personal</span>}
+  </div>
+
+  {sidebarOpen && (
+    <ChevronRight
+      size={16}
+      className={`transition-transform ${openPersonal ? 'rotate-90' : ''}`}
+    />
+  )}
+</button>
+
+{/* SUBMENU PERSONAL */}
+{sidebarOpen && openPersonal && (
+  <div className="relative ml-5 mt-1 flex flex-col gap-1 border-l-2 border-red-50/30 pl-4">
+
+    <button
+      onClick={() => navigate("/registro-agente")}
+      className="text-left px-3 py-1 rounded hover:bg-red-500/40 transition text-sm relative"
+    >
+      <span className="absolute -left-4 top-1/2 w-4 h-[2px] bg-red-200/30"></span>
+      Registro de Personal
+    </button>
+
+  </div>
+)}
+
+ 
+</ProtectedFiles>
+
   {/* TITULO - Solo visible si está abierto */}
  <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
   {sidebarOpen ? (
@@ -829,7 +897,8 @@ return (
       )}
     </div>
   )}
-</div><ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
+</div>
+<ProtectedFiles allow={[ROLES.ADMIN, ROLES.SISTEMAS, ROLES.GERENCIA]}>
   {/* Título de sección condicional */}
  <p className={`text-xs uppercase opacity-70 mt-4 mb-2 px-3 flex ${!sidebarOpen ? 'justify-center' : ''}`}>
   {sidebarOpen ? (

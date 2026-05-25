@@ -20,6 +20,9 @@ import ModuloBases from "./pages/Modulo_bases"
 import BusquedaTelefonos from "./pages/BusquedaTelefonos"
 import ControlSupervisor from "./pages/ControlSupervisor"
 import LandingInterno from "./pages/LandingInterno"
+import RegistroAgente from "./pages/RegistroAgente"
+import AgregarAgente from "./pages/AgregarAgente"
+import GestionAgente from "./pages/GestionAgente"
 
 const pageVariants = {
   initial: {
@@ -215,7 +218,18 @@ function AppRoutes() {
               }
               
             />
-             
+            {/* REGISTRO AGENTE */}
+            <Route
+              path="/registro-agente"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                      <RegistroAgente />
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+              
+            />
             {/* LANDING INTERNO */}
             <Route
               path="/landing-interno"
@@ -228,7 +242,31 @@ function AppRoutes() {
               }
               
             />
+            {/* AGREGAR AGENTE */}
+            <Route
+              path="/agregar-agente"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                      <AgregarAgente />
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+              
+            />
 
+          {/* AGREGAR AGENTE */}
+            <Route
+              path="/gestion-agente"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                      <GestionAgente />
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+              
+            />
             {/* REDIRECCIÓN GLOBAL */}
             <Route
               path="*"

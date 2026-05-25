@@ -66,7 +66,8 @@ export default function Control_Modulos() {
           monitor: false,
           busqueda: false,
           bases: false,
-          landing: false
+          landing: false,
+          usuarios: false
         }
       }
 
@@ -74,6 +75,7 @@ export default function Control_Modulos() {
       if (item.id_modulo === 2) map[item.id_camp].busqueda = item.modulo_activo
       if (item.id_modulo === 3) map[item.id_camp].bases = item.modulo_activo
       if (item.id_modulo === 4) map[item.id_camp].landing = item.modulo_activo
+      if (item.id_modulo === 5) map[item.id_camp].usuarios = item.modulo_activo
     })
 
     return Object.values(map)
@@ -91,7 +93,8 @@ export default function Control_Modulos() {
         monitor: 1,
         busqueda: 2,
         bases: 3,
-        landing: 4
+        landing: 4,
+        usuarios: 5
       }
 
       const idModulo = moduloMap[moduloKey]
@@ -160,6 +163,7 @@ export default function Control_Modulos() {
               <th className="px-1 py-3 text-center">BUSQUEDA</th>
               <th className="px-1 py-3 text-center">BASES</th>
               <th className="px-1 py-3 text-center">LANDING</th>
+              <th className="px-1 py-3 text-center">USUARIOS</th>
             </tr>
           </thead>
 
@@ -204,6 +208,14 @@ export default function Control_Modulos() {
                   <ToggleSwitch
                     checked={item.landing}
                     onChange={() => handleToggle(item, "landing")}
+                    isDark={isDark}
+                  />
+                </td>
+
+                <td className="px-4 py-3 text-center">
+                  <ToggleSwitch
+                    checked={item.usuarios}
+                    onChange={() => handleToggle(item, "usuarios")}
                     isDark={isDark}
                   />
                 </td>
