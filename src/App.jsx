@@ -23,6 +23,7 @@ import LandingInterno from "./pages/LandingInterno"
 import RegistroAgente from "./pages/RegistroAgente"
 import AgregarAgente from "./pages/AgregarAgente"
 import GestionAgente from "./pages/GestionAgente"
+import CrearCampana from "./pages/CrearCampana"
 
 const pageVariants = {
   initial: {
@@ -265,8 +266,24 @@ function AppRoutes() {
                   </HeaderLayout>
                 </ProtectedRoute>
               }
+            />
+
+            {/* AGREGAR CAMPAÑA */}
+            <Route
+              path="/crear-campana"
+              element={
+                <ProtectedRoute>
+                  <HeaderLayout>
+                      <CrearCampana />
+                  </HeaderLayout>
+                </ProtectedRoute>
+              }
+              
               
             />
+
+
+            
             {/* REDIRECCIÓN GLOBAL */}
             <Route
               path="*"

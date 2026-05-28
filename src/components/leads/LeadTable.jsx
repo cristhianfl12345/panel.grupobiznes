@@ -6,235 +6,596 @@ import { useLocalTheme } from '../../context/useLocalTheme'
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRightLeft } from "lucide-react"
 
-export default function LeadTable({ 
-  leads = [], 
-  loading, 
-  searched, 
+export default function LeadTable({
+  leads = [],
+  loading,
+  searched,
   onCopy,
   columns,
   setColumns
 }) {
 
   const { theme } = useLocalTheme()
+
   const isDark = theme === 'dark'
 
   const [draggedKey, setDraggedKey] = useState(null)
 
-  const visibleColumns = columns?.filter(col => col.visible) || []
+  const visibleColumns =
+    columns?.filter(col => col.visible) || []
 
-  const getKey = (col) => col.key || col.query_vista
-  const getLabel = (col) => col.label || col.Vista
+  const getKey = (col) =>
+    col.key || col.query_vista
+
+  const getLabel = (col) =>
+    col.label || col.Vista
 
   const handleDragStart = (key) => {
     setDraggedKey(key)
   }
 
-const handleDrop = (targetKey) => {
-  if (!draggedKey) return
+  const handleDrop = (targetKey) => {
 
-  // no permitir mover index
-  if (draggedKey === "index") return
+    if (!draggedKey) return
 
-  // no permitir que nada se coloque antes de index
-  if (targetKey === "index") return
+    if (draggedKey === "index") return
 
-  const newColumns = [...columns]
+    if (targetKey === "index") return
 
-  const fromIndex = newColumns.findIndex(c => (c.key || c.query_vista) === draggedKey)
-  const toIndex = newColumns.findIndex(c => (c.key || c.query_vista) === targetKey)
+    const newColumns = [...columns]
 
-  if (fromIndex === -1 || toIndex === -1) return
+    const fromIndex = newColumns.findIndex(
+      c =>
+        (c.key || c.query_vista) === draggedKey
+    )
 
-  const [moved] = newColumns.splice(fromIndex, 1)
-  newColumns.splice(toIndex, 0, moved)
+    const toIndex = newColumns.findIndex(
+      c =>
+        (c.key || c.query_vista) === targetKey
+    )
 
-  setColumns(newColumns)
-  setDraggedKey(null)
-}
+    if (
+      fromIndex === -1 ||
+      toIndex === -1
+    ) return
+
+    const [moved] = newColumns.splice(
+      fromIndex,
+      1
+    )
+
+    newColumns.splice(toIndex, 0, moved)
+
+    setColumns(newColumns)
+
+    setDraggedKey(null)
+
+  }
+
+  // =========================================================
   // PAGINACIÓN
+  // =========================================================
+
   const rowsPerPage = 20
-  const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(leads.length / rowsPerPage)
+
+  const [currentPage, setCurrentPage] =
+    useState(1)
+
+  const totalPages = Math.ceil(
+    leads.length / rowsPerPage
+  )
 
   const paginatedLeads = useMemo(() => {
-    const start = (currentPage - 1) * rowsPerPage
+
+    const start =
+      (currentPage - 1) * rowsPerPage
+
     const end = start + rowsPerPage
+
     return leads.slice(start, end)
+
   }, [leads, currentPage])
 
   const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
+
+    if (
+      page >= 1 &&
+      page <= totalPages
+    ) {
       setCurrentPage(page)
     }
+
   }
 
   return (
 
     <div className="w-full h-[calc(100vh-220px)] flex flex-col">
 
-      {/* CONTENEDOR TABLA */}
+      {/* ========================================================= */}
+      {/* TABLA */}
+      {/* ========================================================= */}
+
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.35 }}
+        initial={{
+          opacity: 0,
+          y: 10
+        }}
+        animate={{
+          opacity: 1,
+          y: 0
+        }}
+        transition={{
+          duration: 0.28
+        }}
         className={`
-          flex-1 overflow-auto
-          rounded-xl
-          shadow-md
-          transition-colors
-          ${isDark ? "bg-slate-900" : "bg-white"}
+          relative
+          flex-1
+          overflow-hidden
+          rounded-[28px]
+          border
+          shadow-[0_20px_60px_rgba(0,0,0,0.25)]
+          transition-all
+          ${
+            isDark
+              ? `
+                border-[#343746]
+                bg-[#1B1C24]
+              `
+              : `
+                border-slate-200
+                bg-white
+              `
+          }
         `}
       >
 
-        <table className={`
-          w-full
-          table-auto
-          text-xs
-          border-collapse
-          ${isDark 
-            ? 'text-slate-200' 
-            : 'text-slate-800'
-          }
-        `}>
+        {/* GLOW */}
+        <div
+          className="
+            pointer-events-none
+            absolute inset-0
+            bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_30%)]
+          "
+        />
 
-          {/* HEADER */}
-          <thead className={`
-            sticky top-0 z-20
-            backdrop-blur
-            ${isDark ? 'bg-slate-800/95' : 'bg-gray-100/95'}
-          `}>
+        {/* SCROLL */}
+        <div className="h-full overflow-auto">
 
-            <tr>
+          <table
+            className={`
+              w-full
+              table-auto
+              border-collapse
+              text-xs
+              ${
+                isDark
+                  ? 'text-slate-200'
+                  : 'text-slate-800'
+              }
+            `}
+          >
 
-              <AnimatePresence initial={false}>
+            {/* ========================================================= */}
+            {/* HEADER */}
+            {/* ========================================================= */}
 
-                {visibleColumns.map((col, i) => {
+            <thead
+              className={`
+                sticky top-0 z-20
+                backdrop-blur-xl
+                border-b
+                ${
+                  isDark
+                    ? `
+                      border-[#343746]
+                      bg-[#20222C]/95
+                    `
+                    : `
+                      border-slate-200
+                      bg-white/95
+                    `
+                }
+              `}
+            >
 
-                  const key = getKey(col)
-                  const label = getLabel(col)
+              <tr>
 
-                  return (
+                <AnimatePresence initial={false}>
 
-                    <th
-                      key={key}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={() => handleDrop(key)}
-                      className={`
-                        border
-                        px-3 py-2
-                        text-left
-                        whitespace-nowrap
-                        transition-colors
-                        ${isDark ? 'border-slate-700' : 'border-slate-300'}
-                        ${i === 0 ? "rounded-tl-xl" : ""}
-                        ${i === visibleColumns.length - 1 ? "rounded-tr-xl" : ""}
-                      `}
-                    >
+                  {visibleColumns.map((col, i) => {
 
-                      <motion.div
-  draggable={key !== "index"}
-  onDragStart={() => key !== "index" && handleDragStart(key)}
-  whileHover={key !== "index" ? { scale: 1.05 } : {}}
-  whileTap={key !== "index" ? { scale: 0.95 } : {}}
-  className={`flex items-center gap-2 select-none ${
-    key === "index" ? "" : "cursor-move group"
-  }`}
->
+                    const key = getKey(col)
 
-                       {key !== "index" && (
-  <motion.div
-    whileHover={{ rotate: 90, scale: 1.2 }}
-    transition={{ type: "spring", stiffness: 300 }}
-    className="text-slate-400 group-hover:text-blue-500"
-  >
-    <ArrowRightLeft size={14}/>
-  </motion.div>
-)}
+                    const label = getLabel(col)
 
-                        <span className="font-medium whitespace-nowrap">
-                          {label}
-                        </span>
+                    return (
 
-                      </motion.div>
+                      <th
+                        key={key}
+                        onDragOver={(e) =>
+                          e.preventDefault()
+                        }
+                        onDrop={() =>
+                          handleDrop(key)
+                        }
+                        className={`
+                          relative
+                          px-4 py-4
+                          text-left
+                          whitespace-nowrap
+                          border-r
+                          transition-all
+                          ${
+                            isDark
+                              ? `
+                                border-[#343746]
+                              `
+                              : `
+                                border-slate-200
+                              `
+                          }
+                          ${
+                            i === visibleColumns.length - 1
+                              ? 'border-r-0'
+                              : ''
+                          }
+                        `}
+                      >
 
-                    </th>
+                        {/* LINEA SUPERIOR */}
+                        <div
+                          className="
+                            absolute top-0 left-0
+                            h-px w-full
+                            bg-gradient-to-r
+                            from-transparent
+                            via-blue-500/30
+                            to-transparent
+                          "
+                        />
 
-                  )
+                        <motion.div
+                          draggable={
+                            key !== "index"
+                          }
+                          onDragStart={() =>
+                            key !== "index" &&
+                            handleDragStart(key)
+                          }
+                          whileHover={
+                            key !== "index"
+                              ? {
+                                  scale: 1.02
+                                }
+                              : {}
+                          }
+                          whileTap={
+                            key !== "index"
+                              ? {
+                                  scale: 0.96
+                                }
+                              : {}
+                          }
+                          className={`
+                            flex items-center gap-2
+                            select-none
+                            ${
+                              key === "index"
+                                ? ""
+                                : "cursor-move group"
+                            }
+                          `}
+                        >
 
-                })}
+                          {key !== "index" && (
 
-              </AnimatePresence>
+                            <motion.div
+                              whileHover={{
+                                rotate: 90,
+                                scale: 1.15
+                              }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 280
+                              }}
+                              className={`
+                                flex h-7 w-7
+                                items-center justify-center
+                                rounded-xl
+                                border
+                                transition-all
+                                ${
+                                  isDark
+                                    ? `
+                                      border-[#3B3E4E]
+                                      bg-[#2A2C38]
+                                      text-slate-400
+                                      group-hover:border-blue-500/40
+                                      group-hover:text-blue-400
+                                    `
+                                    : `
+                                      border-slate-200
+                                      bg-slate-50
+                                      text-slate-500
+                                      group-hover:border-blue-300
+                                      group-hover:text-blue-500
+                                    `
+                                }
+                              `}
+                            >
+                              <ArrowRightLeft size={13} />
+                            </motion.div>
 
-            </tr>
+                          )}
 
-          </thead>
+                          <span
+                            className={`
+                              text-[12px]
+                              font-black
+                              uppercase
+                              tracking-wide
+                              ${
+                                isDark
+                                  ? 'text-slate-100'
+                                  : 'text-slate-700'
+                              }
+                            `}
+                          >
+                            {label}
+                          </span>
 
-          {/* BODY */}
-<tbody key={currentPage}>
-  {!loading && paginatedLeads.map((lead, index) => (
-    <LeadRow
-      key={`${lead.idkey}-${currentPage}-${index}`} // solucion de renderizado sobrescrito
-      lead={lead}
-      index={leads.length - ((currentPage - 1) * rowsPerPage + index)}
-      onCopy={onCopy}
-      columns={visibleColumns}
-      isDark={isDark}
-    />
-  ))}
-</tbody>
+                        </motion.div>
 
-        </table>
+                      </th>
+
+                    )
+
+                  })}
+
+                </AnimatePresence>
+
+              </tr>
+
+            </thead>
+
+            {/* ========================================================= */}
+            {/* BODY */}
+            {/* ========================================================= */}
+
+            <tbody key={currentPage}>
+
+              {!loading && paginatedLeads.map(
+                (lead, index) => (
+
+                  <LeadRow
+                    key={`${lead.idkey}-${currentPage}-${index}`}
+                    lead={lead}
+                    index={
+                      leads.length -
+                      (
+                        (
+                          currentPage - 1
+                        ) * rowsPerPage +
+                        index
+                      )
+                    }
+                    onCopy={onCopy}
+                    columns={visibleColumns}
+                    isDark={isDark}
+                  />
+
+                )
+              )}
+
+            </tbody>
+
+          </table>
+
+          {/* EMPTY */}
+          {!loading &&
+            searched &&
+            paginatedLeads.length === 0 && (
+
+              <div
+                className={`
+                  flex flex-col
+                  items-center justify-center
+                  py-20
+                  text-center
+                  ${
+                    isDark
+                      ? 'text-slate-400'
+                      : 'text-slate-500'
+                  }
+                `}
+              >
+
+                <div
+                  className={`
+                    mb-4
+                    flex h-20 w-20
+                    items-center justify-center
+                    rounded-full
+                    border
+                    ${
+                      isDark
+                        ? `
+                          border-[#343746]
+                          bg-[#232530]
+                        `
+                        : `
+                          border-slate-200
+                          bg-slate-50
+                        `
+                    }
+                  `}
+                >
+                  <ArrowRightLeft
+                    size={28}
+                  />
+                </div>
+
+                <h3 className="text-lg font-bold">
+                  No se encontraron resultados
+                </h3>
+
+                <p className="mt-1 text-sm opacity-80">
+                  Ajusta los filtros o realiza una nueva búsqueda
+                </p>
+
+              </div>
+
+            )}
+
+        </div>
 
       </motion.div>
 
-
+      {/* ========================================================= */}
       {/* PAGINADOR */}
+      {/* ========================================================= */}
+
       {!loading && leads.length > 0 && (
 
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
+          initial={{
+            opacity: 0,
+            y: 8
+          }}
+          animate={{
+            opacity: 1,
+            y: 0
+          }}
+          transition={{
+            duration: 0.25
+          }}
           className={`
-            flex
-            justify-center
-            items-center
-            gap-2
-            p-4
-            border-t
-            flex-wrap
-            ${isDark ? 'border-slate-700' : 'border-slate-300'}
+            relative
+            mt-4
+            overflow-hidden
+            rounded-[24px]
+            border
+            px-5 py-4
+            shadow-xl
+            backdrop-blur-xl
+            flex items-center justify-center gap-2 flex-wrap
+            ${
+              isDark
+                ? `
+                  border-[#343746]
+                  bg-[#1B1C24]/95
+                `
+                : `
+                  border-slate-200
+                  bg-white/95
+                `
+            }
           `}
         >
 
+          {/* GLOW */}
+          <div
+            className="
+              pointer-events-none
+              absolute inset-x-0 top-0 h-px
+              bg-gradient-to-r
+              from-transparent
+              via-blue-500/40
+              to-transparent
+            "
+          />
+
+          {/* PREV */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => goToPage(currentPage - 1)}
+            whileHover={{
+              scale: 1.06,
+              y: -1
+            }}
+            whileTap={{
+              scale: 0.94
+            }}
+            onClick={() =>
+              goToPage(currentPage - 1)
+            }
             disabled={currentPage === 1}
-            className="px-3 py-1 rounded-lg border disabled:opacity-40"
+            className={`
+              h-10 min-w-[42px]
+              rounded-2xl
+              border
+              text-sm font-black
+              transition-all
+              shadow-lg
+              disabled:opacity-40
+              ${
+                isDark
+                  ? `
+                    border-[#343746]
+                    bg-[#232530]
+                    text-slate-200
+                    hover:bg-[#2A2C38]
+                  `
+                  : `
+                    border-slate-200
+                    bg-white
+                    text-slate-700
+                    hover:bg-slate-50
+                  `
+              }
+            `}
           >
             «
           </motion.button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {/* PAGINAS */}
+          {Array.from(
+            { length: totalPages },
+            (_, i) => i + 1
+          ).map((page) => (
 
             <motion.button
               key={page}
-              whileHover={{ scale: 1.12 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => goToPage(page)}
+              whileHover={{
+                scale: 1.08,
+                y: -1
+              }}
+              whileTap={{
+                scale: 0.94
+              }}
+              onClick={() =>
+                goToPage(page)
+              }
               className={`
-                px-3 py-1
-                rounded-lg
+                h-10 min-w-[42px]
+                rounded-2xl
                 border
-                transition
+                px-3
+                text-sm font-black
+                transition-all
+                shadow-lg
                 ${
                   currentPage === page
-                    ? 'bg-blue-600 text-white border-blue-600'
+                    ? `
+                      border-blue-500/30
+                      bg-gradient-to-r
+                      from-red-600
+                      via-red-500
+                      to-red-400
+                      text-white
+                      shadow-red-500/30
+                    `
                     : isDark
-                      ? 'hover:bg-slate-700'
-                      : 'hover:bg-slate-200'
+                      ? `
+                        border-[#343746]
+                        bg-[#232530]
+                        text-slate-300
+                        hover:bg-[#2A2C38]
+                      `
+                      : `
+                        border-slate-200
+                        bg-white
+                        text-slate-700
+                        hover:bg-slate-50
+                      `
                 }
               `}
             >
@@ -243,12 +604,45 @@ const handleDrop = (targetKey) => {
 
           ))}
 
+          {/* NEXT */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded-lg border disabled:opacity-40"
+            whileHover={{
+              scale: 1.06,
+              y: -1
+            }}
+            whileTap={{
+              scale: 0.94
+            }}
+            onClick={() =>
+              goToPage(currentPage + 1)
+            }
+            disabled={
+              currentPage === totalPages
+            }
+            className={`
+              h-10 min-w-[42px]
+              rounded-2xl
+              border
+              text-sm font-black
+              transition-all
+              shadow-lg
+              disabled:opacity-40
+              ${
+                isDark
+                  ? `
+                    border-[#343746]
+                    bg-[#232530]
+                    text-slate-200
+                    hover:bg-[#2A2C38]
+                  `
+                  : `
+                    border-slate-200
+                    bg-white
+                    text-slate-700
+                    hover:bg-slate-50
+                  `
+              }
+            `}
           >
             »
           </motion.button>
@@ -258,5 +652,7 @@ const handleDrop = (targetKey) => {
       )}
 
     </div>
+
   )
+
 }

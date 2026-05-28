@@ -245,7 +245,7 @@ const [showPassword, setShowPassword] = useState({});
 
             <h1
               className={`
-                text-4xl font-black tracking-tight
+                text-2xl font-black tracking-tight
                 ${isDark ? "text-white" : "text-slate-800"}
               `}
             >
@@ -592,7 +592,7 @@ const [showPassword, setShowPassword] = useState({});
       `}
     >
 
-      <FaKey className="text-sm" />
+      <FaKey className="text-sm cursor-pointer" />
 
     </motion.button>
 
