@@ -21,6 +21,8 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
+  Pencil,
+  Plus,
   Trash2
 } from "lucide-react"
 
@@ -105,7 +107,11 @@ const [editingId, setEditingId] = useState(null)
 
 const [editForm, setEditForm] = useState({
   nombre: "",
-  activa: true,
+  activa: true ,
+
+//  producto: "",
+  // campania_name: "",
+
   iniRows: []
 })
 
@@ -135,7 +141,7 @@ const [loadingEdit, setLoadingEdit] = useState(false)
       clearMessages()
 
       // ======================================================
-      // AJUSTA ESTA RUTA A TU BACK
+      // get all campañas
       // ======================================================
 
       const res = await fetch(
@@ -171,6 +177,24 @@ const [loadingEdit, setLoadingEdit] = useState(false)
     getCampanas()
 
   }, [])
+// normalizacion de datos enviar
+const normalizeCoreIni = (coreIni) => {
+
+  if (!coreIni) {
+    return []
+  }
+
+  if (Array.isArray(coreIni)) {
+    return coreIni
+  }
+
+  if (Array.isArray(coreIni.rows)) {
+    return coreIni.rows
+  }
+
+  return [coreIni]
+
+}
 
   // ======================================================
   // FILTER
@@ -345,33 +369,58 @@ const handleOpenEdit = (item) => {
   const admin = item?.admin || {}
 
   const coreIni = Array.isArray(item?.core_ini)
-  ? item.core_ini
-  : Array.isArray(item?.core_ini?.rows)
-    ? item.core_ini.rows
-    : []
+    ? item.core_ini
+    : Array.isArray(item?.core_ini?.rows)
+      ? item.core_ini.rows
+      : []
 
   setEditingId(admin.id_camp)
 
   setEditForm({
     nombre: admin.nombre || "",
     activa: admin.activa || false,
-    iniRows: coreIni.length > 0
-      ? coreIni.map((row) => ({
-          id_orden: row.id_orden,
-          ini_campania: row.ini_campania || "",
-          producto: row.producto || "",
-          campania_name: row.campania_name || "",
-          isNew: false
-        }))
-      : [
-          {
-            id_orden: null,
-            ini_campania: "",
-            producto: "",
-            campania_name: "",
-            isNew: true
-          }
-        ]
+
+    producto:
+      coreIni?.[0]?.producto || "",
+
+    campania_name:
+      coreIni?.[0]?.campania_name || "",
+
+   iniRows:
+  coreIni.length > 0
+    ? coreIni.map((row) => ({
+        id_orden: row.id_orden,
+
+        ini_campania:
+          row.ini_campania || "",
+
+        producto:
+          row.producto || "",
+
+        campania_name:
+          row.campania_name || "",
+
+        original: {
+          ini_campania:
+            row.ini_campania || "",
+
+          producto:
+            row.producto || "",
+
+          campania_name:
+            row.campania_name || ""
+        },
+
+        isNew: false,
+        isEdited: false
+      }))
+        : [
+            {
+              id_orden: null,
+              ini_campania: "",
+              isNew: true
+            }
+          ]
   })
 
 }
@@ -390,7 +439,6 @@ const handleEditChange = (
   }))
 
 }
-
 const handleIniChange = (
   index,
   field,
@@ -402,6 +450,14 @@ const handleIniChange = (
     const updated = [...prev.iniRows]
 
     updated[index][field] = value
+
+    const current =
+      updated[index]
+
+    current.isEdited =
+      current.ini_campania !== current.original?.ini_campania ||
+      current.producto !== current.original?.producto ||
+      current.campania_name !== current.original?.campania_name
 
     return {
       ...prev,
@@ -440,9 +496,10 @@ const handleRemoveIni = (index) => {
 
   setEditForm((prev) => {
 
-    const updated = [...prev.iniRows]
-
-    updated.splice(index, 1)
+    const updated =
+      prev.iniRows.filter(
+        (_, i) => i !== index
+      )
 
     return {
       ...prev,
@@ -464,6 +521,47 @@ const handleUpdate = async (idCamp) => {
 
     setLoadingEdit(true)
 
+    // ======================================================
+    // LIMPIAR FILAS
+    // ======================================================
+
+    const rowsCleaned =
+      editForm.iniRows.filter(
+        (row) =>
+          row.ini_campania?.trim() !== ""
+      )
+
+    // ======================================================
+    // UPDATES
+    // ======================================================
+
+    const updates =
+      rowsCleaned.filter(
+        (row) =>
+          !row.isNew &&
+          row.isEdited
+      )
+
+    // ======================================================
+    // INSERTS
+    // ======================================================
+
+    const inserts =
+      rowsCleaned.filter(
+        (row) =>
+          row.isNew
+      )
+
+    // ======================================================
+    // DELETES
+    // ======================================================
+
+    const deletes = []
+
+    // ======================================================
+    // REQUEST
+    // ======================================================
+
     const res = await fetch(
       `${API}/editar/${idCamp}`,
       {
@@ -474,7 +572,9 @@ const handleUpdate = async (idCamp) => {
         body: JSON.stringify({
           nombre: editForm.nombre,
           activa: editForm.activa,
-          iniRows: editForm.iniRows
+          updates,
+          inserts,
+          deletes
         })
       }
     )
@@ -849,12 +949,7 @@ const handleUpdate = async (idCamp) => {
 
             const admin = item?.admin || {}
 
-            const coreIni =
-  Array.isArray(item?.core_ini)
-    ? item.core_ini
-    : item?.core_ini
-      ? [item.core_ini]
-      : []
+            const coreIni = normalizeCoreIni(item?.core_ini)
 
             return (
 
@@ -977,7 +1072,85 @@ const handleUpdate = async (idCamp) => {
         />
 
       </div>
+{/* PRODUCTO */}
 
+<div className="space-y-2">
+
+  <label
+    className={`text-sm font-bold ${
+      isDark
+        ? "text-slate-300"
+        : "text-slate-700"
+    }`}
+  >
+    Producto
+  </label>
+
+  <div className="relative">
+
+    <Pencil
+      className="
+        absolute left-3 top-1/2
+        -translate-y-1/2
+        h-4 w-4 text-cyan-400
+      "
+    />
+
+    <input
+      type="text"
+      value={editForm.producto}
+      onChange={(e) =>
+        handleEditChange(
+          "producto",
+          e.target.value
+        )
+      }
+      className={`${inputClass} pl-10`}
+    />
+
+  </div>
+
+</div>
+
+{/* CAMPANIA NAME */}
+
+<div className="space-y-2">
+
+  <label
+    className={`text-sm font-bold ${
+      isDark
+        ? "text-slate-300"
+        : "text-slate-700"
+    }`}
+  >
+    Campania Name
+  </label>
+
+  <div className="relative">
+
+    <Pencil
+      className="
+        absolute left-3 top-1/2
+        -translate-y-1/2
+        h-4 w-4 text-cyan-400
+      "
+    />
+
+    <input
+      type="text"
+      value={editForm.campania_name}
+      onChange={(e) =>
+        handleEditChange(
+          "campania_name",
+          e.target.value
+        )
+      }
+      className={`${inputClass} pl-10`}
+    />
+
+  </div>
+
+</div> 
       {/* INIS */}
 
       <div className="space-y-4">
@@ -1003,21 +1176,45 @@ const handleUpdate = async (idCamp) => {
               `}
             >
 
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
 
-                <button
-                  onClick={() =>
-                    handleRemoveIni(index)
-                  }
-                  className="
-                    text-red-400
-                    hover:text-red-500
-                  "
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+  <div className="flex items-center gap-2">
 
-              </div>
+    {row.isNew ? (
+      <Plus className="h-4 w-4 text-emerald-400" />
+    ) : (
+      <Pencil className="h-4 w-4 text-cyan-400" />
+    )}
+
+    <span
+      className={`
+        text-xs font-black uppercase
+        ${isDark
+          ? "text-slate-400"
+          : "text-slate-500"
+        }
+      `}
+    >
+      {row.isNew
+        ? "Nueva fila"
+        : "Editar fila"}
+    </span>
+
+  </div>
+
+  <button
+    onClick={() =>
+      handleRemoveIni(index)
+    }
+    className="
+      text-red-400
+      hover:text-red-500
+    "
+  >
+    <Trash2 className="h-4 w-4" />
+  </button>
+
+</div>
 
               <input
                 type="text"
@@ -1032,10 +1229,10 @@ const handleUpdate = async (idCamp) => {
                 }
                 className={inputClass}
               />
-
+{/* 
               <input
                 type="text"
-                placeholder="Producto"
+           //     placeholder="Producto"
                 value={row.producto}
                 onChange={(e) =>
                   handleIniChange(
@@ -1049,7 +1246,7 @@ const handleUpdate = async (idCamp) => {
 
               <input
                 type="text"
-                placeholder="Campania Name"
+           //     placeholder="Campania Name"
                 value={row.campania_name}
                 onChange={(e) =>
                   handleIniChange(
@@ -1060,7 +1257,7 @@ const handleUpdate = async (idCamp) => {
                 }
                 className={inputClass}
               />
-
+*/}
             </div>
 
           )
