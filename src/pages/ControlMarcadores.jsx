@@ -113,8 +113,13 @@ useEffect(() => {
   /* ============================= */
 
   useEffect(() => {
+    const token = localStorage.getItem("token")
 
-    fetch(`${API}/campanas`)
+    fetch(`${API}/campanas`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(r => r.json())
       .then(data => setCampanas(data))
 
@@ -122,10 +127,14 @@ useEffect(() => {
 
   // inicio resumen marcadores
   useEffect(() => {
-
+const token = localStorage.getItem("token")
   if (!idCamp) return
 
-  fetch(`${API}/resumen-marcadores/${idCamp}`)
+  fetch(`${API}/resumen-marcadores/${idCamp}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
     .then(r => r.json())
     .then(data => setResumenMarcadores(data))
 
@@ -133,24 +142,36 @@ useEffect(() => {
 // fin
 
   useEffect(() => {
-
+const token = localStorage.getItem("token")
     if (!idCamp) return
 
-    fetch(`${API}/marcadores/${idCamp}`)
+    fetch(`${API}/marcadores/${idCamp}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(r => r.json())
       .then(data => setMarcadores(data))
 
   }, [idCamp])
 
   useEffect(() => {
-
+const token = localStorage.getItem("token")
     if (!idCamp) return
 
-    fetch(`${API}/activos/${idCamp}`)
+    fetch(`${API}/activos/${idCamp}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(r => r.json())
       .then(data => setActivos(data))
 
-    fetch(`${API}/spam/${idCamp}`)
+    fetch(`${API}/spam/${idCamp}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(r => r.json())
       .then(data => setSpam(data))
 
@@ -164,10 +185,13 @@ useEffect(() => {
       alert("Seleccione marcador")
       return
     }
-
+const token = localStorage.getItem("token")
     const res = await fetch(`${API}/generar-mascaras`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify({
         idCamp,
         idMarcador,
@@ -187,12 +211,15 @@ useEffect(() => {
   }
 
   const confirmarMascaras = async () => {
-
+const token = localStorage.getItem("token")
     const ids = previewMascaras.map(m => m.id_gen_mask)
 if (!confirm("Deseas insertar este(os) número(s)?")) return
     const res = await fetch(`${API}/confirmar-mascaras`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify({
         ids,
         idCamp,
@@ -212,7 +239,11 @@ if (!confirm("Deseas insertar este(os) número(s)?")) return
 
     setPreviewMascaras([])
 
-    const activosRes = await fetch(`${API}/activos/${idCamp}`)
+    const activosRes = await fetch(`${API}/activos/${idCamp}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
     setActivos(await activosRes.json())
 
   }
@@ -220,10 +251,13 @@ if (!confirm("Deseas insertar este(os) número(s)?")) return
   const moverSpam = async (id) => {
 
     if (!confirm("Mover a spam?")) return
-
+const token = localStorage.getItem("token")
     const res = await fetch(`${API}/mover-spam`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify({ id, id_usuario })
     })
 
@@ -241,11 +275,15 @@ if (!confirm("Deseas insertar este(os) número(s)?")) return
   }
 
   const reemplazar = async (id) => {
+    const token = localStorage.getItem("token")
      if (!confirm("reemplazar este numero?")) return
 
     const res = await fetch(`${API}/reemplazar-spam`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify({ id, id_usuario })
     })
 
@@ -274,10 +312,12 @@ const moverSpamBulk = async () => {
   }
 
   try {
+    const token = localStorage.getItem("token")
     const response = await fetch("http://192.168.9.115:4000/api/mover-spam-bulk", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ids: selectedActivos,
@@ -311,10 +351,12 @@ const reemplazarSpamBulk = async () => {
   }
 
   try {
+    const token = localStorage.getItem("token")
     const response = await fetch("http://192.168.9.115:4000/api/reemplazar-spam-bulk", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         ids: selectedSpam,

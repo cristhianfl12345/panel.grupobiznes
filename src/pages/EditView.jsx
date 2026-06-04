@@ -34,7 +34,12 @@ export default function EditView() {
   // LOAD CAMPANAS
   // =========================
   useEffect(() => {
-    fetch(`${API}/campanas-select`)
+    const token = localStorage.getItem("token");
+    fetch(`${API}/campanas-select`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(res => res.json())
       .then(data => {
         if (data.ok) setCampanas(data.data);
@@ -54,6 +59,7 @@ export default function EditView() {
   // BUSCAR
   // =========================
   const buscar = async () => {
+    const token = localStorage.getItem("token");
     if (!level) return;
 
     setLoading(true);
@@ -61,7 +67,11 @@ export default function EditView() {
     let url = `${API}/vistas-filtradas?level=${level}`;
     if (idcamp) url += `&idcamp=${idcamp}`;
 
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     const json = await res.json();
 
     if (json.ok) {
@@ -76,7 +86,12 @@ export default function EditView() {
   // ABRIR EDIT
   // =========================
   const abrirEditar = async (id_vista) => {
-    const res = await fetch(`${API}/vistas-filtradas/${id_vista}`);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API}/vistas-filtradas/${id_vista}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     const json = await res.json();
 
     if (json.ok) {
@@ -108,13 +123,17 @@ export default function EditView() {
         activo: Number(editing.activo)
       };
 
+      const token = localStorage.getItem("token");
       console.log("PAYLOAD:", payload);
 
       const response = await fetch(
         `${API}/vistas-filtradas/${editing.id_vista}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
           body: JSON.stringify(payload)
         }
       );

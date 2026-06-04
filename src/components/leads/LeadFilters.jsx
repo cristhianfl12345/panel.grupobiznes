@@ -200,11 +200,16 @@ function LeadFilters({
     if (!idCamp) return
 
     try {
-
+const token = localStorage.getItem('token')
       setLoadingMasivos(true)
 
       const response = await fetch(
-        `http://192.168.9.115:4000/api/leads/masivos-carterizado/${idCamp}/4`
+        `http://192.168.9.115:4000/api/leads/masivos-carterizado/${idCamp}/4`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       )
 
       const data = await response.json()

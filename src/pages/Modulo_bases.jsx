@@ -34,7 +34,12 @@ export default function ModuloBases() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_URL}?camp=${camp}`);
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}?camp=${camp}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         const json = await res.json();
         setData(json.data || []);
       } catch (err) {

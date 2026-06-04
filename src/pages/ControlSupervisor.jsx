@@ -186,11 +186,16 @@ export default function ControlSupervisor() {
   const obtenerData = async () => {
 
     try {
-
+const token = localStorage.getItem("token")
       setLoading(true)
 
       const res = await axios.get(
-        `${API}?camp=${idCamp}`
+        `${API}?camp=${idCamp}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
 
       const payload =

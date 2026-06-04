@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-
+import {useNavigate} from "react-router-dom"
 import HeaderLayout from "./components/Header"
 import Login from "./routes/Login"
 import Home from "./pages/Home"
@@ -24,6 +24,7 @@ import RegistroAgente from "./pages/RegistroAgente"
 import AgregarAgente from "./pages/AgregarAgente"
 import GestionAgente from "./pages/GestionAgente"
 import CrearCampana from "./pages/CrearCampana"
+
 
 const pageVariants = {
   initial: {
@@ -55,7 +56,49 @@ function AppRoutes() {
 
   const location = useLocation()
   const [loadingRoute, setLoadingRoute] = useState(false)
+const navigate = useNavigate()
 
+useEffect(() => {
+
+  const user = localStorage.getItem("user")
+  const checksum = localStorage.getItem("user_checksum")
+
+  // si existe usuario pero no checksum => sesión inválida
+  if (user && !checksum) {
+
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    localStorage.removeItem("user_checksum")
+
+    alert("La sesión ha sido cerrada por inconsistencia de datos 🐀🐭.")
+
+    navigate("/login", { replace: true })
+
+    return
+  }
+
+  // detectar modificación del objeto user
+  if (user && checksum) {
+
+    const currentChecksum = btoa(user)
+
+    if (currentChecksum !== checksum) {
+
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
+      localStorage.removeItem("user_checksum")
+
+      alert(
+        "La sesión ha sido cerrada porque se detectó una modificación no autorizada de los datos del usuario 🐀🐭."
+      )
+
+      navigate("/login", { replace: true })
+
+    }
+
+  }
+
+}, [navigate])
   useEffect(() => {
 
     setLoadingRoute(true)

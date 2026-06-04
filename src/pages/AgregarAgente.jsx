@@ -106,7 +106,7 @@ export default function AgregarAgente({ user }) {
     }
 
     try {
-
+const token = localStorage.getItem("token")
       setSearchingDni(true)
 
       setError("")
@@ -114,7 +114,12 @@ export default function AgregarAgente({ user }) {
       setResponseData(null)
 
       const res = await fetch(
-        `${API_URL}/api/agentes/persona/${form.numero_documento}`
+        `${API_URL}/api/agentes/persona/${form.numero_documento}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
 
       const data = await res.json()
@@ -181,6 +186,7 @@ export default function AgregarAgente({ user }) {
     setResponseData(null)
 
     try {
+      const token = localStorage.getItem("token")
 
       const body = {
         numero_documento: form.numero_documento,
@@ -194,7 +200,8 @@ export default function AgregarAgente({ user }) {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify(body)
         }
@@ -406,15 +413,15 @@ export default function AgregarAgente({ user }) {
         flex items-center gap-2
         rounded-2xl
         bg-gradient-to-r
-        from-blue-600
-        via-indigo-500
-        to-cyan-500
+        from-green-700
+        via-emerald-500
+        to-green-500
         px-5
         text-sm font-bold text-white
-        shadow-2xl shadow-blue-500/30
+        shadow-2xl shadow-green-500/30
         transition-all
-        hover:shadow-blue-500/50
-        disabled:opacity-50
+        hover:shadow-green-500/50
+        disabled:opacity-50 cursor-pointer
       "
     >
 
@@ -744,15 +751,15 @@ export default function AgregarAgente({ user }) {
               flex items-center gap-2
               rounded-2xl
               bg-gradient-to-r
-              from-blue-600
-              via-indigo-500
-              to-cyan-500
+              from-emerald-700
+              via-emerald-500
+              to-green-500
               px-6 py-3
               text-sm font-bold text-white
-              shadow-2xl shadow-blue-500/30
+              shadow-2xl shadow-green-500/30
               transition-all
-              hover:shadow-blue-500/50
-              disabled:opacity-50
+              hover:shadow-green-500/50
+              disabled:opacity-50 cursor-pointer
             "
           >
 

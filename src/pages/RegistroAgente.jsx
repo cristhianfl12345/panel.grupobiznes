@@ -347,7 +347,7 @@ const [credenciales, setCredenciales] = useState({
 // CREAR AGENTE
 // =========================
 if (cargo === "AGENTE") {
-
+const token = localStorage.getItem("token")
   const body = {
     usuario: credenciales.usuario,
     password: credenciales.password,
@@ -363,7 +363,8 @@ if (cargo === "AGENTE") {
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(body)
     }

@@ -53,7 +53,12 @@ export default function CrearVista() {
   useEffect(() => {
     const loadCampanas = async () => {
       try {
-        const res = await fetch("http://192.168.9.115:4000/api/campanas-select");
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://192.168.9.115:4000/api/campanas-select", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         const data = await res.json();
 
         if (Array.isArray(data)) {
@@ -110,10 +115,12 @@ export default function CrearVista() {
     setMsg(null);
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch("http://192.168.9.115:4000/api/vistasss", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
   level: Number(form.level),

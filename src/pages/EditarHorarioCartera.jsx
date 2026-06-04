@@ -170,6 +170,7 @@ export default function EditarHorarioCartera({
   const guardar = async () => {
 
     try {
+      const token = localStorage.getItem("token");
 
       setLoading(true);
 
@@ -183,6 +184,7 @@ export default function EditarHorarioCartera({
               headers: {
                 "Content-Type":
                   "application/json",
+                Authorization: `Bearer ${token}`
               },
               body: JSON.stringify({
                 id_carteriza:

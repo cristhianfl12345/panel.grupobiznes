@@ -61,7 +61,12 @@ export default function CrearUser() {
   // FETCH (Sin cambios en lógica)
   // ==============================
   const obtenerUsuarios = async () => {
-    const res = await fetch("http://192.168.9.115:4000/api/usuarios-get");
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://192.168.9.115:4000/api/usuarios-get", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     const json = await res.json();
     setUsuarios(json.data);
     setFiltered(json.data);
@@ -69,7 +74,12 @@ export default function CrearUser() {
   };
 
 const obtenerCampanas = async () => {
-  const res = await fetch("http://192.168.9.115:4000/api/campanas-select");
+  const token = localStorage.getItem("token");
+  const res = await fetch("http://192.168.9.115:4000/api/campanas-select", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   const json = await res.json();
 
   const normalizadas = json.data.map(c => ({
@@ -129,8 +139,14 @@ const obtenerCampanas = async () => {
   // ACTIONS
   // ==============================
   const handleDelete = async (u) => {
+    const token = localStorage.getItem("token");
     if (!confirm("¿Eliminar usuario?")) return;
-    await fetch(`http://192.168.9.115:4000/api/usuarios/${u.id}`, { method: "DELETE" });
+    await fetch(`http://192.168.9.115:4000/api/usuarios/${u.id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     obtenerUsuarios();
   };
 
@@ -156,9 +172,13 @@ const obtenerCampanas = async () => {
   };
 
   const handleSave = async () => {
+    const token = localStorage.getItem("token");
     await fetch(`http://192.168.9.115:4000/api/usuarios/${editUser.id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify({ ...editUser, campanas: selectedCampanas })
     });
     setEditUser(null);
@@ -189,10 +209,12 @@ const handleChange = (e) => {
 // submit
 const handleCreate = async () => {
   try {
+    const token = localStorage.getItem("token");
     const res = await fetch("http://192.168.9.115:4000/api/usuarios", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({ ...form, campanas: selectedCampanas })
     })

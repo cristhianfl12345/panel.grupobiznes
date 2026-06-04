@@ -65,7 +65,7 @@ export default function BusquedaTelefonos() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultados, setResultados] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false); // ✅ clave
+  const [hasSearched, setHasSearched] = useState(false); //  clave
 const exportRef = useRef(null);
   const bgMain = isDark ? "bg-[#1F2029] text-slate-200" : "bg-gray-100 text-gray-800";
   const cardBg = isDark ? "bg-[#262730]" : "bg-white";
@@ -76,9 +76,10 @@ const exportRef = useRef(null);
 
     setLoading(true);
     setResultados([]);
-    setHasSearched(true); // ✅ marca que ya se buscó
+    setHasSearched(true); // marca que ya se buscó
 
-    try {
+    try { 
+      const token = localStorage.getItem("token");
       const params = new URLSearchParams();
       params.append("camp", camp);
 
@@ -86,7 +87,11 @@ const exportRef = useRef(null);
       if (tipo === "dni") params.append("dni", query);
       if (tipo === "idKey") params.append("idKey", query);
 
-      const res = await fetch(`http://192.168.9.115:4000/api/busqueda?${params.toString()}`);
+      const res = await fetch(`http://192.168.9.115:4000/api/busqueda?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const data = await res.json();
 
       setResultados(data.ok ? data.data : []);

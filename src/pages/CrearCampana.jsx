@@ -16,14 +16,16 @@ import {
   FaLayerGroup,
   FaHashtag
 } from "react-icons/fa"
-
+import { IoMdWarning } from "react-icons/io"
+import { FaCircleInfo } from "react-icons/fa6"
 import {
   Loader2,
   AlertCircle,
   CheckCircle2,
   Pencil,
   Plus,
-  Trash2
+  Trash2,
+  Ban
 } from "lucide-react"
 
 // ======================================================
@@ -107,14 +109,13 @@ const [editingId, setEditingId] = useState(null)
 
 const [editForm, setEditForm] = useState({
   nombre: "",
-  activa: true ,
+  activa: true,
 
-//  producto: "",
-  // campania_name: "",
+  iniRows: [],
 
-  iniRows: []
+  deletedRows: []
 })
-
+const [editableFields, setEditableFields] = useState({})
 const [loadingEdit, setLoadingEdit] = useState(false)
   // ======================================================
   // ALERTS
@@ -135,7 +136,7 @@ const [loadingEdit, setLoadingEdit] = useState(false)
   const getCampanas = async () => {
 
     try {
-
+      const token = localStorage.getItem("token")
       setLoading(true)
 
       clearMessages()
@@ -145,7 +146,12 @@ const [loadingEdit, setLoadingEdit] = useState(false)
       // ======================================================
 
       const res = await fetch(
-        `${API}/`
+        `${API}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
 
       const data = await res.json()
@@ -256,6 +262,7 @@ const normalizeCoreIni = (coreIni) => {
     }
 
     try {
+      const token = localStorage.getItem("token")
 
       setLoadingCreate(true)
 
@@ -264,7 +271,8 @@ const normalizeCoreIni = (coreIni) => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
   idCampana: Number(idCamp),
@@ -330,10 +338,15 @@ const normalizeCoreIni = (coreIni) => {
 
       clearMessages()
 
+      const token = localStorage.getItem("token")
+
       const res = await fetch(
         `${API}/${id}`,
         {
-          method: "DELETE"
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
       )
 
@@ -377,11 +390,13 @@ const handleOpenEdit = (item) => {
   setEditingId(admin.id_camp)
 
   setEditForm({
-    nombre: admin.nombre || "",
-    activa: admin.activa || false,
+  nombre: admin.nombre || "",
+  activa: admin.activa || false,
 
-    producto:
-      coreIni?.[0]?.producto || "",
+  deletedRows: [],
+
+ //   producto:
+   //   coreIni?.[0]?.producto || "",
 
     campania_name:
       coreIni?.[0]?.campania_name || "",
@@ -472,6 +487,7 @@ const handleIniChange = (
 // ======================================================
 
 const handleAddIni = () => {
+  const newIndex = editForm.iniRows.length
 
   setEditForm((prev) => ({
     ...prev,
@@ -486,6 +502,15 @@ const handleAddIni = () => {
       }
     ]
   }))
+    setEditableFields((prev) => ({
+    ...prev,
+
+    [`ini_${newIndex}`]: true,
+
+    [`producto_${newIndex}`]: true
+  }))
+
+
 
 }
 // ======================================================
@@ -496,14 +521,38 @@ const handleRemoveIni = (index) => {
 
   setEditForm((prev) => {
 
+    const row =
+      prev.iniRows[index]
+
     const updated =
       prev.iniRows.filter(
         (_, i) => i !== index
       )
 
+    const deletedRows = [
+      ...prev.deletedRows
+    ]
+
+    // ======================================================
+    // SOLO AGREGAR A DELETES
+    // SI YA EXISTÍA EN DB
+    // ======================================================
+
+    if (
+      row.id_orden &&
+      !row.isNew
+    ) {
+
+      deletedRows.push({
+        id_orden: row.id_orden
+      })
+
+    }
+
     return {
       ...prev,
-      iniRows: updated
+      iniRows: updated,
+      deletedRows
     }
 
   })
@@ -516,6 +565,7 @@ const handleRemoveIni = (index) => {
 const handleUpdate = async (idCamp) => {
 
   try {
+    const token = localStorage.getItem("token")
 
     clearMessages()
 
@@ -535,28 +585,48 @@ const handleUpdate = async (idCamp) => {
     // UPDATES
     // ======================================================
 
-    const updates =
-      rowsCleaned.filter(
-        (row) =>
-          !row.isNew &&
-          row.isEdited
-      )
+const updates =
+  rowsCleaned.filter(
+    (row) =>
+      !row.isNew &&
+      row.isEdited
+  )
+// ======================================================
+// INSERTS
+// ======================================================
 
-    // ======================================================
-    // INSERTS
-    // ======================================================
+const inserts =
+  rowsCleaned
+    .filter(
+      (row) => row.isNew
+    )
+    .map((row, index) => ({
 
-    const inserts =
-      rowsCleaned.filter(
-        (row) =>
-          row.isNew
-      )
+      ...row,
+
+      // ======================================================
+      // SOLO LA PRIMERA FILA
+      // GUARDA PRODUCTO Y CAMPANIA_NAME
+      // ======================================================
+
+      producto:
+        index === 0
+          ? row.producto || ""
+          : "" ,
+
+  //    campania_name:
+    //    index === 0
+      //    ? editForm.campania_name || ""
+        //  : ""
+
+    }))
 
     // ======================================================
     // DELETES
     // ======================================================
 
-    const deletes = []
+    const deletes =
+  editForm.deletedRows || []
 
     // ======================================================
     // REQUEST
@@ -567,11 +637,13 @@ const handleUpdate = async (idCamp) => {
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           nombre: editForm.nombre,
           activa: editForm.activa,
+          producto: editForm.producto,
           updates,
           inserts,
           deletes
@@ -809,7 +881,7 @@ const handleUpdate = async (idCamp) => {
               onClick={() => setShowCreate(true)}
               className="
                 flex h-11 items-center gap-2
-                rounded-2xl bg-emerald-500 px-5
+                rounded-2xl bg-emerald-500/70 px-5
                 font-bold text-black
                 shadow-xl shadow-emerald-500/20
               "
@@ -1057,7 +1129,7 @@ const handleUpdate = async (idCamp) => {
               : "text-slate-700"
           }`}
         >
-          Activa
+          CAMPAÑA ACTIVA
         </span>
 
         <input
@@ -1072,7 +1144,7 @@ const handleUpdate = async (idCamp) => {
         />
 
       </div>
-{/* PRODUCTO */}
+{/* PRODUCTO 
 
 <div className="space-y-2">
 
@@ -1111,7 +1183,7 @@ const handleUpdate = async (idCamp) => {
   </div>
 
 </div>
-
+*/}
 {/* CAMPANIA NAME */}
 
 <div className="space-y-2">
@@ -1128,16 +1200,17 @@ const handleUpdate = async (idCamp) => {
 
   <div className="relative">
 
-    <Pencil
+    <Ban
       className="
         absolute left-3 top-1/2
         -translate-y-1/2
-        h-4 w-4 text-cyan-400
+        h-4 w-4 text-red-400
       "
     />
 
     <input
       type="text"
+      disabled // para no editar
       value={editForm.campania_name}
       onChange={(e) =>
         handleEditChange(
@@ -1145,7 +1218,7 @@ const handleUpdate = async (idCamp) => {
           e.target.value
         )
       }
-      className={`${inputClass} pl-10`}
+      className={`${inputClass} pl-10 disabled:cursor-not-allowed disabled:opacity-50`}
     />
 
   </div>
@@ -1196,7 +1269,7 @@ const handleUpdate = async (idCamp) => {
       `}
     >
       {row.isNew
-        ? "Nueva fila"
+        ? "Nueva Ini_campaña"
         : "Editar fila"}
     </span>
 
@@ -1216,34 +1289,223 @@ const handleUpdate = async (idCamp) => {
 
 </div>
 
-              <input
-                type="text"
-                placeholder="Ini Campania"
-                value={row.ini_campania}
-                onChange={(e) =>
-                  handleIniChange(
-                    index,
-                    "ini_campania",
-                    e.target.value
-                  )
-                }
-                className={inputClass}
-              />
-{/* 
-              <input
-                type="text"
-           //     placeholder="Producto"
-                value={row.producto}
-                onChange={(e) =>
-                  handleIniChange(
-                    index,
-                    "producto",
-                    e.target.value
-                  )
-                }
-                className={inputClass}
-              />
+     {/* INI CAMPANIA */}
+<div className="relative">
 
+  <input
+    type="text"
+    placeholder="Ini Campania"
+    value={row.ini_campania}
+    disabled={
+      !editableFields[`ini_${index}`]
+    }
+    onChange={(e) =>
+      handleIniChange(
+        index,
+        "ini_campania",
+        e.target.value
+      )
+    }
+    className={`
+      ${inputClass}
+      pr-14
+      disabled:cursor-not-allowed
+      disabled:opacity-70
+    `}
+  />
+
+  <div className="group">
+
+    <button
+      type="button"
+      onClick={() =>
+        setEditableFields((prev) => ({
+          ...prev,
+          [`ini_${index}`]:
+            !prev[`ini_${index}`]
+        }))
+      }
+      className={`
+        absolute right-3 top-1/2
+        flex h-8 w-8
+        -translate-y-1/2
+        items-center justify-center
+        rounded-full border
+        transition-all duration-200
+        hover:scale-110
+
+        ${editableFields[`ini_${index}`]
+          ? `
+            border-red-500/30
+            bg-red-500/15
+            text-red-600
+            hover:bg-red-500/25
+          `
+          : `
+            border-yellow-500/30
+            bg-yellow-500/15
+            text-yellow-600
+            hover:bg-yellow-500/25
+          `
+        }
+      `}
+    >
+
+      {editableFields[`ini_${index}`]
+        ? (
+          <Ban className="h-4 w-4" />
+        )
+        : (
+          <Pencil className="h-4 w-4" />
+        )
+      }
+
+    </button>
+
+    <div
+      className="
+        pointer-events-none absolute
+        right-0 top-[-42px]
+        z-50
+
+        rounded-xl
+        border border-slate-700
+        bg-[#151821]
+
+        px-3 py-2
+
+        text-[11px]
+        font-bold
+        text-white
+
+        opacity-0
+        shadow-2xl
+        transition-all duration-200
+
+        group-hover:opacity-100
+      "
+    >
+      {editableFields[`ini_${index}`]
+        ? "Deshabilitar edición"
+        : "Habilitar edición"
+      }
+    </div>
+
+  </div>
+
+</div>
+
+{/* PRODUCTO input */}
+
+{index === 0 && (
+
+  <div className="relative">
+
+    <input
+      type="text"
+      placeholder="Producto"
+      value={row.producto}
+      disabled={
+        !editableFields[`producto_${index}`]
+      }
+      onChange={(e) =>
+        handleIniChange(
+          index,
+          "producto",
+          e.target.value
+        )
+      }
+      className={`
+        ${inputClass}
+        pr-14
+        disabled:cursor-not-allowed
+        disabled:opacity-70
+      `}
+    />
+
+    <div className="group">
+
+      <button
+        type="button"
+        onClick={() =>
+          setEditableFields((prev) => ({
+            ...prev,
+            [`producto_${index}`]:
+              !prev[`producto_${index}`]
+          }))
+        }
+        className={`
+          absolute right-3 top-1/2
+          flex h-8 w-8
+          -translate-y-1/2
+          items-center justify-center
+          rounded-full border
+          transition-all duration-200
+          hover:scale-110
+
+          ${editableFields[`producto_${index}`]
+            ? `
+              border-red-500/30
+              bg-red-500/15
+              text-red-600
+              hover:bg-red-500/25
+            `
+            : `
+              border-yellow-500/30
+              bg-yellow-500/15
+              text-yellow-600
+              hover:bg-yellow-500/25
+            `
+          }
+        `}
+      >
+
+        {editableFields[`producto_${index}`]
+          ? (
+            <Ban className="h-4 w-4" />
+          )
+          : (
+            <Pencil className="h-4 w-4" />
+          )
+        }
+
+      </button>
+
+      <div
+        className="
+          pointer-events-none absolute
+          right-0 top-[-42px]
+          z-50
+
+          rounded-xl
+          border border-slate-700
+          bg-[#151821]
+
+          px-3 py-2
+
+          text-[11px]
+          font-bold
+          text-white
+
+          opacity-0
+          shadow-2xl
+          transition-all duration-200
+
+          group-hover:opacity-100
+        "
+      >
+        {editableFields[`producto_${index}`]
+          ? "Deshabilitar edición"
+          : "Habilitar edición"
+        }
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+{/*
               <input
                 type="text"
            //     placeholder="Campania Name"
@@ -1274,7 +1536,7 @@ const handleUpdate = async (idCamp) => {
         className="
           flex h-11 w-full items-center
           justify-center gap-2 rounded-2xl
-          bg-cyan-500 font-bold text-black
+          bg-cyan-500/70 opacity-90 font-bold text-black
         "
       >
 
@@ -1317,9 +1579,15 @@ const handleUpdate = async (idCamp) => {
 
       <div className="mt-5 flex flex-col gap-4">
 
-  {coreIni.length > 0 ? (
+{coreIni.length > 0 ? (
 
-    coreIni.map((row, index) => (
+  coreIni
+    .filter((row) =>
+      row.producto?.trim() ||
+      row.ini_campania?.trim() ||
+      row.campania_name?.trim()
+    )
+    .map((row, index) => (
 
       <div
         key={row.id_orden || index}
@@ -1332,32 +1600,38 @@ const handleUpdate = async (idCamp) => {
         `}
       >
 
-        <InfoRow
-          icon={<FaDatabase />}
-          label="Producto"
-          value={row.producto?.trim() || "-"}
-          isDark={isDark}
-        />
+        {row.producto?.trim() && (
+          <InfoRow
+            icon={<FaDatabase />}
+            label="Producto"
+            value={row.producto}
+            isDark={isDark}
+          />
+        )}
 
-        <InfoRow
-          icon={<FaLayerGroup />}
-          label="Ini Campaña"
-          value={row.ini_campania || "-"}
-          isDark={isDark}
-        />
+        {row.ini_campania?.trim() && (
+          <InfoRow
+            icon={<FaLayerGroup />}
+            label="Ini Campaña"
+            value={row.ini_campania}
+            isDark={isDark}
+          />
+        )}
 
-        <InfoRow
-          icon={<FaCheckCircle />}
-          label="Campaña Name"
-          value={row.campania_name || "-"}
-          isDark={isDark}
-        />
+        {row.campania_name?.trim() && (
+          <InfoRow
+            icon={<FaCheckCircle />}
+            label="Campaña Name"
+            value={row.campania_name}
+            isDark={isDark}
+          />
+        )}
 
       </div>
 
     ))
 
-  ) : (
+) : (
 
     <div
       className={`
@@ -1419,7 +1693,7 @@ const handleUpdate = async (idCamp) => {
         className="
           flex h-11 w-full items-center
           justify-center rounded-2xl
-          bg-emerald-500 font-bold text-black
+          bg-emerald-500/70 font-bold text-black
         "
       >
 
@@ -1462,7 +1736,7 @@ const handleUpdate = async (idCamp) => {
         className="
           flex h-11 w-full items-center
           justify-center gap-2 rounded-2xl
-          bg-cyan-500 font-bold text-black
+          bg-yellow-500/70 font-bold text-black
         "
       >
 
@@ -1479,7 +1753,7 @@ const handleUpdate = async (idCamp) => {
         className="
           flex h-11 w-full items-center
           justify-center gap-2 rounded-2xl
-          bg-red-500 font-bold text-white
+          bg-red-500/90 font-bold text-white
         "
       >
 
@@ -1640,9 +1914,9 @@ const handleUpdate = async (idCamp) => {
                       }
                     `}
                   >
-                    Nueva Campaña
+                    Crear campaña
                   </h2>
-{ /* 
+
                   <p
                     className={`
                       mt-1 text-sm
@@ -1652,9 +1926,9 @@ const handleUpdate = async (idCamp) => {
                       }
                     `}
                   >
-                    Crear campaña completa en todos los módulos
+                    Antes de crear una nueva campaña, asegurate de leer los indices de cada campo
                   </p>
-*/}
+
                 </div>
 
                 <motion.button
@@ -1752,166 +2026,456 @@ const handleUpdate = async (idCamp) => {
 </div>
               {/* BODY */}
 
-              <div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
+<div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
 
-                <div>
+  <div>
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-400">
-                    ID Campaña
-                  </label>
+    <label
+      className="
+        mb-2 flex items-center gap-2
+        text-sm font-semibold text-slate-400
+      "
+    >
+      ID Campaña
 
-                  <input
-                    type="number"
-                    value={idCamp}
-                    onChange={(e) =>
-                      setIdCamp(e.target.value)
-                    }
-                    className={inputClass}
-                  />
+      <div className="group relative flex items-center">
 
-                </div>
+        <FaCircleInfo
+          className="
+            cursor-pointer text-[15px]
+            text-slate-400 transition-all
+            duration-200 hover:scale-110
+            hover:text-slate-300
+          "
+        />
 
-                <div>
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-[140%]
+            z-[999]
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-400">
-                    Nombre
-                  </label>
+            w-max max-w-[240px]
+            -translate-x-1/2
 
-                  <input
-                    type="text"
-                    value={nombre}
-                    onChange={(e) =>
-                      setNombre(e.target.value)
-                    }
-                    className={inputClass}
-                  />
+            rounded-xl
+            border border-slate-700
+            bg-[#151821]
 
-                </div>
+            px-3 py-2
 
-                <div>
+            text-center text-xs
+            font-semibold text-white
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-400">
-                    Ini Campania
-                  </label>
+            whitespace-normal
+            break-words
 
-                  <input
-                    type="text"
-                    value={iniCampania}
-                    onChange={(e) =>
-                      setIniCampania(e.target.value)
-                    }
-                    className={inputClass}
-                  />
+            opacity-0
+            shadow-2xl
+            transition-all duration-200
+            group-hover:opacity-100
+          "
+        >
+          Este es el numero con el que se identificara a la campaña, debe ser unico y no se puede repetir
+        </div>
 
-                </div>
+      </div>
 
-                <div>
+    </label>
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-400">
-                    Producto
-                  </label>
+    <input
+      type="number"
+      value={idCamp}
+      onChange={(e) =>
+        setIdCamp(e.target.value)
+      }
+      className={inputClass}
+    />
 
-                  <input
-                    type="text"
-                    value={producto}
-                    onChange={(e) =>
-                      setProducto(e.target.value)
-                    }
-                    className={inputClass}
-                  />
+  </div>
 
-                </div>
+  <div>
 
-                <div className="md:col-span-2">
+    <label
+      className="
+        mb-2 flex items-center gap-2
+        text-sm font-semibold text-slate-400
+      "
+    >
+      Nombre
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-400">
-                    Campania Name
-                  </label>
+      <div className="group relative flex items-center">
 
-                  <input
-                    type="text"
-                    value={campaniaName}
-                    onChange={(e) =>
-                      setCampaniaName(e.target.value)
-                    }
-                    className={inputClass}
-                  />
+        <IoMdWarning
+          className="
+            cursor-pointer text-[17px]
+            text-[#CC9923] transition-all
+            duration-200 hover:scale-110
+            hover:text-[#CC9923]
+          "
+        />
 
-                </div>
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-[140%]
+            z-[999]
 
-                <div
-                  className={`
-                    flex items-center justify-between
-                    rounded-2xl border p-4
-                    md:col-span-2
-                    ${isDark
-                      ? `
-                        border-[#343746]
-                        bg-[#1F2029]
-                      `
-                      : `
-                        border-slate-200
-                        bg-slate-50
-                      `
-                    }
-                  `}
-                >
+            w-max max-w-[240px]
+            -translate-x-1/2
 
-                  <span
-                    className={`
-                      text-sm font-semibold
-                      ${isDark
-                        ? "text-slate-300"
-                        : "text-slate-700"
-                      }
-                    `}
-                  >
-                    Campaña activa
-                  </span>
+            rounded-xl
+            border border-yellow-500/30
+            bg-[#151821]
 
-                  <input
-                    type="checkbox"
-                    checked={activa}
-                    onChange={(e) =>
-                      setActiva(e.target.checked)
-                    }
-                    className="h-5 w-5"
-                  />
+            px-3 py-2
 
-                </div>
+            text-center text-xs
+            font-semibold text-yellow-200
 
-                <div className="md:col-span-2">
+            whitespace-normal
+            break-words
 
-                  <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={handleCreate}
-                    disabled={loadingCreate}
-                    className="
-                      flex h-12 w-full items-center
-                      justify-center gap-2 rounded-2xl
-                      bg-emerald-500 font-black text-black
-                      shadow-lg shadow-emerald-500/20
-                      disabled:opacity-60
-                    "
-                  >
+            opacity-0
+            shadow-2xl
+            transition-all duration-200
+            group-hover:opacity-100
+          "
+        >
+          Este es el nombre que se mostrará para la campaña en la plataforma
+        </div>
 
-                    {loadingCreate
-                      ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      )
-                      : (
-                        <FaPlus />
-                      )
-                    }
+      </div>
 
-                    Crear Campaña
+    </label>
 
-                  </motion.button>
+    <input
+      type="text"
+      value={nombre}
+      onChange={(e) =>
+        setNombre(e.target.value)
+      }
+      className={inputClass}
+    />
 
-                </div>
+  </div>
 
-              </div>
+  <div>
+
+    <label
+      className="
+        mb-2 flex items-center gap-2
+        text-sm font-semibold text-slate-400
+      "
+    >
+      Ini Campania
+
+      <div className="group relative flex items-center">
+
+        <FaCircleInfo
+          className="
+            cursor-pointer text-[15px]
+            text-slate-400 transition-all
+            duration-200 hover:scale-110
+            hover:text-slate-300
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-[140%]
+            z-[999]
+
+            w-max max-w-[240px]
+            -translate-x-1/2
+
+            rounded-xl
+            border border-slate-700
+            bg-[#151821]
+
+            px-3 py-2
+
+            text-center text-xs
+            font-semibold text-white
+
+            whitespace-normal
+            break-words
+
+            opacity-0
+            shadow-2xl
+            transition-all duration-200
+            group-hover:opacity-100
+          "
+        >
+          Este es el Ini_campania asignado a tu nueva campaña
+        </div>
+
+      </div>
+
+    </label>
+
+    <input
+      type="text"
+      value={iniCampania}
+      onChange={(e) =>
+        setIniCampania(e.target.value)
+      }
+      className={inputClass}
+    />
+
+  </div>
+
+  <div>
+
+    <label
+      className="
+        mb-2 flex items-center gap-2
+        text-sm font-semibold text-slate-400
+      "
+    >
+      Producto
+
+      <div className="group relative flex items-center">
+
+        <FaCircleInfo
+          className="
+            cursor-pointer text-[15px]
+            text-slate-400 transition-all
+            duration-200 hover:scale-110
+            hover:text-slate-300
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-[140%]
+            z-[999]
+
+            w-max max-w-[240px]
+            -translate-x-1/2
+
+            rounded-xl
+            border border-slate-700
+            bg-[#151821]
+
+            px-3 py-2
+
+            text-center text-xs
+            font-semibold text-white
+
+            whitespace-normal
+            break-words
+
+            opacity-0
+            shadow-2xl
+            transition-all duration-200
+            group-hover:opacity-100
+          "
+        >
+          Este es el producto asociado a la campaña
+        </div>
+
+      </div>
+
+    </label>
+
+    <input
+      type="text"
+      value={producto}
+      onChange={(e) =>
+        setProducto(e.target.value)
+      }
+      className={inputClass}
+    />
+
+  </div>
+
+  <div className="md:col-span-2">
+
+    <label
+      className="
+        mb-2 flex items-center gap-2
+        text-sm font-semibold text-slate-400
+      "
+    >
+      Campania Name
+
+      <div className="group relative flex items-center">
+
+        <IoMdWarning
+          className="
+            cursor-pointer text-[17px]
+            text-[#CC9923] transition-all
+            duration-200 hover:scale-110
+            hover:text-[#CC9923]
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-[140%]
+            z-[999]
+
+            w-max max-w-[240px]
+            -translate-x-1/2
+
+            rounded-xl
+            border border-yellow-500/30
+            bg-[#151821]
+
+            px-3 py-2
+
+            text-center text-xs
+            font-semibold text-yellow-200
+
+            whitespace-normal
+            break-words
+
+            opacity-0
+            shadow-2xl
+            transition-all duration-200
+            group-hover:opacity-100
+          "
+        >
+          Este es el nombre de la campaña que se inserta en la base de datos
+        </div>
+
+      </div>
+
+    </label>
+
+    <input
+      type="text"
+      value={campaniaName}
+      onChange={(e) =>
+        setCampaniaName(e.target.value)
+      }
+      className={inputClass}
+    />
+
+  </div>
+
+  <div
+    className={`
+      flex items-center justify-between
+      rounded-2xl border p-4
+      md:col-span-2
+      ${isDark
+        ? `
+          border-[#343746]
+          bg-[#1F2029]
+        `
+        : `
+          border-slate-200
+          bg-slate-50
+        `
+      }
+    `}
+  >
+
+    <span
+      className={`
+        flex items-center gap-2
+        text-sm font-semibold
+        ${isDark
+          ? "text-slate-300"
+          : "text-slate-700"
+        }
+      `}
+    >
+      Campaña activa
+
+      <div className="group relative flex items-center">
+
+        <FaCircleInfo
+          className="
+            cursor-pointer text-[15px]
+            text-slate-400 transition-all
+            duration-200 hover:scale-110
+            hover:text-slate-300
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none absolute
+            left-1/2 top-[140%]
+            z-[999]
+
+            w-max max-w-[240px]
+            -translate-x-1/2
+
+            rounded-xl
+            border border-slate-700
+            bg-[#151821]
+
+            px-3 py-2
+
+            text-center text-xs
+            font-semibold text-white
+
+            whitespace-normal
+            break-words
+
+            opacity-0
+            shadow-2xl
+            transition-all duration-200
+            group-hover:opacity-100
+          "
+        >
+          La campaña a agregar puede estar inicialmente inactiva
+        </div>
+
+      </div>
+
+    </span>
+
+    <input
+      type="checkbox"
+      checked={activa}
+      onChange={(e) =>
+        setActiva(e.target.checked)
+      }
+      className="h-5 w-5"
+    />
+
+  </div>
+
+  <div className="md:col-span-2">
+
+    <motion.button
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={handleCreate}
+      disabled={loadingCreate}
+      className="
+        flex h-12 w-full items-center
+        justify-center gap-2 rounded-2xl
+        bg-emerald-500/70 font-black text-black
+        shadow-lg shadow-emerald-500/20
+        disabled:opacity-60
+      "
+    >
+
+      {loadingCreate
+        ? (
+          <Loader2 className="h-5 w-5 animate-spin" />
+        )
+        : (
+          <FaPlus />
+        )
+      }
+
+      Crear Campaña
+
+    </motion.button>
+
+  </div>
+
+</div>
 
             </motion.div>
 

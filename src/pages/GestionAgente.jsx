@@ -95,11 +95,16 @@ const [showPassword, setShowPassword] = useState({});
   const getAgentes = async () => {
 
     try {
+      const token = localStorage.getItem("token");
 
       setLoading(true);
 
       const res = await fetch(
-        `${API}/campana/${idCampana}`
+        `${API}/campana/${idCampana}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       const data = await res.json();
@@ -249,7 +254,7 @@ const [showPassword, setShowPassword] = useState({});
                 ${isDark ? "text-white" : "text-slate-800"}
               `}
             >
-              Lista de Usuarios
+              Lista de Agentes
             </h1>
 
            
@@ -306,16 +311,24 @@ const [showPassword, setShowPassword] = useState({});
               whileHover={{ scale: 1.03 }}
               onClick={() => setShowAgregar(true)}
               className="
-                flex h-11 items-center gap-2 rounded-2xl
-                bg-green-700 px-5 font-semibold text-white
-                shadow-lg shadow-green-500/20
-              "
+              flex items-center gap-2
+              rounded-2xl
+              bg-gradient-to-r
+              from-emerald-700
+              via-emerald-500
+              to-green-500
+              px-6 py-3
+              text-sm font-bold text-white
+              shadow-2xl shadow-green-500/30
+              transition-all
+              hover:shadow-green-500/50
+              disabled:opacity-50 cursor-pointer
+            "
             >
 
              <FaPlus className="text-sm" />
 
-              Nuevo Usuario
-
+              Agregar agente
             </motion.button>
 
           </div>
@@ -793,7 +806,7 @@ const [showPassword, setShowPassword] = useState({});
     flex h-10 w-10 items-center justify-center
     rounded-xl bg-amber-400 text-slate-800
     transition-all hover:bg-amber-300
-    shadow-md
+    shadow-md cursor-pointer
   "
 >
 
@@ -1156,7 +1169,8 @@ function FuenteCard({
 
   const save = async () => {
 
-    try {
+    try { 
+      const token = localStorage.getItem("token");
 
       await fetch(
         `${API}/horario`,
@@ -1164,6 +1178,7 @@ function FuenteCard({
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
             id_carteriza: idCarteriza,
@@ -1247,11 +1262,15 @@ function DeleteButton({ id, reload }) {
     if (!ok) return;
 
     try {
+      const token = localStorage.getItem("token");
 
       await fetch(
         `${API}/campana/${id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
       );
 
@@ -1271,7 +1290,7 @@ function DeleteButton({ id, reload }) {
       onClick={remove}
       className="
         flex h-10 w-10 items-center justify-center
-        rounded-xl bg-red-500 text-white
+        rounded-xl bg-red-500 text-white cursor-pointer transition-all hover:bg-red-600
       "
     >
       <Trash2 className="h-4 w-4" />
@@ -1295,9 +1314,7 @@ function FuenteHorario({
     tiktok: "5",
   };
 
-  // ACA ESTA EL ERROR QUE TENIAS:
-  // TU BACK DEVUELVE "1", "2", "3"
-  // Y TU FRONT BUSCABA "whatsapp"
+  // el back devuelve ids numericos, hay que mapearlos a string para encontrar el horario correspondiente
 
   const horario = item.fuentes?.find(
     (x) => String(x.fuente) === fuenteMap[fuente]

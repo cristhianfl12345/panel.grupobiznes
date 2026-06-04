@@ -11,9 +11,12 @@ export const ROLES = {
   GERENCIA: 6,
 }
 
+
 export default function ProtectedFiles({ children, allow = [] }) {
 
-  const idTipoUsuario = Number(localStorage.getItem("id_tipo_usuario"))
+  const user = JSON.parse(localStorage.getItem("user") || "{}")
+
+  const idTipoUsuario = Number(user.id_tipo_usuario)
 
   // 🚫 sin sesión
   if (!idTipoUsuario) {
@@ -24,7 +27,7 @@ export default function ProtectedFiles({ children, allow = [] }) {
   const isAllowed = allow.includes(idTipoUsuario)
 
   if (!isAllowed) {
-    return null // 👈 oculta completamente el componente
+    return null
   }
 
   return children

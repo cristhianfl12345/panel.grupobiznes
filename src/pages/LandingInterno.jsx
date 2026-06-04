@@ -165,15 +165,23 @@ export default function LandingInterno() {
   const loadData = async () => {
 
     try {
-
+const token = localStorage.getItem("token")
       setLoadingData(true)
 
       const [
         campaniaRes,
         tiposBaseRes
       ] = await Promise.all([
-        axios.get(`${API}/campania?camp=${camp}`),
-        axios.get(`${API}/tipos-base?camp=${camp}`)
+        axios.get(`${API}/campania?camp=${camp}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }),
+        axios.get(`${API}/tipos-base?camp=${camp}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
       ])
 
       const campaniaData = campaniaRes.data.data
@@ -260,7 +268,12 @@ export default function LandingInterno() {
       setLoadingTelefono(true)
 
       const { data } = await axios.get(
-        `${API}/telefono/${idOrigen}`
+        `${API}/telefono/${idOrigen}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
 
       const telefono =
@@ -305,6 +318,7 @@ const handleSubmit = async (e) => {
   e.preventDefault()
 
   try {
+    const token = localStorage.getItem("token")
 
     setLoading(true)
 
@@ -314,6 +328,10 @@ const handleSubmit = async (e) => {
       idcampania: camp,
       idusuario: nroDoc,
       id_anuncio: idOrigen,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }, {
       
     })
 

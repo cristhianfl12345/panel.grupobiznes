@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import PopUpAdmin from "../routes/PopUpAdmin";
 import PopUpSupervisor from "../routes/PopUpSupervisor";
-import ProtectedFiles, { ROLES } from "../routes/ProtectedFiles" 
+import ProtectedFiles, { ROLES } from "../routes/ProtectedFiles";
+import ProfileCard from "../components/ProfileCard";
 import Login from "../routes/Login";
 import {
   Menu,
@@ -47,7 +48,8 @@ export default function HeaderLayout({ children }) {
 const fullName = user
   ? `${user.nombres} ${user.apellidos}`
   : "";
-
+// para el perfil
+const [showProfile, setShowProfile] = useState(false)
 //campañas por usuario inicio
 
 const [openNotif, setOpenNotif] = useState(false);
@@ -68,13 +70,19 @@ const [openCampanasClientes, setOpenCampanasClientes] = useState(false)
 useEffect(() => {
   const loadCampanas = async () => {
     try {
+      const token = localStorage.getItem("token");
       const storedUser = localStorage.getItem("user");
       if (!storedUser) return;
 
       const user = JSON.parse(storedUser);
 
       const res = await fetch(
-        `http://192.168.9.115:4000/api/auth/mis-campanas/${user.id}`
+        `http://192.168.9.115:4000/api/auth/mis-campanas/${user.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
 
       const data = await res.json();
@@ -206,9 +214,9 @@ const limpiarNombreVista = (nombre) => {
                 : m.id_modulo === 3
                 ? "MONITOR DE BASES"
                 : m.id_modulo === 4
-                ?"LANDING"
+                ?"LANDING INTERNO"
                 : m.id_modulo === 5
-                ?"GESTION DE AGENTE"
+                ?"MODULO DE AGENTE"
                 : "MODULO",
             ruta:
               m.id_modulo === 1
@@ -258,10 +266,12 @@ const [openPersonal, setOpenPersonal] = useState(false);
   const [openSupervisor, setOpenSupervisor] = useState(false);
 
   //restriccion de notificaicones por roles:
-  const tipoUsuario = Number(localStorage.getItem("id_tipo_usuario"));
+const user_idTipoUser = JSON.parse(localStorage.getItem("user") || "{}");
 
-const esSupervisor = [3,4,5].includes(tipoUsuario);
-const esAdmin = [1,2,6].includes(tipoUsuario);
+const tipoUsuario = Number(user_idTipoUser.id_tipo_usuario);
+
+const esSupervisor = [3, 4, 5].includes(tipoUsuario);
+const esAdmin = [1, 2, 6].includes(tipoUsuario);
 
 // cierre de sesion
 const handleLogout = () => {
@@ -271,7 +281,7 @@ const handleLogout = () => {
   // borrar solo lo relacionado al usuario pero mantener el tema (Dark/Light)
   localStorage.removeItem("token");
   localStorage.removeItem("user");
-  localStorage.removeItem("id_tipo_usuario");
+  localStorage.removeItem("user_checksum");
   //localStorage.removeItem("notificaciones_cerradas_supervisor");
  // localStorage.removeItem("notificaciones_cerradas_admin");
 
@@ -1132,7 +1142,35 @@ return (
   </>
 )} </div>
             {/* USER MENU */}
-
+{showProfile && (
+  <div
+    className="
+      fixed inset-0 z-[9999]
+      flex items-center justify-center
+      bg-black/50 backdrop-blur-sm
+    "
+    onClick={() => setShowProfile(false)}
+  >
+    <div onClick={(e) => e.stopPropagation()}>
+      <ProfileCard
+        name="Javi A. Torres"
+        title="Software Engineer"
+        handle="javicodes"
+        status="Online"
+        contactText="Contact Me"
+        avatarUrl="/avatar.jpg"
+        showUserInfo={false}
+        enableTilt={true}
+        enableMobileTilt={false}
+        onContactClick={() => console.log("Contact clicked")}
+        behindGlowColor="rgba(125, 190, 255, 0.67)"
+        iconUrl="/male-icon.svg"
+        behindGlowEnabled
+        innerGradient="linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)"
+      />
+    </div>
+  </div>
+)}
             <div className="relative">
 
               <button
@@ -1157,7 +1195,7 @@ return (
 
               <AnimatePresence>
                 <div ref={userMenuRef}>
-
+{/* profile */}
                 {userMenu && (
 
                   <motion.div
@@ -1172,9 +1210,15 @@ return (
                     `}
                   >
 
-                    <button className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition">
-                      Perfil
-                    </button>
+                    <button
+  onClick={() => {
+    setShowProfile(true)
+    setUserMenu(false)
+  }}
+  className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition"
+>
+  Perfil
+</button>
 
                     <button className="w-full text-left px-4 py-2.5 hover:bg-gray-100 transition border-b">
                       Configuración
