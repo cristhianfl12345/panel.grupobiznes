@@ -886,7 +886,7 @@ setModoEdicionAgente(false)
         )
 
 //case 'PRUEBA':
-// case 'semaforoTipoLead':
+ case 'Carterizacion':
 case '__asignacion_agente__':
 
   return (

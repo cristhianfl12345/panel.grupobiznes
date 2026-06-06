@@ -70,7 +70,7 @@ useEffect(() => {
     localStorage.removeItem("user")
     localStorage.removeItem("user_checksum")
 
-    alert("La sesión ha sido cerrada por inconsistencia de datos 🐀🐭.")
+    alert("La sesión ha sido cerrada por inconsistencia de datos.")
 
     navigate("/login", { replace: true })
 
