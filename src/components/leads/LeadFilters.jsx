@@ -907,10 +907,10 @@ const token = localStorage.getItem('token')
                         items-center justify-center
                         rounded-2xl
                         bg-gradient-to-br
-                        from-blue-300
-                        to-cyan-300
+                        from-slate-400
+                        to-slate-300
                         text-white
-                        shadow-xl shadow-blue-500/30
+                        shadow-xl shadow-indigo-500/30
                       "
                     >
 
@@ -1097,10 +1097,10 @@ const token = localStorage.getItem('token')
                           items-center justify-center
                           rounded-2xl
                           bg-gradient-to-br
-                          from-emerald-400
-                          to-green-300
+                          from-slate-400
+                          to-slate-300
                           text-white
-                          shadow-xl shadow-green-500/30
+                          shadow-xl shadow-indigo-500/30
                         "
                       >
 
@@ -1194,10 +1194,10 @@ const token = localStorage.getItem('token')
                           items-center justify-center
                           rounded-2xl
                           bg-gradient-to-br
-                          from-rose-400
-                          to-red-300
+                          from-slate-400
+                          to-slate-300
                           text-white
-                          shadow-xl shadow-red-500/30
+                          shadow-xl shadow-indigo-500/30
                         "
                       >
 
@@ -1346,14 +1346,14 @@ const token = localStorage.getItem('token')
                     flex items-center gap-2
                     rounded-2xl
                     bg-gradient-to-r
-                    from-blue-400
-                    via-indigo-400
-                    to-cyan-400
+                    from-slate-400
+                    via-slate-300
+                    to-slate-400
                     px-6 py-3
-                    text-sm font-bold text-white
-                    shadow-2xl shadow-blue-500/30
+                    text-sm font-bold text-slate-700
+                    shadow-2xl shadow-slate-500/60
                     transition-all
-                    hover:shadow-blue-500/50
+                    hover:shadow-indigo-500/50
                   "
                 >
 

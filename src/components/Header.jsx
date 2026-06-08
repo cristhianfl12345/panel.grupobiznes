@@ -282,6 +282,7 @@ const handleLogout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   localStorage.removeItem("user_checksum");
+  localStorage.removeItem("auth");
   //localStorage.removeItem("notificaciones_cerradas_supervisor");
  // localStorage.removeItem("notificaciones_cerradas_admin");
 

@@ -89,7 +89,7 @@ useEffect(() => {
       localStorage.removeItem("user_checksum")
 
       alert(
-        "La sesión ha sido cerrada porque se detectó una modificación no autorizada de los datos del usuario 🐀🐭."
+        "La sesión ha sido cerrada porque se detectó una modificación no autorizada de los datos del usuario."
       )
 
       navigate("/login", { replace: true })
