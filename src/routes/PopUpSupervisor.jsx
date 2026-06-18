@@ -80,7 +80,7 @@ export default function PopUpSupervisor({ open, setOpen }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io("http://192.168.9.115:4000", {
+    const socket = io("https://panel.bizapp.pe", {
       auth: { token },
       transports: ["websocket"],
     });

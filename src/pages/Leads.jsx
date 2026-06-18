@@ -7,6 +7,8 @@ import LeadFilters from '../components/leads/LeadFilters'
 import LeadTable from '../components/leads/LeadTable'
 import { useLocalTheme } from '../context/useLocalTheme'
 import Loader from '../pages/Loader'
+import { FaPlus } from "react-icons/fa";
+
 
 export default function Leads() {
 
@@ -24,12 +26,33 @@ export default function Leads() {
 
   const [searchText, setSearchText] = useState('')
   const [toast, setToast] = useState(null)
+  const [mostrarNivel2, setMostrarNivel2] =
+  useState(false)
 
-  // NUEVO: filtros por columnas
+const columnasNivel1 = useMemo(() => {
+  return columns.filter(
+    c =>
+      c.key === 'index' ||
+      Number(c.nivel_vista) === 1
+  )
+}, [columns])
+
+const columnasNivel2 = useMemo(() => {
+  return columns.filter(
+    c => Number(c.nivel_vista) === 2
+  )
+}, [columns])
+
+  // filtros por columnas
+  const compare = (a, b) =>
+  String(a ?? '').trim() === String(b ?? '').trim()
+
   const [columnFilters, setColumnFilters] = useState({
     pautanameanuncio: '',
     CampaOrigen: '',
-    Alias: ''
+    Alias: '',
+    discador: '',
+    gestiones: ''
   })
 
   const handleCopy = async (text) => {
@@ -73,15 +96,16 @@ export default function Leads() {
         const jsonKeys = Object.keys(rows[0])
 
         const matchedColumns = vistas
-          .filter(col => jsonKeys.includes(col.query_vista))
-          .map(col => ({
-            key: col.query_vista,
-            label: col.Vista,
-            visible: col.activo
-          }))
+  .filter(col => jsonKeys.includes(col.query_vista))
+  .map(col => ({
+    key: col.query_vista,
+    label: col.Vista,
+    visible: col.activo,
+    nivel_vista: Number(col.nivel_vista)
+  }))
 
         setColumns([
-          { key: 'index', label: 'N', visible: true },
+          { key: 'index', label: '#N', visible: true, expandable: true },
           ...matchedColumns
         ])
       }
@@ -127,19 +151,39 @@ export default function Leads() {
   }, [leads, searchText])
 
   // FILTROS POR COLUMNAS (tipo BI)
-  const filteredLeads = useMemo(() => {
+const filteredLeads = useMemo(() => {
 
-    return searchedLeads.filter(l => {
+  return searchedLeads.filter(l => {
 
-      return (
-        (!columnFilters.pautanameanuncio || l.pautanameanuncio === columnFilters.pautanameanuncio) &&
-        (!columnFilters.CampaOrigen || l.CampaOrigen === columnFilters.CampaOrigen) &&
-        (!columnFilters.Alias || l.Alias === columnFilters.Alias)
-      )
+  const discador =
+    Number(l.discador) || 0
 
-    })
+  const gestiones =
+    Number(l.gestiones) || 0
 
-  }, [searchedLeads, columnFilters])
+  return (
+    (!columnFilters.pautanameanuncio ||
+      compare(l.pautanameanuncio, columnFilters.pautanameanuncio)) &&
+
+    (!columnFilters.CampaOrigen ||
+      compare(l.CampaOrigen, columnFilters.CampaOrigen)) &&
+
+    (!columnFilters.Alias ||
+      compare(l.Alias, columnFilters.Alias)) &&
+
+    (
+      !columnFilters.discador ||
+      discador === Number(columnFilters.discador)
+    ) &&
+
+    (
+      !columnFilters.gestiones ||
+      gestiones === Number(columnFilters.gestiones)
+    )
+  )
+
+})
+}, [searchedLeads, columnFilters])
 
   return (
 
@@ -172,13 +216,14 @@ export default function Leads() {
         />
 
         <LeadTable
-          leads={filteredLeads} // DATA FINAL FILTRADA
-          loading={loading}
-          searched={searched}
-          onCopy={handleCopy}
-          columns={columns}
-          setColumns={setColumns}
-        />
+  leads={filteredLeads}
+  loading={loading}
+  searched={searched}
+  onCopy={handleCopy}
+  columns={columnasNivel1}
+  detailColumns={columnasNivel2}
+  setColumns={setColumns}
+/>
 
       </div>
 

@@ -20,7 +20,8 @@ import {
 
 import { INDICE_CAMPS } from "../context/indiceCamps"
 
-const API_URL = "http://192.168.9.115:4000"
+const API_URL = "https://panel.bizapp.pe"
+// const API_URL = "https://panel.bizapp.pe"
 
 export default function AgregarAgente({ user }) {
 

@@ -7,7 +7,9 @@ import ProtectedFiles, { ROLES } from "../routes/ProtectedFiles"
 
 export default function ControlMarcadores() {
 
-  const API = "http://192.168.9.115:4000/api"
+   const API = "https://panel.bizapp.pe/api"
+  
+  // const API = "https://panel.bizapp.pe/api"
 
   const [searchParams] = useSearchParams()
   const idCampFromUrl = searchParams.get("camp")
@@ -313,7 +315,8 @@ const moverSpamBulk = async () => {
 
   try {
     const token = localStorage.getItem("token")
-    const response = await fetch("http://192.168.9.115:4000/api/mover-spam-bulk", {
+    const response = await fetch("https://panel.bizapp.pe/api/mover-spam-bulk", {
+    //  const response = await fetch("https://panel.bizapp.pe/api/mover-spam-bulk", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -352,7 +355,8 @@ const reemplazarSpamBulk = async () => {
 
   try {
     const token = localStorage.getItem("token")
-    const response = await fetch("http://192.168.9.115:4000/api/reemplazar-spam-bulk", {
+    const response = await fetch("https://panel.bizapp.pe/api/reemplazar-spam-bulk", {
+    //  const response = await fetch("https://panel.bizapp.pe/api/reemplazar-spam-bulk", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

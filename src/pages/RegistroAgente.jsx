@@ -24,7 +24,8 @@ import {
 
 import { useLocalTheme } from "../context/useLocalTheme"
 
-const API = "http://192.168.9.115:4000/api"
+const API = "https://panel.bizapp.pe/api"
+//const API = "https://panel.bizapp.pe/api"
 
 // =========================
 // AUTH

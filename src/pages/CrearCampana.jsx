@@ -33,7 +33,8 @@ import {
 // ======================================================
 
 const API =
-  "http://192.168.9.115:4000/api/crear-campanas"
+  "https://panel.bizapp.pe/api/crear-campanas"
+ // "https://panel.bizapp.pe/api/crear-campanas"
 
 // ======================================================
 // PAGINATION

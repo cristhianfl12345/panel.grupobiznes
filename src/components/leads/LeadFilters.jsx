@@ -20,8 +20,11 @@ import {
   CalendarDays,
   Send,
   Users,
-  Loader2
+  Loader2,
+  Eye,
+  EyeOff
 } from "lucide-react"
+import { IoSettingsOutline } from "react-icons/io5";
 
 import {
   motion,
@@ -32,6 +35,8 @@ import { useLocalTheme } from '../../context/useLocalTheme'
 import { getSubcampanias } from '../../services/leads.service'
 import ColumnCustomizer from './ColumnCustomizer'
 import { INDICE_CAMPS } from '../../context/indiceCamps'
+import DescargarInfo from "../visualizaciones/DescargarInfo"
+import ControlVistas from "./ControlVistas"
 
 function LeadFilters({
   onSearch,
@@ -65,6 +70,8 @@ function LeadFilters({
 
   const [showColumnPanel, setShowColumnPanel] =
     useState(false)
+  
+    const [showControlVistas, setShowControlVistas] = useState(false)
 
   const [showFilters, setShowFilters] =
     useState(false)
@@ -97,7 +104,9 @@ function LeadFilters({
     useState({
       pautanameanuncio: '',
       CampaOrigen: '',
-      Alias: ''
+      Alias: '',
+      discador: '',
+      gestiones: ''
     })
 
   const campInfo = useMemo(() => {
@@ -114,32 +123,49 @@ function LeadFilters({
 
   const uniqueValues = useMemo(() => {
 
-    const extract = (key) => {
+const extract = (key) => {
 
-      const set = new Set()
+  const set = new Set()
 
-      leads.forEach(l => {
+  leads.forEach(l => {
 
-        const val = l[key]
+    const val = l[key]
 
-        if (
-          val !== null &&
-          val !== undefined &&
-          val !== ''
-        ) {
-          set.add(val)
-        }
+    if (
+      key === 'discador' ||
+      key === 'gestiones'
+    ) {
 
-      })
+      set.add(
+        val == null || val === ''
+          ? 0
+          : Number(val)
+      )
 
-      return Array.from(set).sort()
+    } else {
+
+      if (
+        val !== null &&
+        val !== undefined &&
+        val !== ''
+      ) {
+        set.add(val)
+      }
 
     }
+
+  })
+
+  return Array.from(set).sort()
+
+}
 
     return {
       pautanameanuncio: extract('pautanameanuncio'),
       CampaOrigen: extract('CampaOrigen'),
-      Alias: extract('Alias')
+      Alias: extract('Alias'),
+      discador: extract('discador'),
+      gestiones: extract('gestiones')
     }
 
   }, [leads])
@@ -204,7 +230,8 @@ const token = localStorage.getItem('token')
       setLoadingMasivos(true)
 
       const response = await fetch(
-        `http://192.168.9.115:4000/api/leads/masivos-carterizado/${idCamp}/4`,
+        `https://panel.bizapp.pe/api/leads/masivos-carterizado/${idCamp}/4`,
+       // `https://panel.bizapp.pe/api/leads/masivos-carterizado/${idCamp}/4`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -253,6 +280,100 @@ const token = localStorage.getItem('token')
     })
 
   }
+  const handleAsignacionMasiva = async () => {
+
+  try {
+
+    if (!selectedAgents.length) {
+
+      alert('Seleccione al menos un agente')
+
+      return
+
+    }
+
+    if (!fechaInicio || !fechaFin) {
+
+      alert('Seleccione fecha inicio y fecha fin')
+
+      return
+
+    }
+
+    if (!idCamp) {
+
+      alert('No existe una campaña seleccionada')
+
+      return
+
+    }
+
+    const token = localStorage.getItem('token')
+
+    setLoadingMasivos(true)
+
+    const fechaInicioSQL =
+      fechaInicio.replace('T', ' ') + ':00'
+
+    const fechaFinSQL =
+      fechaFin.replace('T', ' ') + ':00'
+
+    const response = await fetch(
+      'https://panel.bizapp.pe/api/leads/asignar-leads',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          fechaInicio: fechaInicioSQL,
+          fechaFin: fechaFinSQL,
+          idCamp,
+          usuarios: selectedAgents
+        })
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+
+      throw new Error(
+        data?.message ||
+        'Error al asignar leads'
+      )
+
+    }
+
+    alert(
+      `Se asignaron ${data.totalLeads} leads entre ${data.totalUsuarios} agentes`
+    )
+
+    setShowMasivosModal(false)
+
+    setSelectedAgents([])
+
+    setFechaInicio('')
+
+    setFechaFin('')
+
+  } catch (error) {
+
+    console.error(error)
+
+    alert(
+      error.message ||
+      'Error al realizar la asignación'
+    )
+
+  } finally {
+
+    setLoadingMasivos(false)
+
+  }
+
+}
 
   const handleSubmit = (e) => {
 
@@ -295,15 +416,15 @@ const token = localStorage.getItem('token')
   }
 
   return (
-
+// border-b-0 despues de border
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className={`w-full p-4 rounded-xl shadow-md mb-6 relative ${
+      className={`w-full p-4 rounded-t-[28px] border-t border-r border-l border-slate-400 shadow-md mb-6 relative ${
         isDark
           ? 'bg-slate-800'
-          : 'bg-white'
+          : 'bg-white' 
       }`}
     >
 
@@ -331,7 +452,7 @@ const token = localStorage.getItem('token')
         className="flex flex-col gap-4"
       >
 
-        <div className="flex flex-col sm:flex-row gap-4 items-end justify-between flex-wrap">
+        <div className="flex flex-col sm:flex-row gap-4 items-end justify-align flex-wrap">
 
           <div className="flex flex-col sm:flex-row gap-4 items-end flex-wrap">
 
@@ -432,11 +553,10 @@ const token = localStorage.getItem('token')
 
           </div>
 
-          {/* DERECHA */}
-          <div className="flex items-center gap-3 relative">
+       
 
             {/* MASIVOS */}
-            <motion.button
+            <motion.button 
               whileHover={{
                 scale: 1.04,
                 y: -1
@@ -483,29 +603,27 @@ const token = localStorage.getItem('token')
                 "
               />
 
-              <div
-                className="
-                  relative z-10
-                  flex h-8 w-8 items-center justify-center
-                  rounded-xl
-                  bg-gradient-to-br
-                  from-red-50
-                  to-red-100
-                  text-slate-600 shadow-lg
-                "
-              >
-
-                <FaUsers size={20} />
-
-              </div>
-
+   <div
+  className="
+    relative z-10
+    flex h-8 w-27 items-center justify-between
+    rounded-xl
+    text-slate-600 
+    text-xs font-semibold py-1 px-3
+  "
+>
+  <span>Asignación</span>
+  <FaUsers size={16} />
+</div>
             
-
             </motion.button>
-
             {/* VISTA */}
-            <div className="relative">
+            <div className="flex items-center gap-2 ml-auto relative">
 
+              {Number(idCamp) === 90 && (
+                <DescargarInfo />
+              )}
+{/* 
               <button
                 type="button"
                 onClick={() =>
@@ -513,33 +631,42 @@ const token = localStorage.getItem('token')
                 }
                 className="flex items-center gap-2 px-4 py-2 rounded-lg border"
               >
-
                 <LayoutGrid size={18} />
-
                 Vista
-
+              </button>
+*/}
+              <button
+                type="button"
+                onClick={() =>
+                  setShowControlVistas(!showControlVistas)
+                }
+                className="flex items-center gap-2 px-2 py-2 rounded-lg border"
+              >
+                <IoSettingsOutline size={22} />
+                
               </button>
 
               {showColumnPanel && (
-
                 <div className="absolute right-0 mt-2 z-50">
-
                   <ColumnCustomizer
                     columns={columns}
                     setColumns={setColumns}
                     show={showColumnPanel}
                     setShow={setShowColumnPanel}
                   />
-
                 </div>
+              )}
 
+              {showControlVistas && (
+                <div className="absolute right-0 top-14 z-50">
+                  <ControlVistas />
+                </div>
               )}
 
             </div>
 
           </div>
-
-        </div>
+        
 
         {/* FILTROS */}
         <AnimatePresence>
@@ -550,7 +677,7 @@ const token = localStorage.getItem('token')
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              className={`grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 ${
+              className={`grid grid-cols-1 md:grid-cols-5 gap-4 mt-2 ${
                 isDark
                   ? 'bg-slate-800/50'
                   : 'bg-slate-50'
@@ -678,6 +805,93 @@ const token = localStorage.getItem('token')
                   </option>
 
                   {uniqueValues.Alias.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+
+               {/* Discador */}
+              <div className="flex flex-col">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Discador
+                </label>
+
+                <select
+                  value={columnFilters.discador}
+                  onChange={(e) =>
+                    handleFilterChange(
+                      'discador',
+                      e.target.value
+                    )
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.discador.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+              {/* Gestiones */}
+              <div className="flex flex-col">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Gestiones
+                </label>
+
+                <select
+                  value={columnFilters.gestiones}
+                  onChange={(e) =>
+                    handleFilterChange(
+                      'gestiones',
+                      e.target.value
+                    )
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.gestiones.map(v => (
 
                     <option key={v} value={v}>
                       {v}
@@ -995,63 +1209,50 @@ const token = localStorage.getItem('token')
 
                         return (
 
-                          <motion.label
-                            whileHover={{
-                              x: 2
-                            }}
-                            key={agente.id_usuario}
-                            className={`
-                              flex items-center justify-between
-                              rounded-2xl border px-4 py-3
-                              cursor-pointer transition-all
-                              ${
-                                checked
-                                  ? `
-                                    border-blue-500/50
-                                    bg-blue-500/10
-                                  `
-                                  : isDark
-                                    ? `
-                                      border-[#343746]
-                                      bg-[#232530]
-                                    `
-                                    : `
-                                      border-slate-200
-                                      bg-slate-50
-                                    `
-                              }
-                            `}
-                          >
+<motion.label
+  whileHover={{
+    x: 2
+  }}
+  key={agente.id_usuario}
+  className={`
+    flex items-center gap-3
+    cursor-pointer transition-all
+    rounded-lg px-1 py-[-1]
+    ${
+      checked
+        ? `
+          bg-blue-500/10
+        `
+        : ''
+    }
+  `}
+>
 
-                            <div className="flex items-center gap-3">
+  <input
+    type="checkbox"
+    checked={checked}
+    onChange={() =>
+      handleCheckAgent(
+        agente.id_usuario
+      )
+    }
+    className="h-4 w-4"
+  />
 
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() =>
-                                  handleCheckAgent(
-                                    agente.id_usuario
-                                  )
-                                }
-                                className="h-4 w-4"
-                              />
+  <span
+    className={`
+      text-sm font-bold
+      ${
+        isDark
+          ? 'text-white'
+          : 'text-slate-700'
+      }
+    `}
+  >
+    {agente.nombre}
+  </span>
 
-                              <span
-                                className={`
-                                  text-sm font-bold
-                                  ${
-                                    isDark
-                                      ? 'text-white'
-                                      : 'text-slate-700'
-                                  }
-                                `}
-                              >
-                                {agente.nombre}
-                              </span>
-
-                            </div>
-
-                          </motion.label>
+</motion.label>
 
                         )
 
@@ -1334,35 +1535,45 @@ const token = localStorage.getItem('token')
                   Cancelar
                 </motion.button>
 
-                <motion.button
-                  whileHover={{
-                    scale: 1.03,
-                    y: -1
-                  }}
-                  whileTap={{
-                    scale: 0.96
-                  }}
-                  className="
-                    flex items-center gap-2
-                    rounded-2xl
-                    bg-gradient-to-r
-                    from-slate-400
-                    via-slate-300
-                    to-slate-400
-                    px-6 py-3
-                    text-sm font-bold text-slate-700
-                    shadow-2xl shadow-slate-500/60
-                    transition-all
-                    hover:shadow-indigo-500/50
-                  "
-                >
+               <motion.button
+  whileHover={{
+    scale: 1.03,
+    y: -1
+  }}
+  whileTap={{
+    scale: 0.96
+  }}
+  onClick={handleAsignacionMasiva}
+  disabled={loadingMasivos}
+  className="
+    flex items-center gap-2
+    rounded-2xl
+    bg-gradient-to-r
+    from-emerald-400
+    via-green-300
+    to-emerald-400
+    px-6 py-3
+    text-sm font-bold text-slate-700
+    shadow-2xl shadow-slate-500/60
+    transition-all
+    hover:shadow-indigo-500/50
+    disabled:opacity-50
+  "
+>
 
-                  <Send className="h-4 w-4" />
+  {
+    loadingMasivos
+      ? <Loader2 className="h-4 w-4 animate-spin" />
+      : <Send className="h-4 w-4" />
+  }
 
-                  Enviar
+  {
+    loadingMasivos
+      ? 'Asignando...'
+      : 'Enviar'
+  }
 
-                </motion.button>
-
+</motion.button>
               </div>
 
             </motion.div>

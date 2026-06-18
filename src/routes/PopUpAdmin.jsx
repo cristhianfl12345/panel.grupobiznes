@@ -43,7 +43,8 @@ export default function PopUpAdmin({ open, setOpen }) {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://192.168.9.115:4000/api/notificaciones-sistemas/obtener",
+        "https://panel.bizapp.pe/api/notificaciones-sistemas/obtener",
+      //  "https://panel.bizapp.pe/api/notificaciones-sistemas/obtener",
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -75,7 +76,7 @@ export default function PopUpAdmin({ open, setOpen }) {
   }, []);
 
   // ==============================
-  // 🔥 AUTO-CARGAR DETALLES
+  // AUTO-CARGAR DETALLES
   // ==============================
   useEffect(() => {
     const cargarDetalles = async () => {
@@ -86,7 +87,8 @@ export default function PopUpAdmin({ open, setOpen }) {
 
         try {
           const res = await fetch(
-            `http://192.168.9.115:4000/api/notificaciones-sistemas/detalle/${n.id_usuario}`,
+            `https://panel.bizapp.pe/api/notificaciones-sistemas/detalle/${n.id_usuario}`,
+            //`https://panel.bizapp.pe/api/notificaciones-sistemas/detalle/${n.id_usuario}`,
             {
               headers: { Authorization: `Bearer ${token}` }
             }

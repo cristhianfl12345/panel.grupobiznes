@@ -87,7 +87,8 @@ const exportRef = useRef(null);
       if (tipo === "dni") params.append("dni", query);
       if (tipo === "idKey") params.append("idKey", query);
 
-      const res = await fetch(`http://192.168.9.115:4000/api/busqueda?${params.toString()}`, {
+      const res = await fetch(`https://panel.bizapp.pe/api/busqueda?${params.toString()}`, {
+      //  const res = await fetch(`https://panel.bizapp.pe/api/busqueda?${params.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

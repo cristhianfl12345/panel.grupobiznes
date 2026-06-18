@@ -25,7 +25,8 @@ import EditarHorarioCartera from "./EditarHorarioCartera";
 import AgregarAgente from "./AgregarAgente";
 import { INDICE_CAMPS } from "../context/indiceCamps";
 
-const API = "http://192.168.9.115:4000/api/agente-info";
+const API = "https://panel.bizapp.pe/api/agente-info";
+//const API = "https://panel.bizapp.pe/api/agente-info";
 
 const FUENTE_ICON = {
   whatsapp: FaWhatsapp,

@@ -6,7 +6,7 @@ import {
   FiClipboard,
   FiVolume2,
 } from 'react-icons/fi'
-import { FaUserEdit } from "react-icons/fa"
+import { FaUserEdit, FaPlus, FaMinus } from "react-icons/fa"
 import { BsFillPlugFill } from 'react-icons/bs'
 
 import { FaPhone } from 'react-icons/fa6'
@@ -27,7 +27,8 @@ export default function LeadRow({
   lead,
   index,
   onCopy,
-  columns = []
+  columns = [],
+ detailColumns = []
 }) {
 
   const { theme } = useLocalTheme()
@@ -36,6 +37,9 @@ export default function LeadRow({
 
   const [searchParams] = useSearchParams()
 
+const [expanded, setExpanded] =
+  useState(false)
+  
   const camp = searchParams.get('camp')
 const formatearNombreAgente = (nombreCompleto = "") => {
 
@@ -98,7 +102,8 @@ const handleAsignarAgente = async () => {
     const token = localStorage.getItem("token")
 
     const res = await fetch(
-      "http://192.168.9.115:4000/api/leads/carterizar-individual",
+      "https://panel.bizapp.pe/api/leads/carterizar-individual",
+    //  "https://panel.bizapp.pe/api/leads/carterizar-individual",
       {
         method: "POST",
         headers: {
@@ -163,7 +168,8 @@ const handleReasignarAgente = async () => {
     const token = localStorage.getItem("token")
 
     const res = await fetch(
-      "http://192.168.9.115:4000/api/leads/reasignar-lead",
+      "https://panel.bizapp.pe/api/leads/reasignar-lead",
+     // "https://panel.bizapp.pe/api/leads/reasignar-lead",
       {
         method: "PUT",
         headers: {
@@ -226,7 +232,8 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://192.168.9.115:4000/api/leads/agentes-campana/${camp}`,
+       `https://panel.bizapp.pe/api/leads/agentes-campana/${camp}`,
+     ///   `https://panel.bizapp.pe/api/leads/agentes-campana/${camp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -273,7 +280,8 @@ useEffect(() => {
         localStorage.getItem("token")
 
       const res = await fetch(
-        `http://192.168.9.115:4000/api/leads/leads-asignados/${camp}`,
+        `https://panel.bizapp.pe/api/leads/leads-asignados/${camp}`,
+      //   `https://panel.bizapp.pe/api/leads/leads-asignados/${camp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -319,21 +327,53 @@ setModoEdicionAgente(false)
 
   const renderCell = (key) => {
 
-    const baseClass = "border p-2"
+   const baseClass = `
+  border
+  p-2
+  ${isDark
+    ? 'border-[#343746]'
+    : 'border-slate-700'
+  }
+`
 
     switch (key) {
 
-      case 'index':
+case 'index':
 
-        return (
+  return (
 
-          <motion.td
-            className={`${baseClass} text-center`}
-          >
-            {index}
-          </motion.td>
+    <motion.td
+      className={`
+        ${baseClass}
+        cursor-pointer
+        font-bold
+      `}
+      onClick={() =>
+        setExpanded(prev => !prev)
+      }
+    >
 
-        )
+      <div
+        className="
+          flex
+          items-center
+          justify-center
+          gap-2
+        "
+      >
+
+        {expanded
+          ? <FaMinus className="text-red-500" size={10} />
+          : <FaPlus className="text-green-500" size={10} />
+        }
+
+        <span>{index}</span>
+
+      </div>
+
+    </motion.td>
+
+  )
 
       case 'idkey':
       case 'IdKey_Computado':
@@ -500,7 +540,11 @@ setModoEdicionAgente(false)
             {...cellAnimation}
             className={baseClass}
           >
-            {lead.pautanameanuncio || '-'}
+            {
+  lead.pautanameanuncio
+    ? lead.pautanameanuncio.slice(0, 30)
+    : '-'
+}
           </motion.td>
 
         )
@@ -630,56 +674,86 @@ setModoEdicionAgente(false)
         )
 
       }
+case 'discador':
 
-      case 'discador':
+  return (
 
-        return (
+    <motion.td
+      {...cellAnimation}
+      className={`${baseClass} text-center`}
+    >
 
-          <motion.td
-            {...cellAnimation}
-            className={`${baseClass} text-center`}
-          >
+      {lead.discador ? (
 
-            <div className="flex items-center justify-center gap-2">
+        <div
+          className={`
+            inline-flex
+            items-center
+            justify-center
+            rounded-xl
+            px-3
+            py-1.5
+            text-xs
+            font-semibold
+            ${
+              isDark
+                ? 'bg-emerald-900/30 text-emerald-300'
+                : 'bg-emerald-300 text-black'
+            }
+          `}
+        >
+          {lead.discador}
+        </div>
 
-              <span>
-                {lead.discador}
-              </span>
+      ) : (
 
-              {lead.discador && (
-                <FiPhoneCall className="text-green-600" />
-              )}
+        '-'
 
-            </div>
+      )}
 
-          </motion.td>
+    </motion.td>
 
-        )
+  )
+  case 'gestiones':
 
-      case 'gestiones':
+  return (
 
-        return (
+    <motion.td
+      {...cellAnimation}
+      className={`${baseClass} text-center`}
+    >
 
-          <motion.td
-            {...cellAnimation}
-            className={`${baseClass} text-center`}
-          >
+      {lead.gestiones ? (
 
-            <div className="flex items-center justify-center gap-2">
+        <div
+          className={`
+            inline-flex
+            items-center
+            justify-center
+            rounded-xl
+            px-3
+            py-1.5
+            text-xs
+            font-semibold
+            ${
+              isDark
+                ? 'bg-emerald-900/30 text-emerald-300'
+                : 'bg-emerald-300 text-black'
+            }
+          `}
+        >
+          {lead.gestiones}
+        </div>
 
-              <span>
-                {lead.gestiones}
-              </span>
+      ) : (
 
-              {lead.gestiones && (
-                <FiClipboard className="text-blue-500" />
-              )}
+        '-'
 
-            </div>
+      )}
 
-          </motion.td>
+    </motion.td>
 
-        )
+  )
 
       case 'ultimocodcontacto': {
 
@@ -885,9 +959,9 @@ setModoEdicionAgente(false)
 
         )
 
-//case 'PRUEBA':
- case 'Carterizacion':
-case '__asignacion_agente__':
+case 'negocio':
+// case 'Carterizacion':
+//case '__asignacion_agente__':
 
   return (
 
@@ -1090,8 +1164,9 @@ case '__asignacion_agente__':
     }
 
   }
+return (
 
-  return (
+  <>
 
     <motion.tr
       initial={{ opacity: 0 }}
@@ -1106,28 +1181,126 @@ case '__asignacion_agente__':
       className="text-sm"
     >
 
-{[
-  ...columns,
-  {
-    key: '__asignacion_agente__'
-  }
-].map((col) => {
+      {columns.map((col) => {
 
-  const key =
-    col.key || col.query_vista
+        const key =
+          col.key || col.query_vista
 
-  return (
+        return (
+          <React.Fragment key={key}>
+            {renderCell(key)}
+          </React.Fragment>
+        )
 
-    <React.Fragment key={key}>
-      {renderCell(key)}
-    </React.Fragment>
-
-  )
-
-})}
+      })}
 
     </motion.tr>
 
-  )
+    {expanded && (
 
+      <tr>
+
+        <td
+          colSpan={columns.length}
+          className={`
+            border
+            p-4
+            ${isDark
+              ? 'bg-[#17181F]'
+              : 'bg-slate-100'
+            }
+          `}
+        >
+{/* columnas de nivel 2 */}
+          <div
+  className={`
+    overflow-hidden
+    rounded-xl
+    border
+    ${
+      isDark
+        ? 'border-[#343746]'
+        : 'border-slate-200'
+    }
+  `}
+>
+
+  <div
+    className="
+      grid
+      grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-5
+    "
+  >
+
+    {detailColumns.map(col => (
+
+      <div
+        key={col.key}
+        className={`
+          border-r border-b
+          ${
+            isDark
+              ? 'border-[#343746]'
+              : 'border-slate-200'
+          }
+        `}
+      >
+
+        <div
+          className={`
+            px-3 py-2
+            text-xs font-semibold
+            border-b
+            ${
+              isDark
+                ? `
+                  bg-[#2d3040]
+                  border-[#343746]
+                  text-slate-200
+                `
+                : `
+                  bg-red-200/90
+                  border-slate-200
+                  text-slate-700
+                `
+            }
+          `}
+        >
+          {col.label}
+        </div>
+
+        <div
+          className={`
+            px-3 py-2
+            text-sm
+            break-words
+            ${
+              isDark
+                ? 'bg-[#232530] text-slate-300'
+                : 'bg-white text-slate-800'
+            }
+          `}
+        >
+          {lead[col.key] ?? '-'}
+        </div>
+
+      </div>
+
+    ))}
+
+  </div>
+
+</div>
+
+        </td>
+
+      </tr>
+
+    )}
+
+  </>
+
+)
 }

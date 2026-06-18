@@ -52,16 +52,76 @@ const pageVariants = {
   }
 }
 
+const isTokenExpired = (token) => {
+
+  try {
+
+    const payload = JSON.parse(
+      atob(token.split('.')[1])
+    )
+
+    return Date.now() >= payload.exp * 1000
+
+  } catch (error) {
+
+    return true
+
+  }
+
+}
+
+
+
 function AppRoutes() {
 
   const location = useLocation()
   const [loadingRoute, setLoadingRoute] = useState(false)
 const navigate = useNavigate()
 
+const logout = (message = null) => {
+
+  localStorage.removeItem("token")
+  localStorage.removeItem("user")
+  localStorage.removeItem("user_checksum")
+  localStorage.removeItem("auth")
+
+  if (message) {
+    alert(message)
+  }
+
+  navigate("/login", { replace: true })
+
+}
+
+
+
 useEffect(() => {
 
   const user = localStorage.getItem("user")
   const checksum = localStorage.getItem("user_checksum")
+  const token = localStorage.getItem("token")
+
+if (token && isTokenExpired(token)) {
+
+  logout(
+    "Tu sesión ha expirado. Debes volver a iniciar sesión."
+  )
+
+  return
+
+}
+
+  // verifica si existe token
+  if (!token) {
+
+  localStorage.removeItem("token")
+  localStorage.removeItem("user")
+  localStorage.removeItem("user_checksum")
+
+  navigate("/login", { replace: true })
+
+  return
+}
 
   // si existe usuario pero no checksum => sesión inválida
   if (user && !checksum) {
@@ -97,6 +157,7 @@ useEffect(() => {
     }
 
   }
+  
 
 }, [navigate])
   useEffect(() => {
@@ -112,6 +173,33 @@ useEffect(() => {
   }, [location.pathname])
 
   const isAuth = localStorage.getItem("auth")
+
+  useEffect(() => {
+
+  const checkToken = () => {
+
+    const token = localStorage.getItem("token")
+
+    if (!token) return
+
+    if (isTokenExpired(token)) {
+
+      logout(
+        "Tu sesión ha expirado. Debes volver a iniciar sesión."
+      )
+
+    }
+
+  }
+
+  window.addEventListener("focus", checkToken)
+
+  return () => {
+    window.removeEventListener("focus", checkToken)
+  }
+
+}, [navigate])
+  
 
   return (
     <>

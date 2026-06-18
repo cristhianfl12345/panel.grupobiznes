@@ -12,7 +12,8 @@ export default function LeadTable({
   searched,
   onCopy,
   columns,
-  setColumns
+  setColumns,
+  detailColumns
 }) {
 
   const { theme } = useLocalTheme()
@@ -126,12 +127,12 @@ export default function LeadTable({
         }}
         transition={{
           duration: 0.28
-        }}
+        }} //antes el rounded estaba en 28
         className={`
           relative
           flex-1
           overflow-hidden
-          rounded-[28px]
+          rounded-[0px] 
           border
           shadow-[0_20px_60px_rgba(0,0,0,0.25)]
           transition-all
@@ -165,11 +166,11 @@ export default function LeadTable({
             className={`
               w-full
               table-auto
-              border-collapse
+              border border-spacing-0
               text-xs
               ${
                 isDark
-                  ? 'text-slate-200'
+                  ? 'text-white'
                   : 'text-slate-800'
               }
             `}
@@ -192,7 +193,7 @@ export default function LeadTable({
                     `
                     : `
                       border-slate-200
-                      bg-white/95
+                      bg-slate-500
                     `
                 }
               `}
@@ -200,159 +201,162 @@ export default function LeadTable({
 
               <tr>
 
-                <AnimatePresence initial={false}>
+               <AnimatePresence initial={false}>
 
-                  {visibleColumns.map((col, i) => {
+  {visibleColumns.map((col, i) => {
 
-                    const key = getKey(col)
+    const key = getKey(col)
 
-                    const label = getLabel(col)
+    const label = getLabel(col)
 
-                    return (
+    return (
 
-                      <th
-                        key={key}
-                        onDragOver={(e) =>
-                          e.preventDefault()
-                        }
-                        onDrop={() =>
-                          handleDrop(key)
-                        }
-                        className={`
-                          relative
-                          px-4 py-4
-                          text-left
-                          whitespace-nowrap
-                          border-r
-                          transition-all
-                          ${
-                            isDark
-                              ? `
-                                border-[#343746]
-                              `
-                              : `
-                                border-slate-200
-                              `
-                          }
-                          ${
-                            i === visibleColumns.length - 1
-                              ? 'border-r-0'
-                              : ''
-                          }
-                        `}
-                      >
+      <th
+        key={key}
+        onDragOver={(e) =>
+          e.preventDefault()
+        }
+        onDrop={() =>
+          handleDrop(key)
+        }
+        className={`
+          relative
+          px-5 py-4
+          text-left
+          whitespace-nowrap
+          border-r
+          border-b
+          transition-all
+          ${
+            isDark
+              ? `
+                bg-[#252834]
+                border-[#404454]/95
+              `
+              : `
+                bg-red-300
+                border-black/95
+              `
+          }
+          ${
+            i === visibleColumns.length - 1
+              ? 'border-r-0'
+              : ''
+          }
+        `}
+      >
 
-                        {/* LINEA SUPERIOR */}
-                        <div
-                          className="
-                            absolute top-0 left-0
-                            h-px w-full
-                            bg-gradient-to-r
-                            from-transparent
-                            via-blue-500/30
-                            to-transparent
-                          "
-                        />
+        {/* LINEA SUPERIOR */}
+        <div
+          className="
+            absolute top-0 left-0
+            h-px w-full
+            bg-gradient-to-r
+            from-transparent
+            via-red-500/50
+            to-transparent
+          "
+        />
 
-                        <motion.div
-                          draggable={
-                            key !== "index"
-                          }
-                          onDragStart={() =>
-                            key !== "index" &&
-                            handleDragStart(key)
-                          }
-                          whileHover={
-                            key !== "index"
-                              ? {
-                                  scale: 1.02
-                                }
-                              : {}
-                          }
-                          whileTap={
-                            key !== "index"
-                              ? {
-                                  scale: 0.96
-                                }
-                              : {}
-                          }
-                          className={`
-                            flex items-center gap-2
-                            select-none
-                            ${
-                              key === "index"
-                                ? ""
-                                : "cursor-move group"
-                            }
-                          `}
-                        >
+        <motion.div
+          draggable={
+            key !== "index"
+          }
+          onDragStart={() =>
+            key !== "index" &&
+            handleDragStart(key)
+          }
+          whileHover={
+            key !== "index"
+              ? {
+                  scale: 1.02
+                }
+              : {}
+          }
+          whileTap={
+            key !== "index"
+              ? {
+                  scale: 0.96
+                }
+              : {}
+          }
+          className={`
+            flex items-center gap-2
+            select-none
+            ${
+              key === "index"
+                ? ""
+                : "cursor-move group"
+            }
+          `}
+        >
+{/* 
+          {key !== "index" && (
 
-                          {key !== "index" && (
+            <motion.div
+              whileHover={{
+                rotate: 90,
+                scale: 1.15
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 280
+              }}
+              className={`
+                flex h-7 w-7
+                items-center justify-center
+                rounded-xl
+                border
+                transition-all
+                ${
+                  isDark
+                    ? `
+                      border-[#3B3E4E]
+                      bg-[#2A2C38]
+                      text-slate-400
+                      group-hover:border-blue-500/40
+                      group-hover:text-blue-400
+                    `
+                    : `
+                      border-slate-200
+                      bg-slate-50
+                      text-slate-500
+                      group-hover:border-blue-300
+                      group-hover:text-blue-500
+                    `
+                }
+              `}
+            >
+              <ArrowRightLeft size={13} />
+            </motion.div>
 
-                            <motion.div
-                              whileHover={{
-                                rotate: 90,
-                                scale: 1.15
-                              }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 280
-                              }}
-                              className={`
-                                flex h-7 w-7
-                                items-center justify-center
-                                rounded-xl
-                                border
-                                transition-all
-                                ${
-                                  isDark
-                                    ? `
-                                      border-[#3B3E4E]
-                                      bg-[#2A2C38]
-                                      text-slate-400
-                                      group-hover:border-blue-500/40
-                                      group-hover:text-blue-400
-                                    `
-                                    : `
-                                      border-slate-200
-                                      bg-slate-50
-                                      text-slate-500
-                                      group-hover:border-blue-300
-                                      group-hover:text-blue-500
-                                    `
-                                }
-                              `}
-                            >
-                              <ArrowRightLeft size={13} />
-                            </motion.div>
+          )}
+*/}
+          <span
+            className={`
+              text-[11px]
+              font-black
+              uppercase
+              tracking-[0.12em]
+              ${
+                isDark
+                  ? 'text-slate-50'
+                  : 'text-slate-800'
+              }
+            `}
+          >
+            {label}
+          </span>
 
-                          )}
+        </motion.div>
 
-                          <span
-                            className={`
-                              text-[12px]
-                              font-black
-                              uppercase
-                              tracking-wide
-                              ${
-                                isDark
-                                  ? 'text-slate-100'
-                                  : 'text-slate-700'
-                              }
-                            `}
-                          >
-                            {label}
-                          </span>
+      </th>
 
-                        </motion.div>
+    )
 
-                      </th>
+  })}
 
-                    )
-
-                  })}
-
-                </AnimatePresence>
+</AnimatePresence>
 
               </tr>
 
@@ -381,6 +385,7 @@ export default function LeadTable({
                     }
                     onCopy={onCopy}
                     columns={visibleColumns}
+                    detailColumns={detailColumns}
                     isDark={isDark}
                   />
 
@@ -473,8 +478,10 @@ export default function LeadTable({
             relative
             mt-4
             overflow-hidden
-            rounded-[24px]
-            border
+            rounded-b-[28px]
+            border-b
+            border-r
+            border-l
             px-5 py-4
             shadow-xl
             backdrop-blur-xl
@@ -486,7 +493,7 @@ export default function LeadTable({
                   bg-[#1B1C24]/95
                 `
                 : `
-                  border-slate-200
+                  border-slate-400
                   bg-white/95
                 `
             }

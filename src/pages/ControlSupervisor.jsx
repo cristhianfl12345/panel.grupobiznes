@@ -47,13 +47,16 @@ import {
   FiPhoneCall,
   FiTarget
 } from "react-icons/fi"
-
+import { FaCirclePlus } from "react-icons/fa6"
+import { FaLightbulb } from "react-icons/fa"
+ import { LuLightbulbOff } from "react-icons/lu"
 import {
   BsArrowDownUp
 } from "react-icons/bs"
 
 const API =
-  "http://192.168.9.115:4000/api/control-supervisor"
+ "https://panel.bizapp.pe/api/control-supervisor"
+ // "https://panel.bizapp.pe/api/control-supervisor"
 
 function formatTime(value) {
 
@@ -950,8 +953,9 @@ function CardSupervisor({
                     <thead>
 
                       <tr className="bg-[#f04a3a] text-white">
-
                         <TH />
+
+                       <TH />
 
                         <TH>Asesor</TH>
 
@@ -1070,17 +1074,19 @@ function AsesorRow({
             : "bg-white"}
         `}
       >
-
-        <TD>
-
-          <div className={`
-            w-3 h-3 rounded-full mx-auto
-            ${conectado
-              ? "bg-green-500"
-              : "bg-gray-400"}
-          `} />
-
-        </TD>
+        
+<TD>
+  {/* Icono de plus en color verde */}
+  <FaCirclePlus className="text-green-500 text-xl" />
+</TD>
+<TD>
+  {/* Condicional para mostrar los iconos de bombilla */}
+  {conectado ? (
+    <FaLightbulb className="text-yellow-500 text-xl mx-auto" />
+  ) : (
+    <LuLightbulbOff className="text-gray-400 text-xl mx-auto" />
+  )}
+</TD>
 
         <TD isDark={isDark}>
 
