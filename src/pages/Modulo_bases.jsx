@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Database, Filter, Clock, RefreshCcw  } from "lucide-react";
 import {INDICE_CAMPS} from "../context/indiceCamps";
 
-const API_URL = "https://panel.bizapp.pe/api/modulo-bases";
-//const API_URL = "https://panel.bizapp.pe/api/modulo-bases";
+const API_URL = "http://192.168.9.115:4000/api/modulo-bases";
+//const API_URL = "http://192.168.9.115:4000/api/modulo-bases";
 
 export default function ModuloBases() {
   const [searchParams] = useSearchParams();

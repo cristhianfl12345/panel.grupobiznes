@@ -230,8 +230,8 @@ const token = localStorage.getItem('token')
       setLoadingMasivos(true)
 
       const response = await fetch(
-        `https://panel.bizapp.pe/api/leads/masivos-carterizado/${idCamp}/4`,
-       // `https://panel.bizapp.pe/api/leads/masivos-carterizado/${idCamp}/4`,
+        `http://192.168.9.115:4000/api/leads/masivos-carterizado/${idCamp}/4`,
+       // `http://192.168.9.115:4000/api/leads/masivos-carterizado/${idCamp}/4`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -319,7 +319,7 @@ const token = localStorage.getItem('token')
       fechaFin.replace('T', ' ') + ':00'
 
     const response = await fetch(
-      'https://panel.bizapp.pe/api/leads/asignar-leads',
+      'http://192.168.9.115:4000/api/leads/asignar-leads',
       {
         method: 'POST',
         headers: {

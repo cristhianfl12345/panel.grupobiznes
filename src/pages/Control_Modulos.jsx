@@ -6,8 +6,8 @@ import { motion } from "framer-motion"
 import { Layers } from "lucide-react"
 import { useLocalTheme } from "../context/useLocalTheme"
 
-const API = "https://panel.bizapp.pe/api/control-modulos"
-//const API = "https://panel.bizapp.pe/api/control-modulos"
+const API = "http://192.168.9.115:4000/api/control-modulos"
+//const API = "http://192.168.9.115:4000/api/control-modulos"
 // helper auth
 const getAuthConfig = () => {
   const token = localStorage.getItem("token")

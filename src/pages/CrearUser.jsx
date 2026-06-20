@@ -62,8 +62,8 @@ export default function CrearUser() {
   // ==============================
   const obtenerUsuarios = async () => {
     const token = localStorage.getItem("token");
-    const res = await fetch("https://panel.bizapp.pe/api/usuarios-get", {
-   // const res = await fetch("https://panel.bizapp.pe/api/usuarios-get", {
+    const res = await fetch("http://192.168.9.115:4000/api/usuarios-get", {
+   // const res = await fetch("http://192.168.9.115:4000/api/usuarios-get", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -76,8 +76,8 @@ export default function CrearUser() {
 
 const obtenerCampanas = async () => {
   const token = localStorage.getItem("token");
-   const res = await fetch("https://panel.bizapp.pe/api/campanas-select", {
-  //const res = await fetch("https://panel.bizapp.pe/api/campanas-select", {
+   const res = await fetch("http://192.168.9.115:4000/api/campanas-select", {
+  //const res = await fetch("http://192.168.9.115:4000/api/campanas-select", {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -143,8 +143,8 @@ const obtenerCampanas = async () => {
   const handleDelete = async (u) => {
     const token = localStorage.getItem("token");
     if (!confirm("¿Eliminar usuario?")) return;
-    await fetch(`https://panel.bizapp.pe/api/usuarios/${u.id}`, {
-   // await fetch(`https://panel.bizapp.pe/api/usuarios/${u.id}`, {
+    await fetch(`http://192.168.9.115:4000/api/usuarios/${u.id}`, {
+   // await fetch(`http://192.168.9.115:4000/api/usuarios/${u.id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
@@ -176,8 +176,8 @@ const obtenerCampanas = async () => {
 
   const handleSave = async () => {
     const token = localStorage.getItem("token");
-     await fetch(`https://panel.bizapp.pe/api/usuarios/${editUser.id}`, {
-    //await fetch(`https://panel.bizapp.pe/api/usuarios/${editUser.id}`, {
+     await fetch(`http://192.168.9.115:4000/api/usuarios/${editUser.id}`, {
+    //await fetch(`http://192.168.9.115:4000/api/usuarios/${editUser.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -214,8 +214,8 @@ const handleChange = (e) => {
 const handleCreate = async () => {
   try {
     const token = localStorage.getItem("token");
-    // const res = await fetch("https://panel.bizapp.pe/api/usuarios", {
-    const res = await fetch("https://panel.bizapp.pe/api/usuarios", {
+    // const res = await fetch("http://192.168.9.115:4000/api/usuarios", {
+    const res = await fetch("http://192.168.9.115:4000/api/usuarios", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

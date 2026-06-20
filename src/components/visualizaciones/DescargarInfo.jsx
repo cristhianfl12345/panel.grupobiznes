@@ -39,7 +39,7 @@ export default function DescargarInfo() {
 
         const response =
           await fetch(
-            "https://panel.bizapp.pe/api/descarga-registro"
+            "http://192.168.9.115:4000/api/descarga-registro"
           );
 
         if (!response.ok) {

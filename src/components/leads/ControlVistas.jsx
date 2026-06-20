@@ -34,7 +34,7 @@ export default function ControlVistas() {
       const token = localStorage.getItem("token")
 
       const res = await fetch(
-        `https://panel.bizapp.pe/api/control-vistas/${idCamp}`,
+        `http://192.168.9.115:4000/api/control-vistas/${idCamp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -62,7 +62,7 @@ export default function ControlVistas() {
       const token = localStorage.getItem("token")
 
       await fetch(
-        "https://panel.bizapp.pe/api/control-vistas",
+        "http://192.168.9.115:4000/api/control-vistas",
         {
           method: "PUT",
           headers: {

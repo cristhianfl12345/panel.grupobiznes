@@ -48,15 +48,15 @@ import {
   FiTarget
 } from "react-icons/fi"
 import { FaCirclePlus } from "react-icons/fa6"
-import { FaLightbulb } from "react-icons/fa"
+import { FaLightbulb, FaDotCircle } from "react-icons/fa"
  import { LuLightbulbOff } from "react-icons/lu"
 import {
   BsArrowDownUp
 } from "react-icons/bs"
 
 const API =
- "https://panel.bizapp.pe/api/control-supervisor"
- // "https://panel.bizapp.pe/api/control-supervisor"
+ "http://192.168.9.115:4000/api/control-supervisor"
+ // "http://192.168.9.115:4000/api/control-supervisor"
 
 function formatTime(value) {
 
@@ -1372,7 +1372,7 @@ function TH({
 
         {children}
 
-        <BsArrowDownUp className="opacity-50 text-[10px]" />
+        <FaDotCircle className="text-yellow-200 opacity-30 text-[10px]" />
 
       </div>
 

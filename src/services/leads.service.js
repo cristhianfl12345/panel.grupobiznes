@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const API = "https://panel.bizapp.pe/api"
-//const API = "https://panel.bizapp.pe/api"
+const API = "http://192.168.9.115:4000/api"
+//const API = "http://192.168.9.115:4000/api"
 
 // helper para auth correcto
 const getAuthConfig = () => {

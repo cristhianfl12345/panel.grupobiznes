@@ -54,8 +54,8 @@ export default function CrearVista() {
     const loadCampanas = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("https://panel.bizapp.pe/api/campanas-select", {
-       //   const res = await fetch("https://panel.bizapp.pe/api/campanas-select", {
+        const res = await fetch("http://192.168.9.115:4000/api/campanas-select", {
+       //   const res = await fetch("http://192.168.9.115:4000/api/campanas-select", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -117,8 +117,8 @@ export default function CrearVista() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://panel.bizapp.pe/api/vistasss", {
-      //const res = await fetch("https://panel.bizapp.pe/api/vistasss", {
+      const res = await fetch("http://192.168.9.115:4000/api/vistasss", {
+      //const res = await fetch("http://192.168.9.115:4000/api/vistasss", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

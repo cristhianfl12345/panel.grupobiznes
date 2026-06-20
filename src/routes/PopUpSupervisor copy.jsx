@@ -55,7 +55,7 @@ export default function PopUpSupervisor({ open, setOpen }) {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "https://panel.bizapp.pe/api/notificaciones-supervisor/obtener",
+        "http://192.168.9.115:4000/api/notificaciones-supervisor/obtener",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -119,7 +119,7 @@ export default function PopUpSupervisor({ open, setOpen }) {
       const token = localStorage.getItem("token");
 
       await fetch(
-        "https://panel.bizapp.pe/api/notificaciones-supervisor/marcar-leida",
+        "http://192.168.9.115:4000/api/notificaciones-supervisor/marcar-leida",
         {
           method: "POST",
           headers: {

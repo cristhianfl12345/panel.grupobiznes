@@ -102,8 +102,8 @@ const handleAsignarAgente = async () => {
     const token = localStorage.getItem("token")
 
     const res = await fetch(
-      "https://panel.bizapp.pe/api/leads/carterizar-individual",
-    //  "https://panel.bizapp.pe/api/leads/carterizar-individual",
+      "http://192.168.9.115:4000/api/leads/carterizar-individual",
+    //  "http://192.168.9.115:4000/api/leads/carterizar-individual",
       {
         method: "POST",
         headers: {
@@ -168,8 +168,8 @@ const handleReasignarAgente = async () => {
     const token = localStorage.getItem("token")
 
     const res = await fetch(
-      "https://panel.bizapp.pe/api/leads/reasignar-lead",
-     // "https://panel.bizapp.pe/api/leads/reasignar-lead",
+      "http://192.168.9.115:4000/api/leads/reasignar-lead",
+     // "http://192.168.9.115:4000/api/leads/reasignar-lead",
       {
         method: "PUT",
         headers: {
@@ -232,8 +232,8 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-       `https://panel.bizapp.pe/api/leads/agentes-campana/${camp}`,
-     ///   `https://panel.bizapp.pe/api/leads/agentes-campana/${camp}`,
+       `http://192.168.9.115:4000/api/leads/agentes-campana/${camp}`,
+     ///   `http://192.168.9.115:4000/api/leads/agentes-campana/${camp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -280,8 +280,8 @@ useEffect(() => {
         localStorage.getItem("token")
 
       const res = await fetch(
-        `https://panel.bizapp.pe/api/leads/leads-asignados/${camp}`,
-      //   `https://panel.bizapp.pe/api/leads/leads-asignados/${camp}`,
+        `http://192.168.9.115:4000/api/leads/leads-asignados/${camp}`,
+      //   `http://192.168.9.115:4000/api/leads/leads-asignados/${camp}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

@@ -77,8 +77,8 @@ useEffect(() => {
       const user = JSON.parse(storedUser);
 
       const res = await fetch(
-        `https://panel.bizapp.pe/api/auth/mis-campanas/${user.id}`,
-       // `https://panel.bizapp.pe/api/auth/mis-campanas/${user.id}`,
+        `http://192.168.9.115:4000/api/auth/mis-campanas/${user.id}`,
+       // `http://192.168.9.115:4000/api/auth/mis-campanas/${user.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -157,8 +157,8 @@ useEffect(() => {
       
 
 
-const res = await fetch("https://panel.bizapp.pe/api/kpis", {
-//  const res = await fetch("https://panel.bizapp.pe/api/kpis", {
+const res = await fetch("http://192.168.9.115:4000/api/kpis", {
+//  const res = await fetch("http://192.168.9.115:4000/api/kpis", {
   headers: {
     Authorization: `Bearer ${token}`
   }
@@ -190,8 +190,8 @@ const limpiarNombreVista = (nombre) => {
  useEffect(() => {
   const fetchModulos = async () => {
     try {
-      const res = await fetch("https://panel.bizapp.pe/api/control-modulos", {
-      // const res = await fetch("https://panel.bizapp.pe/api/control-modulos", {
+      const res = await fetch("http://192.168.9.115:4000/api/control-modulos", {
+      // const res = await fetch("http://192.168.9.115:4000/api/control-modulos", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }

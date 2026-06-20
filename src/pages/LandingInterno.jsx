@@ -30,8 +30,8 @@ import { motion, AnimatePresence } from "framer-motion"
 
 import { INDICE_CAMPS } from "../context/indiceCamps"
 
-const API = "https://panel.bizapp.pe/api/landing-interno"
-//const API = "https://panel.bizapp.pe/api/landing-interno"
+const API = "http://192.168.9.115:4000/api/landing-interno"
+//const API = "http://192.168.9.115:4000/api/landing-interno"
 
 export default function LandingInterno() {
 

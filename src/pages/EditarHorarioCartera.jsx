@@ -21,8 +21,8 @@ import {
   Loader2,
 } from "lucide-react";
 
-const API = "https://panel.bizapp.pe/api/agente-info";
-//const API = "https://panel.bizapp.pe/api/agente-info";
+const API = "http://192.168.9.115:4000/api/agente-info";
+//const API = "http://192.168.9.115:4000/api/agente-info";
 
 const FUENTES = [
   {
