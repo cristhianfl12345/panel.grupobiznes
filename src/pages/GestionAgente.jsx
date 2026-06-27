@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { Search } from "lucide-react"
 import {
   FaWhatsapp,
   FaGoogle,
@@ -24,7 +24,7 @@ import { useSearchParams } from "react-router-dom";
 import EditarHorarioCartera from "./EditarHorarioCartera";
 import AgregarAgente from "./AgregarAgente";
 import { INDICE_CAMPS } from "../context/indiceCamps";
-
+import BotonAsignarMonitorCartera from "./BotonAsignarMonitorCartera";
 const API = "http://192.168.9.115:4000/api/agente-info";
 //const API = "http://192.168.9.115:4000/api/agente-info";
 
@@ -275,33 +275,59 @@ const [showPassword, setShowPassword] = useState({});
   `}
 />
 
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar agente..."
-                className={`
-                  h-11 w-[260px] rounded-2xl border pl-10 pr-4 text-sm outline-none transition-all
-                  ${isDark
-                    ? `
-                      border-[#3b3d4d]
-                      bg-[#1F2029]
-                      text-white
-                      placeholder:text-slate-500
-                      focus:border-blue-500
-                      focus:ring-4
-                      focus:ring-blue-500/20
-                    `
-                    : `
-                      border-slate-200
-                      bg-white
-                      text-slate-700
-                      focus:border-blue-500
-                      focus:ring-4
-                      focus:ring-blue-100
-                    `
-                  }
-                `}
-              />
+              <div className="relative">
+
+  <Search
+    size={18}
+    className={`
+      absolute left-3 top-1/2 -translate-y-1/2
+      ${isDark ? "text-slate-500" : "text-slate-400"}
+    `}
+  />
+
+  <input
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    placeholder="Buscar agente..."
+    className={`
+      h-11 w-[260px] rounded-2xl border pl-10 pr-10 text-sm outline-none transition-all
+      ${isDark
+        ? `
+          border-[#3b3d4d]
+          bg-[#1F2029]
+          text-white
+          placeholder:text-slate-500
+          focus:border-blue-500
+          focus:ring-4
+          focus:ring-blue-500/20
+        `
+        : `
+          border-slate-200
+          bg-white
+          text-slate-700
+          focus:border-blue-500
+          focus:ring-4
+          focus:ring-blue-100
+        `
+      }
+    `}
+  />
+
+  {search && (
+    <button
+      type="button"
+      onClick={() => setSearch("")}
+      className={`
+        absolute right-3 top-1/2 -translate-y-1/2
+        text-slate-400 hover:text-slate-600
+        ${isDark ? "hover:text-slate-200" : ""}
+      `}
+    >
+      ✕
+    </button>
+  )}
+
+</div>
 
             </div>
 
@@ -592,6 +618,7 @@ const [showPassword, setShowPassword] = useState({});
           ? `
             border-yellow-500/20
             bg-yellow-500/10
+            uppercase
             text-yellow-300
             hover:bg-yellow-500/20
             hover:border-yellow-400
@@ -599,6 +626,7 @@ const [showPassword, setShowPassword] = useState({});
           : `
             border-yellow-200
             bg-yellow-50
+            uppercase
             text-yellow-600
             hover:bg-yellow-100
           `
@@ -662,7 +690,7 @@ const [showPassword, setShowPassword] = useState({});
               ?.split(" ")
               ?.slice(-2, -1)[0]
               ?.substring(0, 2)
-              ?.toLowerCase() || ""}`}
+              ?.toUpperCase() || ""}`}
 
           </div>
 
@@ -689,17 +717,12 @@ const [showPassword, setShowPassword] = useState({});
                       </Td>
 
                       <Td>
-
-                        <span className="flex justify-center
-                          rounded-xl bg-slate-200 uppercase
-                          px-3 py-2 text-xs font-bold text-black
-                        ">
-                          {
-                            PLATAFORMAS[item.plataforma] || "-"
-                          }
-                        </span>
-
-                      </Td>
+  <BotonAsignarMonitorCartera
+    idUsuario={item.id_usuario}
+    idCampana={idCampana}
+    reload={getAgentes}
+  />
+</Td>
 
                       {/* cambio de fuentes*/}
 

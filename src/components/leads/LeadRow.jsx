@@ -135,6 +135,7 @@ const handleAsignarAgente = async () => {
   )
 
 setAgenteAsignado({
+  id_usuario: Number(agenteSeleccionado),
   nombre_agente_asignado:
     agente?.nombre || ""
 })
@@ -530,6 +531,65 @@ case 'index':
             {lead.CampaOrigen || '-'}
           </motion.td>
 
+        )
+        case 'segmento_tasa':
+
+        return (
+
+          <motion.td
+            {...cellAnimation}
+            className={baseClass}
+          >
+            {lead.segmento_tasa || '-'}
+          </motion.td>
+
+        )
+        case 'suma_aseguradora':
+
+        return (
+
+          <motion.td
+            {...cellAnimation}
+            className={baseClass}
+          >
+            {lead.suma_aseguradora || '-'}
+          </motion.td>
+        )
+
+        case 'prima_recurrente':
+
+        return (
+
+          <motion.td
+            {...cellAnimation}
+            className={baseClass}
+          >
+            {lead.prima_recurrente || '-'}
+          </motion.td>
+        )
+
+        case 'monto_de_deuda':
+
+        return (
+
+          <motion.td
+            {...cellAnimation}
+            className={baseClass}
+          >
+            {lead.prima_recurrente || '-'}
+          </motion.td>
+        )
+
+        case 'etiqueta_endoso':
+
+        return (
+
+          <motion.td
+            {...cellAnimation}
+            className={baseClass}
+          >
+            {lead.etiqueta_endoso || '-'}
+          </motion.td>
         )
 
       case 'pautanameanuncio':
@@ -970,7 +1030,7 @@ case 'negocio':
       className={`${baseClass} text-center`}
     >
 
-    {agenteAsignado && !modoEdicionAgente ? (
+    {agenteAsignado?.id_usuario != null  && !modoEdicionAgente ? (
 
  <div
   className="

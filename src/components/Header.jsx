@@ -528,7 +528,7 @@ return (
                       onClick={() => {
   navigate(`/${mod.ruta}?camp=${campId}`);
 }}
-                      className="text-left px-2 py-1 rounded bg-red-600/40 hover:bg-red-600/70 transition text-xs font-semibold"
+                      className="text-left px-2 py-1  hover:bg-red-500/40 transition text-xs"
                     >
                       {mod.nombre}
                     </motion.button>

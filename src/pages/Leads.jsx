@@ -1,3 +1,4 @@
+//front/src/pages/Leads.jsx
 "use client"
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -54,7 +55,13 @@ const columnasNivel2 = useMemo(() => {
     discador: '',
     gestiones: ''
   })
-
+const [pendingFilters, setPendingFilters] = useState({
+  pautanameanuncio: '',
+  CampaOrigen: '',
+  Alias: '',
+  discador: '',
+  gestiones: ''
+})
   const handleCopy = async (text) => {
     if (!text) return
 
@@ -212,8 +219,22 @@ const filteredLeads = useMemo(() => {
           columns={columns}
           setColumns={setColumns}
           leads={leads} // necesario para generar valores únicos
-          onFilterChange={setColumnFilters} // conexión filtros
-        />
+            filters={pendingFilters}
+  onFilterChange={setPendingFilters}
+  onApplyFilters={() => setColumnFilters(pendingFilters)}
+  onClearFilters={() => {
+    const empty = {
+      pautanameanuncio: '',
+      CampaOrigen: '',
+      Alias: '',
+      discador: '',
+      gestiones: ''
+    }
+
+    setPendingFilters(empty)
+    setColumnFilters(empty)
+  }}
+/>
 
         <LeadTable
   leads={filteredLeads}

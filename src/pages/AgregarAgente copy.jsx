@@ -75,11 +75,6 @@ export default function AgregarAgente({
   const [error, setError] = useState("")
 
   const [responseData, setResponseData] = useState(null)
-  const [usuarioInactivo, setUsuarioInactivo] =
-  useState(false)
-
-const [activandoUsuario, setActivandoUsuario] =
-  useState(false)
 
   const [form, setForm] = useState({
     numero_documento: "",
@@ -103,65 +98,6 @@ const [activandoUsuario, setActivandoUsuario] =
     }))
 
   }, [camp])
-//activar usuariooooooo
-
-const handleActivarUsuario = async () => {
-
-  try {
-
-    setActivandoUsuario(true)
-
-    const token =
-      localStorage.getItem("token")
-
-    const res = await fetch(
-      `${API_URL}/api/agentes/activar-campana`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          numero_documento:
-            form.numero_documento,
-          id_campana:
-            Number(form.id_campana)
-        })
-      }
-    )
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      throw new Error(
-        data.message || "Error"
-      )
-    }
-
-    setUsuarioInactivo(false)
-
-    setResponseData(data)
-
-    if (reload) {
-      await reload()
-    }
-
-    if (onClose) {
-      onClose()
-    }
-
-  } catch (err) {
-
-    setError(err.message)
-
-  } finally {
-
-    setActivandoUsuario(false)
-
-  }
-}
-
 
   // =========================================================
   // BUSCAR PERSONA
@@ -278,17 +214,6 @@ const token = localStorage.getItem("token")
       const data = await res.json()
 
 if (!res.ok) {
-
-  if (
-    data.message ===
-    "Este usuario se encuentra inactivo para esta campaña"
-  ) {
-
-    setUsuarioInactivo(true)
-
-    return
-  }
-
   throw new Error(data.message || "Error")
 }
 
@@ -786,74 +711,6 @@ if (onClose) {
           </motion.div>
 
         )}
-        {usuarioInactivo && (
-
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className={`
-      mt-6 rounded-2xl border p-5
-      ${
-        isDark
-          ? `
-            border-yellow-500/30
-            bg-yellow-500/10
-            text-yellow-300
-          `
-          : `
-            border-yellow-200
-            bg-yellow-50
-            text-yellow-700
-          `
-      }
-    `}
-  >
-
-    <div className="font-semibold">
-      Este usuario se encuentra inactivo para esta campaña
-    </div>
-
-    <div className="mt-4 flex gap-3">
-
-      <button
-        type="button"
-        onClick={handleActivarUsuario}
-        disabled={activandoUsuario}
-        className="
-          rounded-xl
-          bg-green-600
-          px-4 py-2
-          text-white
-          font-bold
-        "
-      >
-
-        {activandoUsuario
-          ? "Activando..."
-          : "Activar"}
-
-      </button>
-
-      <button
-        type="button"
-        onClick={() =>
-          setUsuarioInactivo(false)
-        }
-        className="
-          rounded-xl
-          border
-          px-4 py-2
-          font-bold
-        "
-      >
-        Cancelar
-      </button>
-
-    </div>
-
-  </motion.div>
-
-)}
 
         {/* SUCCESS */}
 

@@ -43,7 +43,10 @@ function LeadFilters({
   columns,
   setColumns,
   leads = [],
-  onFilterChange
+  filters,
+  onFilterChange,
+  onApplyFilters,
+  onClearFilters
 }) {
 
   const { theme } = useLocalTheme()
@@ -99,7 +102,7 @@ function LeadFilters({
     useState(false)
 
   // =========================================================
-
+{/* 
   const [columnFilters, setColumnFilters] =
     useState({
       pautanameanuncio: '',
@@ -108,6 +111,8 @@ function LeadFilters({
       discador: '',
       gestiones: ''
     })
+*/}
+
 
   const campInfo = useMemo(() => {
 
@@ -169,14 +174,14 @@ const extract = (key) => {
     }
 
   }, [leads])
-
+{/* 
   useEffect(() => {
 
     if (onFilterChange) {
       onFilterChange(columnFilters)
     }
 
-  }, [columnFilters])
+  }, [columnFilters]) */}
 
   useEffect(() => {
 
@@ -403,17 +408,7 @@ const token = localStorage.getItem('token')
 
   }
 
-  const handleFilterChange = (
-    key,
-    value
-  ) => {
 
-    setColumnFilters(prev => ({
-      ...prev,
-      [key]: value
-    }))
-
-  }
 
   return (
 // border-b-0 despues de border
@@ -659,7 +654,9 @@ const token = localStorage.getItem('token')
 
               {showControlVistas && (
                 <div className="absolute right-0 top-14 z-50">
-                  <ControlVistas />
+                  <ControlVistas
+  onClose={() => setShowControlVistas(false)}
+/>
                 </div>
               )}
 
@@ -677,7 +674,7 @@ const token = localStorage.getItem('token')
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              className={`grid grid-cols-1 md:grid-cols-5 gap-4 mt-2 ${
+              className={`flex flex-wrap items-end gap-4 mt-2 p-3 rounded-lg ${
                 isDark
                   ? 'bg-slate-800/50'
                   : 'bg-slate-50'
@@ -685,7 +682,7 @@ const token = localStorage.getItem('token')
             >
 
               {/* PAUTA */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-48">
 
                 <label
                   className={`text-xs mb-1 ${
@@ -698,12 +695,12 @@ const token = localStorage.getItem('token')
                 </label>
 
                 <select
-                  value={columnFilters.pautanameanuncio}
+                  value={filters.pautanameanuncio}
                   onChange={(e) =>
-                    handleFilterChange(
-                      'pautanameanuncio',
-                      e.target.value
-                    )
+                    onFilterChange({
+                    ...filters,
+                    pautanameanuncio: e.target.value
+                  })
                   }
                   className={`px-3 py-2 rounded border ${
                     isDark
@@ -729,7 +726,7 @@ const token = localStorage.getItem('token')
               </div>
 
               {/* CAMPA ORIGEN */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-48">
 
                 <label
                   className={`text-xs mb-1 ${
@@ -742,12 +739,13 @@ const token = localStorage.getItem('token')
                 </label>
 
                 <select
-                  value={columnFilters.CampaOrigen}
+                  value={filters.CampaOrigen}
                   onChange={(e) =>
-                    handleFilterChange(
-                      'CampaOrigen',
+                    onFilterChange({
+                      ...filters,
+                      CampaOrigen:
                       e.target.value
-                    )
+                   } )
                   }
                   className={`px-3 py-2 rounded border ${
                     isDark
@@ -773,7 +771,7 @@ const token = localStorage.getItem('token')
               </div>
 
               {/* ALIAS */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-48">
 
                 <label
                   className={`text-xs mb-1 ${
@@ -786,12 +784,12 @@ const token = localStorage.getItem('token')
                 </label>
 
                 <select
-                  value={columnFilters.Alias}
+                  value={filters.Alias}
                   onChange={(e) =>
-                    handleFilterChange(
-                      'Alias',
-                      e.target.value
-                    )
+                   onFilterChange({
+  ...filters,
+  Alias: e.target.value
+})
                   }
                   className={`px-3 py-2 rounded border ${
                     isDark
@@ -817,7 +815,7 @@ const token = localStorage.getItem('token')
               </div>
 
                {/* Discador */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-48">
 
                 <label
                   className={`text-xs mb-1 ${
@@ -830,12 +828,12 @@ const token = localStorage.getItem('token')
                 </label>
 
                 <select
-                  value={columnFilters.discador}
+                  value={filters.discador}
                   onChange={(e) =>
-                    handleFilterChange(
-                      'discador',
-                      e.target.value
-                    )
+                    onFilterChange({
+  ...filters,
+  discador: e.target.value
+})
                   }
                   className={`px-3 py-2 rounded border ${
                     isDark
@@ -860,7 +858,7 @@ const token = localStorage.getItem('token')
 
               </div>
               {/* Gestiones */}
-              <div className="flex flex-col">
+              <div className="flex flex-col w-48">
 
                 <label
                   className={`text-xs mb-1 ${
@@ -873,12 +871,12 @@ const token = localStorage.getItem('token')
                 </label>
 
                 <select
-                  value={columnFilters.gestiones}
+                  value={filters.gestiones}
                   onChange={(e) =>
-                    handleFilterChange(
-                      'gestiones',
-                      e.target.value
-                    )
+                    onFilterChange({
+  ...filters,
+  gestiones: e.target.value
+})
                   }
                   className={`px-3 py-2 rounded border ${
                     isDark
@@ -902,7 +900,36 @@ const token = localStorage.getItem('token')
                 </select>
 
               </div>
+<div className="md:flex gap-2 ml-auto flex justify-end gap-2 mt-3">
 
+  <button
+    type="button"
+    onClick={onClearFilters}
+    className={`
+      px-4 py-2 rounded-lg text-sm font-medium
+      ${
+        isDark
+          ? 'bg-slate-700 text-white hover:bg-slate-600'
+          : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+      }
+    `}
+  >
+    Limpiar Filtros
+  </button>
+
+  <button
+    type="button"
+    onClick={onApplyFilters}
+    className="
+      px-4 py-2 rounded-lg text-sm font-medium
+      bg-emerald-600 text-white
+      hover:bg-blue-700
+    "
+  >
+    Filtrar
+  </button>
+
+</div>
             </motion.div>
 
           )}
